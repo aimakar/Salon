@@ -1,0 +1,487 @@
+unit PrihodNaklF;
+
+interface
+
+uses
+  Windows, Messages, SysUtils, Classes, Graphics, Controls, Forms, Dialogs,
+  DBCtrls, ExtCtrls, StdCtrls, Mask, ToolEdit, Grids, DBGrids, Db, DBTables,
+  Buttons;
+
+  procedure SumTxt1;
+  procedure SumText(A : String; P : Real; var S,S1 : String);
+
+
+type
+  TPrihodNakl = class(TForm)
+    Label1: TLabel;
+    Label2: TLabel;
+    DE: TDateEdit;
+    DBMemo1: TDBMemo;
+    Label6: TLabel;
+    DG: TDBGrid;
+    Label9: TLabel;
+    Label11: TLabel;
+    Q1: TQuery;
+    Label12: TLabel;
+    PRL: TDBLookupComboBox;
+    GRG: TDBLookupComboBox;
+    GRK: TDBLookupComboBox;
+    Label3: TLabel;
+    Label4: TLabel;
+    Label5: TLabel;
+    Label7: TLabel;
+    Label8: TLabel;
+    DBEdit1: TDBEdit;
+    Q1Summa: TFloatField;
+    procedure FormActivate(Sender: TObject);
+    procedure FormKeyDown(Sender: TObject; var Key: Word;
+      Shift: TShiftState);
+    procedure FormDeactivate(Sender: TObject);
+    procedure DGKeyDown(Sender: TObject; var Key: Word;
+      Shift: TShiftState);
+    procedure DGKeyPress(Sender: TObject; var Key: Char);
+    procedure DGEnter(Sender: TObject);
+    procedure DGExit(Sender: TObject);
+    procedure PRLKeyDown(Sender: TObject; var Key: Word;
+      Shift: TShiftState);
+    procedure DEKeyDown(Sender: TObject; var Key: Word;
+      Shift: TShiftState);
+    procedure Timer1Timer(Sender: TObject);
+    procedure GRGKeyDown(Sender: TObject; var Key: Word;
+      Shift: TShiftState);
+    procedure GRKKeyDown(Sender: TObject; var Key: Word;
+      Shift: TShiftState);
+    procedure GRKCloseUp(Sender: TObject);
+
+  private
+  Sk : String;
+    { Private declarations }
+  public
+    { Public declarations }
+  end;
+
+var
+  PrihodNakl: TPrihodNakl;
+
+implementation
+
+uses Data, Pro, NomForm, DobTovPrihF,
+  NewPostF, SprNewPredpr, SprPostVybF;
+
+{$R *.DFM}
+
+procedure TPrihodNakl.FormKeyDown(Sender: TObject; var Key: Word;
+  Shift: TShiftState);
+begin
+if Key=VK_ESCAPE then
+   if DataMain.NaklPrihCode_pr.AsInteger = 0 then
+      begin
+           ShowMessage('Не выбран поставщик!');
+           Key := 0;
+           PrihodNakl.ActiveControl := PRL;
+      end
+   else
+      PrihodNakl.ModalResult := mrOk;
+
+end;
+
+procedure TPrihodNakl.FormActivate(Sender: TObject);
+var S : String;
+begin
+
+     q1.Prepare;
+
+     With DataMain do
+          begin
+               Post.Open;
+               GrVal.Open;
+               Valyta.Open;
+               TNPrih.Open;
+               S := DataMain.DostupDOST1.AsString;
+          end;
+     SumTxt1;
+     PrihodNakl.ActiveControl := DE;
+     Datamain.TNPrih.First;
+     if (not(NasDost(S[22])) and (PrihodNakl.Tag <> 1)) then PrihodNakl.Tag := 1;
+
+     if PrihodNakl.Tag = 1 then begin
+        DE.Enabled := False;
+        PRL.Enabled := False;
+        DBMemo1.Enabled := False;
+        GRK.Enabled := False;
+        GRG.Enabled := False;
+       end
+     else
+       begin
+        DE.Enabled := True;
+        PRL.Enabled := True;
+        DBMemo1.Enabled := True;
+        GRK.Enabled := True;
+        GRG.Enabled := True;
+       end;
+
+
+  Application.CreateForm(TDobTovprih, DobTovPrih);
+  Application.CreateForm(TNewPost, NewPost);
+  Application.CreateForm(TNewPredpr, NewPredpr);
+  Application.CreateForm(TNomF, NomF);
+
+
+
+
+end;
+
+procedure TPrihodNakl.FormDeactivate(Sender: TObject);
+begin
+     With DataMain do
+          begin
+            Oper.Close;
+            Valyta.Close;
+            GRVal.Close;
+            TNPrih.Close;
+          end;
+     q1.Close;
+
+     q1.UnPrepare;
+
+        DE.Enabled := True;
+        PRL.Enabled := True;
+        DBMemo1.Enabled := True;
+        GRK.Enabled := True;
+        GRG.Enabled := True;
+
+DobTovPrih.Release;
+NewPost.release;
+NewPredpr.Release;
+NomF.Release;
+
+
+end;
+
+
+
+procedure TPrihodNakl.DGKeyDown(Sender: TObject; var Key: Word;
+  Shift: TShiftState);
+var S : String;
+    L : Boolean;
+begin
+S := '';
+if PrihodNakl.Tag = 0 then
+     case Key of
+          VK_INSERT : begin
+                     DataMain.TnPrih.OnCalcFields := nil;
+                     DobTovPrih.ShowModal;
+                     SumTXT1;
+                     DataMain.TnPrih.OnCalcFields := DataMain.TNPrihCalcFields;
+                     Datamain.TNPrih.Refresh;
+                      end;
+          VK_DELETE : if MessageDlg('Удалить позицию?',
+                         mtConfirmation, [mbYes, mbNo], 0) = mrYes then
+                         begin
+                         DataMain.TNPrih.Delete;
+                         SumTxt1;
+                         end;
+          VK_ESCAPE : PrihodNakl.ActiveControl := DE;
+          VK_F6 : if InputQuery('Поиск по наименованию','Введите подстроку',S) then
+                  With Datamain.TnPrih do
+                       begin
+                            DisableControls;
+                            L := not(Eof);
+                            while L do begin
+                              if Pos(AnsiUpperCase(S),AnsiUpperCase(FieldByName('Naim').AsString))=0 then
+                                 Next
+                              else
+                                  L :=False;
+                              if Eof then L := False;
+                            end;
+                            enableControls;
+                       end;
+
+
+     end
+else
+    if Key = VK_F6 then
+                  if InputQuery('Поиск по наименованию','Введите подстроку',S) then
+                  With Datamain.TnPrih do
+                       begin
+                            DisableControls;
+                            L := not(Eof);
+                            while L do begin
+                              if Pos(AnsiUpperCase(S),AnsiUpperCase(FieldByName('Naim').AsString))=0 then
+                                 Next
+                              else
+                                  L :=False;
+                              if Eof then L := False;
+                            end;
+                            enableControls;
+                       end;
+
+
+end;
+
+procedure SumTxt1;
+var S,S1 : String;
+    P : Real;
+begin
+     S := PrihodNakl.Label11.Caption;
+     S1 := '';
+     P := DataMain.NaklPrihValPrice.AsFloat;
+
+     SumText(DataMain.NaklPrihNomer.asString,P,S,S1);
+     PrihodNakl.Label11.Caption := S1;
+     PrihodNakl.Label7.Caption := S;
+end;
+
+procedure SumText(A : String; P : Real; var S,S1 : String);
+begin
+with PrihodNakl do begin
+    Q1.Close;
+    Q1.ParamByName('Nakl').AsString := A;
+    Q1.Open;
+    S := FloatToStr(Q1Summa.AsFloat);
+    S1 := FloatToStr(Round(Q1Summa.AsFloat*P*100)/100);
+end;
+end;
+
+
+
+procedure TPrihodNakl.DGKeyPress(Sender: TObject; var Key: Char);
+var A,B,C : Integer;
+    S : String;
+begin
+     if PrihodNakl.Tag = 0
+      then
+        case DG.SelectedIndex of
+        2 : case Key of
+               #13 : begin
+                  B := DataMain.TNPrih.FieldByName('Kol').AsInteger;
+                  NomF.Edit1.Text := '';
+                  NomF.Edit1.EditMask := '99999;; ';
+                  if NomF.ShowModal = mrOk
+                   then
+                     with datamain do begin
+                     A := StrToInt(Trim(NomF.Edit1.Text));
+                     C := A*TNPrih.FieldBYName('V_Up').AsInteger;
+                     TNPrih.Edit;
+                     TNPrih.FieldByName('Up').AsInteger := A;
+                     TNPrih.FieldByName('Kol').AsInteger := C;
+                     TNPrih.Post;
+                     SumTxt1;
+                     end;
+                    End;
+               end;
+        3 : case Key of
+               #13 : begin
+                  B := DataMain.TNPrih.FieldByName('Kol').AsInteger;
+                  NomF.Edit1.Text := '';
+                  NomF.Edit1.EditMask := '99999;; ';
+                  if NomF.ShowModal = mrOk
+                   then
+                     with datamain do begin
+                     A := StrToInt(Trim(NomF.Edit1.Text));
+                     TNPrih.Edit;
+                     TNPrih.FieldByName('Up').AsInteger := 0;
+                     TNPrih.FieldByName('Kol').AsInteger := A;
+                     TNPrih.Post;
+                     SumTxt1;
+                     end;
+                   end;
+             End;
+        4 : case Key of
+               #13 : begin
+                  NomF.Edit1.Text := '';
+                  NomF.Edit1.EditMask := '99999,99;; ';
+                  if NomF.ShowModal = mrOk
+                   then
+                     with datamain do begin
+                     S := '';
+                     S := NomF.Edit1.Text;
+                     TrimAll(S);
+                     TNPrih.Edit;
+                     TNPrih.FieldByName('Price').AsFloat := StrToFloat(S);
+                     TNPrih.Post;
+                     SumTxt1;
+                     end;
+                  end;
+             End;
+
+        end;
+if DataMain.Ost.State = dsBrowse then DataMain.Ost.Refresh;
+if DataMain.TNPrih.State = dsBrowse then DataMain.TNPrih.Refresh;
+
+
+end;
+
+//end;
+
+
+procedure TPrihodNakl.DGEnter(Sender: TObject);
+begin
+if PrihodNakl.Tag=0 then
+     PrihodNakl.KeyPreview := False;
+end;
+
+procedure TPrihodNakl.DGExit(Sender: TObject);
+begin
+if PrihodNakl.Tag=0 then
+     PrihodNakl.KeyPreview := True;
+end;
+
+procedure TPrihodNakl.PRLKeyDown(Sender: TObject; var Key: Word;
+  Shift: TShiftState);
+var NameI : String;
+    I : Integer;
+begin
+     If PrihodNakl.Tag = 0 then
+     case Key of
+          VK_DOWN,VK_UP : if not(PrihodNakl.Prl.ListVisible) then Key := 0;
+          VK_SPACE : if not(PrihodNakl.Prl.ListVisible) then PrihodNakl.Prl.DropDown;
+          VK_RETURN : begin
+                        PrihodNakl.Prl.CloseUp(True);
+                        PrihodNakl.ActiveControl := GRG;
+                      end;
+          VK_F6 : begin
+                Application.CreateForm(TSprPostVyb,SprPostVyb);
+                SprPostVyb.ShowModal;
+                if SprPostVyb.Tag <> 0 then begin
+                DataMain.NaklPrih.Edit;
+                DataMain.NaklPrihCode_PR.AsInteger := SprPostVyb.Tag;
+                DataMain.NaklPrih.Post;
+                PRL.Update;
+                end;
+                SprPostVyb.Release;
+                  end;
+          end;
+     If PrihodNakl.Tag = 0 then
+     case Key of
+          VK_INSERT : begin
+                    NewPost.Caption := 'Добаление нового поставщика';
+                    NewPost.CheckBox1.Enabled := True;
+                    NewPost.CheckBox2.Enabled := True;
+                    With DataMain do
+                         begin
+                              Post.Refresh;
+                              NameI := Post.IndexName;
+                              Post.IndexName := '';
+                              Post.Last;
+                              I := Post.FieldByName('Code_Post').AsInteger;
+                              Post.IndexName := NameI;
+                              Post.Append;
+                              Post.FieldByName('Code_Post').AsInteger := I+1;
+                              Post.FieldByName('Cons').AsInteger :=0;
+                              Post.Post;
+                              Post.Edit;
+//                                   Timer1.Enabled :=False;
+
+                              if NewPost.ShowModal = mrCancel then
+                                 begin
+                                      Post.Cancel;
+                                      Post.Delete;
+                                 end
+                              else
+                                  Post.post;
+//                                   Timer1.Enabled :=True;
+
+                              If NewPost.CheckBox1.Checked then begin
+                                 Predpr.Open;
+                                 NameI := Predpr.Indexname;
+                                 Predpr.IndexName :='';
+                                 Predpr.Last;
+                                 I := Predpr.FieldByName('Code_Pr').AsInteger;
+                                 Predpr.IndexName :=NameI;
+                                 Predpr.Append;
+                                 Predpr.FieldByName('Code_Pr').AsInteger := I+1;
+                                 Predpr.FieldByName('Naim').AsString := Post.FieldByName('Naim').AsString;
+                                 Predpr.Post;
+                                 if MessageDlg('Желаете отредактировать данные клиента?',
+                                 mtConfirmation, [mbYes, mbNo], 0) = mrYes then begin
+                                      NewPredpr.CheckBox1.Enabled := False;
+                                      NewPredpr.CheckBox2.Enabled := False;
+                                      Predpr.Edit;
+                                      NewPredpr.ShowModal;
+                                      Predpr.Post;
+                                 end;
+                                 Predpr.Close;
+                              end;
+                              If NewPost.CheckBox2.Checked then begin
+                                 Proiz.Open;
+                                 NameI := Proiz.IndexName;
+                                 Proiz.IndexName := '';
+                                 Proiz.Last;
+                                 I := Proiz.FieldByName('Code_Proiz').AsInteger;
+                                 Proiz.IndexName := NameI;
+                                 Proiz.Append;
+                                 Proiz.FieldByName('Code_Proiz').AsInteger := I+1;
+                                 Proiz.FieldByName('Naim').AsString := Post.FieldByName('Naim').AsString;
+                                 Proiz.FieldByName('Naim').AsString := Post.FieldByName('Prim').AsString;
+                                 Proiz.Post;
+                                 Proiz.Close;
+                              end;
+                         end;
+                      end;
+          VK_DOWN,VK_UP : if not(PrihodNakl.Prl.ListVisible) then Key := 0;
+          VK_SPACE : if not(PrihodNakl.Prl.ListVisible) then PrihodNakl.Prl.DropDown;
+          VK_RETURN : begin
+                        PrihodNakl.Prl.CloseUp(True);
+                        PrihodNakl.ActiveControl := GRG;
+                      end;
+          end;
+end;
+
+
+procedure TPrihodNakl.DEKeyDown(Sender: TObject; var Key: Word;
+  Shift: TShiftState);
+begin
+     if Key = VK_RETURN then PrihodNakl.ActiveControl := PrL;
+end;
+
+
+procedure TPrihodNakl.Timer1Timer(Sender: TObject);
+begin
+     with DataMain do
+         begin
+              NaklPrih.Refresh;
+              Ost.Refresh;
+              TNPrih.Refresh;
+         end;
+
+end;
+
+procedure TPrihodNakl.GRGKeyDown(Sender: TObject; var Key: Word;
+  Shift: TShiftState);
+begin
+     If PrihodNakl.Tag = 0 then
+     case Key of
+          VK_DOWN,VK_UP : if not(PrihodNakl.GRG.ListVisible) then Key := 0;
+          VK_SPACE : if not(PrihodNakl.GRG.ListVisible) then PrihodNakl.GRG.DropDown;
+          VK_RETURN, VK_TAB : begin
+                        PrihodNakl.GRG.CloseUp(True);
+                        PrihodNakl.GRK.Refresh;
+                        PrihodNakl.ActiveControl := GRK;
+                        SumTXT1;
+                      end;
+          end;
+
+end;
+
+procedure TPrihodNakl.GRKKeyDown(Sender: TObject; var Key: Word;
+  Shift: TShiftState);
+begin
+     If PrihodNakl.Tag = 0 then
+     case Key of
+          VK_DOWN,VK_UP : if not(PrihodNakl.GRK.ListVisible) then Key := 0;
+          VK_SPACE : if not(PrihodNakl.GRK.ListVisible) then PrihodNakl.GRK.DropDown;
+          VK_RETURN, VK_TAB : begin
+                        PrihodNakl.GRK.CloseUp(True);
+                        PrihodNakl.ActiveControl := DG;
+                        SUMTXT1;
+                      end;
+          end;
+end;
+
+procedure TPrihodNakl.GRKCloseUp(Sender: TObject);
+begin
+     SumTXT1;
+end;
+
+end.

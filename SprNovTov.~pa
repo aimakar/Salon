@@ -1,0 +1,926 @@
+unit SprNovTov;
+
+interface
+
+uses
+  Windows, Messages, SysUtils, Classes, Graphics, Controls, Forms, Dialogs,
+  StdCtrls, DBCtrls, Mask, ToolEdit, RXDBCtrl, Db, DBTables, ExtCtrls,
+  CurrEdit, Buttons;
+
+type
+  TNewTov = class(TForm)
+    DBEdit1: TDBEdit;
+    PrihPrice: TDBEdit;
+    NacB: TDBEdit;
+    PriceB: TDBEdit;
+    DBEdit5: TDBEdit;
+    DBEdit7: TDBEdit;
+    Label1: TLabel;
+    Label2: TLabel;
+    Label5: TLabel;
+    Label7: TLabel;
+    Label8: TLabel;
+    Label9: TLabel;
+    Label10: TLabel;
+    Label11: TLabel;
+    DBEdit8: TDBEdit;
+    SN: TDBCheckBox;
+    Button1: TButton;
+    Button2: TButton;
+    GroupBox1: TGroupBox;
+    Button5: TButton;
+    CB: TDBLookupComboBox;
+    Label13: TLabel;
+    Label14: TLabel;
+    DBLookupComboBox1: TDBLookupComboBox;
+    DBLookupComboBox2: TDBLookupComboBox;
+    Label15: TLabel;
+    DBLookupComboBox3: TDBLookupComboBox;
+    DBEdit2: TDBEdit;
+    DBEdit3: TDBEdit;
+    DBLookupComboBox4: TDBLookupComboBox;
+    Label6: TLabel;
+    Label16: TLabel;
+    Label17: TLabel;
+    Label18: TLabel;
+    DBDateEdit1: TDBDateEdit;
+    Label19: TLabel;
+    DBEdit4: TDBEdit;
+    DBText1: TDBText;
+    Query1: TQuery;
+    Query4: TQuery;
+    Table1: TTable;
+    Query2: TQuery;
+    Query3: TQuery;
+    Query3Nomer: TStringField;
+    Query3SchNom: TFloatField;
+    Query3Ot: TDateField;
+    Query3Kol: TFloatField;
+    Query3Price: TFloatField;
+    Query2Nomer: TStringField;
+    Query2SchNom: TFloatField;
+    Query2Ot: TDateField;
+    Query2Kol: TFloatField;
+    Query2Price: TFloatField;
+    Query1Nomer: TStringField;
+    Query1SchNom: TFloatField;
+    Query1Ot: TDateField;
+    Query1Kol: TFloatField;
+    Query1Price: TFloatField;
+    Table1NOMER: TStringField;
+    Table1SCHNOM: TFloatField;
+    Table1SUMMA: TFloatField;
+    Table1OT: TDateField;
+    Table1KOL: TFloatField;
+    Table1PKOL: TFloatField;
+    Table1PSUMMA: TFloatField;
+    Query5: TQuery;
+    Query6: TQuery;
+    Query6Nomer: TStringField;
+    Query6Ot: TDateField;
+    Query6Kol: TFloatField;
+    Query6Price: TFloatField;
+    Query5Nomer: TStringField;
+    Query5Ot: TDateField;
+    Query5Kol: TFloatField;
+    Query5Price: TFloatField;
+    Query7: TQuery;
+    Query7Nomer: TFloatField;
+    Query7Ot: TDateField;
+    Query7Kol: TFloatField;
+    Query7Price: TFloatField;
+    Query8: TQuery;
+    Query8Nomer: TStringField;
+    Query8Ot: TDateField;
+    Query8Kol: TFloatField;
+    Query8Price: TFloatField;
+    Query9: TQuery;
+    Query9Nomer: TStringField;
+    Query9Ot: TDateField;
+    Query9Kol: TFloatField;
+    Query9Price: TFloatField;
+    Query10: TQuery;
+    Query10Nomer: TStringField;
+    Query10Ot: TDateField;
+    Query10Kol: TFloatField;
+    Query10Price: TFloatField;
+    Query11: TQuery;
+    Query12: TQuery;
+    Query13: TQuery;
+    Query13Nomer: TStringField;
+    Query13Ot: TDateField;
+    Query13Kol: TFloatField;
+    Query13Price: TFloatField;
+    Query12Nomer: TStringField;
+    Query12Ot: TDateField;
+    Query12Kol: TFloatField;
+    Query12Price: TFloatField;
+    Query11Nomer: TStringField;
+    Query11Ot: TDateField;
+    Query11Kol: TSmallintField;
+    Query11Price: TFloatField;
+    Button3: TButton;
+    Otp_Tov: TQuery;
+    Label12: TLabel;
+    DBEdit9: TDBEdit;
+    Label20: TLabel;
+    DBEdit10: TDBEdit;
+    DBEdit11: TDBEdit;
+    Label21: TLabel;
+    DBRadioGroup1: TDBRadioGroup;
+    Alko_StrEd: TDBEdit;
+    DBCheckBox1: TDBCheckBox;
+    DalEd: TRxDBCalcEdit;
+    Label4: TLabel;
+    Label22: TLabel;
+    Label3: TLabel;
+    CE1: TComboEdit;
+    SpeedButton1: TSpeedButton;
+    procedure PrihPriceExit(Sender: TObject);
+    procedure NacBChange(Sender: TObject);
+    procedure FormKeyDown(Sender: TObject; var Key: Word;
+      Shift: TShiftState);
+    procedure Button2Click(Sender: TObject);
+    procedure Button1Click(Sender: TObject);
+    procedure DBEdit1KeyDown(Sender: TObject; var Key: Word;
+      Shift: TShiftState);
+    procedure FormActivate(Sender: TObject);
+    procedure CBKeyDown(Sender: TObject; var Key: Word;
+      Shift: TShiftState);
+    procedure PrihPriceKeyDown(Sender: TObject; var Key: Word;
+      Shift: TShiftState);
+    procedure NacBKeyDown(Sender: TObject; var Key: Word;
+      Shift: TShiftState);
+    procedure PriceBKeyDown(Sender: TObject; var Key: Word;
+      Shift: TShiftState);
+    procedure DBEdit7KeyDown(Sender: TObject; var Key: Word;
+      Shift: TShiftState);
+    procedure DBEdit8KeyDown(Sender: TObject; var Key: Word;
+      Shift: TShiftState);
+    procedure SNKeyDown(Sender: TObject; var Key: Word;
+      Shift: TShiftState);
+    procedure DBEdit6KeyDown(Sender: TObject; var Key: Word;
+      Shift: TShiftState);
+    procedure DBMemo1KeyDown(Sender: TObject; var Key: Word;
+      Shift: TShiftState);
+    procedure DBLookupComboBox1KeyDown(Sender: TObject; var Key: Word;
+      Shift: TShiftState);
+    procedure DBLookupComboBox2KeyDown(Sender: TObject; var Key: Word;
+      Shift: TShiftState);
+    procedure DBLookupComboBox3KeyDown(Sender: TObject; var Key: Word;
+      Shift: TShiftState);
+    procedure DBLookupComboBox4KeyDown(Sender: TObject; var Key: Word;
+      Shift: TShiftState);
+    procedure Button5Click(Sender: TObject);
+    procedure Button3Click(Sender: TObject);
+    procedure DBRadioGroup1Change(Sender: TObject);
+    procedure CE1ButtonClick(Sender: TObject);
+    procedure SpeedButton1Click(Sender: TObject);
+  private
+    { Private declarations }
+  public
+    { Public declarations }
+  end;
+
+var
+  NewTov: TNewTov;
+
+implementation
+
+uses Data, NewPostF, SprNewPredpr, NewProizF, KartF, Tovar_GroupF;
+
+{$R *.DFM}
+
+procedure TNewTov.PrihPriceExit(Sender: TObject);
+begin
+  DataMain.TovarPrice_B.AsFloat := DataMain.TovarPrihod.AsFloat * DataMain.TovarNacen.AsFloat;
+end;
+
+procedure TNewTov.NacBChange(Sender: TObject);
+begin
+     If NacB.Modified then
+       DataMain.TovarPrice_B.AsFloat := DataMain.TovarPrihod.AsFloat * DataMain.TovarNacen.AsFloat;
+end;
+
+procedure TNewTov.FormKeyDown(Sender: TObject; var Key: Word;
+  Shift: TShiftState);
+begin
+     case Key of
+          VK_ESCAPE : NewTov.ModalResult := mrCancel;
+     end;
+end;
+
+procedure TNewTov.Button2Click(Sender: TObject);
+begin
+     NewTov.ModalResult := mrCancel;
+end;
+
+procedure TNewTov.Button1Click(Sender: TObject);
+var I : integer;
+    S : String;
+begin
+     i:=0;
+     S:='';
+     With DataMain do begin
+
+if Tovar.FieldByName('Code_PR').AsInteger=0 then
+   begin
+     S := 'Не выбран производитель!'+#13;
+     I := 1;
+   end;
+if Tovar.FieldByName('Code_Post').AsInteger=0 then
+   begin
+     S := S+'Не выбран поставщик!';
+     I := 1;
+   end;
+If i = 0 then
+   Begin
+        if not(Ost.FindKey([Tovar.FieldByName('Code').asInteger])) then
+           Ost.AppendRecord([Tovar.FieldByName('Code').asInteger,nil,nil]);
+           NewTov.ModalResult := mrOk;
+   end
+   else ShowMessage(S);
+     end;
+
+end;
+
+procedure TNewTov.DBEdit1KeyDown(Sender: TObject; var Key: Word;
+  Shift: TShiftState);
+begin
+     case Key of
+          VK_RETURN : NewTov.ActiveControl := DBLookupComboBox1;
+
+     end;
+end;
+
+procedure TNewTov.FormActivate(Sender: TObject);
+begin
+     DataMain.Proiz.Open;
+     DataMain.Post.Open;
+     NewTov.ActiveControl := DBEdit1;
+end;
+
+procedure TNewTov.CBKeyDown(Sender: TObject; var Key: Word;
+  Shift: TShiftState);
+begin
+     case Key of
+          VK_Return : NewTov.ActiveControl :=PrihPrice;
+     end;
+end;
+
+procedure TNewTov.PrihPriceKeyDown(Sender: TObject; var Key: Word;
+  Shift: TShiftState);
+begin
+     case Key of
+          VK_Return : begin
+                    NewTov.ActiveControl := NacB;
+                    DataMain.Tovar.FieldByName('Price_B').AsFloat := DataMain.Tovar.FieldByName('Prihod').AsFloat * DataMain.Tovar.FieldByName('Nacen').AsFloat;
+                      end;
+     end;
+
+end;
+
+procedure TNewTov.NacBKeyDown(Sender: TObject; var Key: Word;
+  Shift: TShiftState);
+begin
+     case Key of
+          VK_Return : BEGIN
+                    NewTov.ActiveControl :=PriceB;
+                    DataMain.Tovar.FieldByName('Price_B').AsFloat := DataMain.Tovar.FieldByName('Prihod').AsFloat * DataMain.Tovar.FieldByName('Nacen').AsFloat;
+                      end;
+
+     end;
+
+end;
+
+procedure TNewTov.PriceBKeyDown(Sender: TObject; var Key: Word;
+  Shift: TShiftState);
+begin
+     case Key of
+          VK_Return : NewTov.ActiveControl := DBEdit7;
+     end;
+
+end;
+
+procedure TNewTov.DBEdit7KeyDown(Sender: TObject; var Key: Word;
+  Shift: TShiftState);
+begin
+     case Key of
+          VK_Return : NewTov.ActiveControl :=DBEdit8;
+     end;
+
+end;
+
+
+procedure TNewTov.DBEdit8KeyDown(Sender: TObject; var Key: Word;
+  Shift: TShiftState);
+begin
+     case Key of
+          VK_Return : NewTov.ActiveControl := SN;
+     end;
+
+end;
+
+procedure TNewTov.SNKeyDown(Sender: TObject; var Key: Word;
+  Shift: TShiftState);
+begin
+     case Key of
+          VK_Return : NewTov.ActiveControl := Button1;
+     end;
+
+end;
+
+procedure TNewTov.DBEdit6KeyDown(Sender: TObject; var Key: Word;
+  Shift: TShiftState);
+begin
+{     case Key of
+          VK_Return : NewTov.ActiveControl := DBMemo1;
+     end;
+}
+end;
+
+procedure TNewTov.DBMemo1KeyDown(Sender: TObject; var Key: Word;
+  Shift: TShiftState);
+begin
+     case Key of
+          VK_Return : NewTov.ActiveControl :=Button1;
+     end;
+
+end;
+
+procedure TNewTov.DBLookupComboBox1KeyDown(Sender: TObject; var Key: Word;
+  Shift: TShiftState);
+var NameI : String;
+    I : Integer;
+begin
+     case Key of
+          VK_INSERT : begin
+                    Application.CreateForm(TNewPost, NewPost);
+                    NewPost.Caption := 'Добаление нового поставщика';
+                    NewPost.CheckBox1.Enabled := True;
+                    NewPost.CheckBox2.Enabled := True;
+                    With DataMain do
+                         begin
+                              Post.Refresh;
+                              NameI := Post.IndexName;
+                              Post.IndexName := '';
+                              Post.Last;
+                              I := Post.FieldByName('Code_Post').AsInteger;
+                              Post.IndexName := NameI;
+                              Post.Append;
+                              Post.FieldByName('Code_Post').AsInteger := I+1;
+                              Post.FieldByName('Cons').AsInteger :=0;
+                              Post.Post;
+                              Post.Edit;
+
+                              if NewPost.ShowModal = mrCancel then
+                                 begin
+                                      Post.Cancel;
+                                      Post.Delete;
+                                 end
+                              else
+                                  Post.post;
+
+                              If NewPost.CheckBox1.Checked then begin
+                                 Predpr.Open;
+                                 NameI := Predpr.Indexname;
+                                 Predpr.IndexName :='';
+                                 Predpr.Last;
+                                 I := Predpr.FieldByName('Code_Pr').AsInteger;
+                                 Predpr.IndexName :=NameI;
+                                 Predpr.Append;
+                                 Predpr.FieldByName('Code_Pr').AsInteger := I+1;
+                                 Predpr.FieldByName('Naim').AsString := Post.FieldByName('Naim').AsString;
+                                 Predpr.Post;
+                                 if MessageDlg('Желаете отредактировать данные клиента?',
+                                 mtConfirmation, [mbYes, mbNo], 0) = mrYes then begin
+                                      NewPredpr.CheckBox1.Enabled := False;
+                                      NewPredpr.CheckBox2.Enabled := False;
+                                      Predpr.Edit;
+                                      NewPredpr.ShowModal;
+                                      Predpr.Post;
+                                 end;
+                                 Predpr.Close;
+                              end;
+                              If NewPost.CheckBox2.Checked then begin
+                                 Proiz.Open;
+                                 NameI := Proiz.IndexName;
+                                 Proiz.IndexName := '';
+                                 Proiz.Last;
+                                 I := Proiz.FieldByName('Code_Proiz').AsInteger;
+                                 Proiz.IndexName := NameI;
+                                 Proiz.Append;
+                                 Proiz.FieldByName('Code_Proiz').AsInteger := I+1;
+                                 Proiz.FieldByName('Naim').AsString := Post.FieldByName('Naim').AsString;
+                                 Proiz.FieldByName('Naim').AsString := Post.FieldByName('Prim').AsString;
+                                 Proiz.Post;
+                                 Proiz.Close;
+                                 NewPost.Release;
+                              end;
+                         end;
+                      end;
+          VK_DOWN,VK_UP : if not(DBLookupComboBox1.ListVisible) then Key := 0;
+          VK_SPACE : if not(DBLookupComboBox1.ListVisible) then DBLookupComboBox1.DropDown;
+          VK_RETURN : begin
+                        DBLookupComboBox1.CloseUp(True);
+                        NewTov.ActiveControl := DBLookupComboBox2;
+                      end;
+     end;
+
+end;
+
+procedure TNewTov.DBLookupComboBox2KeyDown(Sender: TObject; var Key: Word;
+  Shift: TShiftState);
+var I : Integer;
+    NameI : String;
+
+begin
+     case Key of
+          VK_DOWN,VK_UP : if not(DBLookupComboBox2.ListVisible) then Key := 0;
+          VK_SPACE : if not(DBLookupComboBox2.ListVisible) then DBLookupComboBox2.DropDown;
+          VK_RETURN : begin
+                        DBLookupComboBox2.CloseUp(True);
+                        NewTov.ActiveControl := CB;
+                      end;
+          VK_INSERT : Begin
+                    Application.CreateForm(TNewProiz, NewProiz);
+                    NewProiz.Caption := 'Добавление нового производителя';
+                    NewProiz.CheckBox1.Enabled := True;
+                    NewProiz.CheckBox2.Enabled := True;
+                    With DataMain do
+                         begin
+                              Proiz.Refresh;
+                              NameI := Proiz.IndexName;
+                              Proiz.IndexName := '';
+                              Proiz.Last;
+                              I := Proiz.FieldByName('Code_Proiz').AsInteger;
+                              Proiz.IndexName := NameI;
+                              Proiz.Append;
+                              Proiz.FieldByName('Code_Proiz').AsInteger := I+1;
+                              Proiz.Post;
+                              Proiz.Edit;
+                              if NewProiz.ShowModal = mrCancel then
+                                 begin
+                                      Proiz.Cancel;
+                                      Proiz.Delete;
+                                 end
+                              else
+                                  Proiz.post;
+                              If NewProiz.CheckBox1.Checked then begin
+                                 Predpr.Open;
+                                 NameI := Predpr.IndexName;
+                                 Predpr.IndexName := '';
+                                 Predpr.Last;
+                                 I := Predpr.FieldByName('Code_Pr').AsInteger;
+                                 Predpr.IndexName := NameI;
+                                 Predpr.Append;
+                                 Predpr.FieldByName('Code_Pr').AsInteger := I+1;
+                                 Predpr.FieldByName('Naim').AsString := Proiz.FieldByName('Naim').AsString;
+                                 Predpr.Post;
+                                 if MessageDlg('Желаете отредактировать данные клиента?',
+                                 mtConfirmation, [mbYes, mbNo], 0) = mrYes then begin
+                                      NewPredpr.CheckBox1.Enabled := False;
+                                      NewPredpr.CheckBox2.Enabled := False;
+                                      Predpr.Edit;
+                                      NewPredpr.ShowModal;
+                                      Predpr.Post;
+                                 end;
+                              end;
+                              If NewProiz.CheckBox2.Checked then begin
+                                 Post.Open;
+                                 NameI := Post.IndexName;
+                                 Post.IndexName := '';
+                                 Post.Last;
+                                 I := Post.FieldByName('Code_Post').AsInteger;
+                                 Post.IndexName := NameI;
+                                 Post.Append;
+                                 Post.FieldByName('Code_Post').AsInteger := I+1;
+                                 Post.FieldByName('Naim').AsString := Proiz.FieldByName('Naim').AsString;
+                                 Post.FieldByName('Naim').AsString := Proiz.FieldByName('Prim').AsString;
+                                 Post.Post;
+                                 NewProiz.Release;
+                              end;
+                         end;
+                      end;
+     end;
+
+end;
+
+procedure TNewTov.DBLookupComboBox3KeyDown(Sender: TObject; var Key: Word;
+  Shift: TShiftState);
+begin
+     case Key of
+          VK_DOWN,VK_UP : if not(DBLookupComboBox3.ListVisible) then Key := 0;
+          VK_SPACE : if not(DBLookupComboBox3.ListVisible) then DBLookupComboBox3.DropDown;
+          VK_RETURN : begin
+                        DBLookupComboBox3.CloseUp(True);
+                        NewTov.ActiveControl := DBEdit4;
+                      end;
+     end;
+
+end;
+
+procedure TNewTov.DBLookupComboBox4KeyDown(Sender: TObject; var Key: Word;
+  Shift: TShiftState);
+begin
+     case Key of
+          VK_DOWN,VK_UP : if not(DBLookupComboBox4.ListVisible) then Key := 0;
+          VK_SPACE : if not(DBLookupComboBox4.ListVisible) then DBLookupComboBox4.DropDown;
+          VK_RETURN : begin
+                        DBLookupComboBox4.CloseUp(True);
+                        NewTov.ActiveControl := Button1;
+                      end;
+     end;
+
+end;
+
+procedure TNewTov.Button5Click(Sender: TObject);
+begin
+     Query1.Close;
+     Query1.ParamByName('Code').AsInteger := Datamain.TovarCode.AsInteger;
+     Query1.Open;
+
+     Query2.Close;
+     Query2.ParamByName('Code').AsInteger := Datamain.TovarCode.AsInteger;
+     Query2.Open;
+     Query3.Close;
+     Query3.ParamByName('Code').AsInteger := Datamain.TovarCode.AsInteger;
+     Query3.Open;
+     Query5.Close;
+     Query5.ParamByName('Code').AsInteger := Datamain.TovarCode.AsInteger;
+     Query5.Open;
+     Query6.Close;
+     Query6.ParamByName('Code').AsInteger := Datamain.TovarCode.AsInteger;
+     Query6.Open;
+     Query7.Close;
+     Query7.ParamByName('Code').AsInteger := Datamain.TovarCode.AsInteger;
+     Query7.Open;
+     Query8.Close;
+     Query8.ParamByName('Code').AsInteger := Datamain.TovarCode.AsInteger;
+     Query8.Open;
+     Query9.Close;
+     Query9.ParamByName('Code').AsInteger := Datamain.TovarCode.AsInteger;
+     Query9.Open;
+     Query10.Close;
+     Query10.ParamByName('Code').AsInteger := Datamain.TovarCode.AsInteger;
+     Query10.Open;
+     Query11.Close;
+     Query11.ParamByName('Code').AsInteger := Datamain.TovarCode.AsInteger;
+     Query11.Open;
+     Query12.Close;
+     Query12.ParamByName('Code').AsInteger := Datamain.TovarCode.AsInteger;
+     Query12.Open;
+     Query13.Close;
+     Query13.ParamByName('Code').AsInteger := Datamain.TovarCode.AsInteger;
+     Query13.Open;
+     Table1.Open;
+     Table1.EmptyTable;
+     Query7.First;
+     while not(Query7.Eof) do
+       begin
+            Table1.Append;
+            Table1Nomer.AsString := Query7Nomer.AsString;
+            Table1SchNom.AsInteger := 0;
+            Table1Ot.AsDateTime := Query7Ot.AsDateTime;
+            Table1PKol.AsInteger := Query7Kol.AsInteger;
+            Table1PSumma.AsFloat := Query7Kol.AsInteger * Query7Price.AsFloat;
+            Table1Kol.AsInteger := 0;
+            Table1Summa.AsFloat := 0;
+            Table1.Post;
+            Query7.next;
+       end;
+       Query7.Close;
+     Query8.First;
+     while not(Query8.Eof) do
+       begin
+            Table1.Append;
+            Table1Nomer.AsString := Query8Nomer.AsString;
+            Table1SchNom.AsInteger := 0;
+            Table1Ot.AsDateTime := Query8Ot.AsDateTime;
+            Table1PKol.AsInteger := Query8Kol.AsInteger;
+            Table1PSumma.AsFloat := Query8Kol.AsInteger * Query8Price.AsFloat;
+            Table1Kol.AsInteger := 0;
+            Table1Summa.AsFloat := 0;
+            Table1.Post;
+            Query8.next;
+       end;
+       Query8.Close;
+     Query9.First;
+     while not(Query9.Eof) do
+       begin
+            Table1.Append;
+            Table1Nomer.AsString := Query9Nomer.AsString;
+            Table1SchNom.AsInteger := 0;
+            Table1Ot.AsDateTime := Query9Ot.AsDateTime;
+            Table1PKol.AsInteger := Query9Kol.AsInteger;
+            Table1PSumma.AsFloat := Query9Kol.AsInteger * Query9Price.AsFloat;
+            Table1Kol.AsInteger := 0;
+            Table1Summa.AsFloat := 0;
+            Table1.Post;
+            Query9.next;
+       end;
+       Query9.Close;
+     Query10.First;
+     while not(Query10.Eof) do
+       begin
+            Table1.Append;
+            Table1Nomer.AsString := Query10Nomer.AsString;
+            Table1SchNom.AsInteger := 0;
+            Table1Ot.AsDateTime := Query10Ot.AsDateTime;
+            Table1PKol.AsInteger := Query10Kol.AsInteger;
+            Table1PSumma.AsFloat := Query10Kol.AsInteger * Query10Price.AsFloat;
+            Table1Kol.AsInteger := 0;
+            Table1Summa.AsFloat := 0;
+            Table1.Post;
+            Query10.next;
+       end;
+       Query10.Close;
+     Query11.First;
+     while not(Query11.Eof) do
+       begin
+            Table1.Append;
+            Table1Nomer.AsString := Query11Nomer.AsString;
+            Table1SchNom.AsInteger := 0;
+            Table1Ot.AsDateTime := Query11Ot.AsDateTime;
+            Table1PKol.AsInteger := 0;
+            Table1PSumma.AsFloat := 0;
+            Table1Kol.AsInteger := Query11Kol.AsInteger;
+            Table1Summa.AsFloat := Query11Kol.AsInteger * Query11Price.AsFloat;
+            Table1.Post;
+            Query11.next;
+       end;
+       Query11.Close;
+     Query1.First;
+     while not(Query1.Eof) do
+       begin
+            Table1.Append;
+            Table1Nomer.AsString := Query1Nomer.AsString;
+            Table1SchNom.AsInteger := Query1SchNom.AsInteger;
+            Table1Ot.AsDateTime := Query1Ot.AsDateTime;
+            Table1PKol.AsInteger := 0;
+            Table1PSumma.AsFloat := 0;
+            Table1Kol.AsInteger := Query1Kol.AsInteger;
+            Table1Summa.AsFloat := Query1Kol.AsInteger * Query1Price.AsFloat;
+            Table1.Post;
+            Query1.next;
+       end;
+       Query1.Close;
+     Query2.First;
+     while not(Query2.Eof) do
+       begin
+            Table1.Append;
+            Table1Nomer.AsString := Query2Nomer.AsString;
+            Table1SchNom.AsInteger := Query2SchNom.AsInteger;
+            Table1Ot.AsDateTime := Query2Ot.AsDateTime;
+            Table1PKol.AsInteger := 0;
+            Table1PSumma.AsFloat := 0;
+            Table1Kol.AsInteger := Query2Kol.AsInteger;
+            Table1Summa.AsFloat := Query2Kol.AsInteger * Query2Price.AsFloat;
+            Table1.Post;
+            Query2.next;
+       end;
+       Query2.Close;
+     Query3.First;
+     while not(Query3.Eof) do
+       begin
+            Table1.Append;
+            Table1Nomer.AsString := Query3Nomer.AsString;
+            Table1SchNom.AsInteger := Query3SchNom.AsInteger;
+            Table1Ot.AsDateTime := Query3Ot.AsDateTime;
+            Table1PKol.AsInteger := 0;
+            Table1PSumma.AsFloat := 0;
+            Table1Kol.AsInteger := Query3Kol.AsInteger;
+            Table1Summa.AsFloat := Query3Kol.AsInteger * Query3Price.AsFloat;
+            Table1.Post;
+            Query3.next;
+       end;
+       Query3.Close;
+     Query5.First;
+     while not(Query5.Eof) do
+       begin
+            Table1.Append;
+            Table1Nomer.AsString := Query5Nomer.AsString;
+            Table1SchNom.AsInteger := 0;
+            Table1Ot.AsDateTime := Query5Ot.AsDateTime;
+            Table1PKol.AsInteger := 0;
+            Table1PSumma.AsFloat := 0;
+            Table1Kol.AsInteger := Query5Kol.AsInteger;
+            Table1Summa.AsFloat := Query5Kol.AsInteger * Query5Price.AsFloat;
+            Table1.Post;
+            Query5.next;
+       end;
+       Query5.Close;
+     Query6.First;
+     while not(Query6.Eof) do
+       begin
+            Table1.Append;
+            Table1Nomer.AsString := Query6Nomer.AsString;
+            Table1SchNom.AsInteger := 0;
+            Table1Ot.AsDateTime := Query6Ot.AsDateTime;
+            Table1PKol.AsInteger := 0;
+            Table1PSumma.AsFloat := 0;
+            Table1Kol.AsInteger := Query6Kol.AsInteger;
+            Table1Summa.AsFloat := Query6Kol.AsInteger * Query6Price.AsFloat;
+            Table1.Post;
+            Query6.next;
+       end;
+       Query6.Close;
+     Query12.First;
+     while not(Query12.Eof) do
+       begin
+            Table1.Append;
+            Table1Nomer.AsString := Query12Nomer.AsString;
+            Table1SchNom.AsInteger := 0;
+            Table1Ot.AsDateTime := Query12Ot.AsDateTime;
+            Table1PKol.AsInteger := 0;
+            Table1PSumma.AsFloat := 0;
+            Table1Kol.AsInteger := Query12Kol.AsInteger;
+            Table1Summa.AsFloat := Query12Kol.AsInteger * Query12Price.AsFloat;
+            Table1.Post;
+            Query12.next;
+       end;
+       Query12.Close;
+     Query13.First;
+     while not(Query13.Eof) do
+       begin
+            Table1.Append;
+            Table1Nomer.AsString := Query13Nomer.AsString;
+            Table1SchNom.AsInteger := 0;
+            Table1Ot.AsDateTime := Query13Ot.AsDateTime;
+            Table1PKol.AsInteger := 0;
+            Table1PSumma.AsFloat := 0;
+            Table1Kol.AsInteger := Query13Kol.AsInteger;
+            Table1Summa.AsFloat := Query13Kol.AsInteger * Query13Price.AsFloat;
+            Table1.Post;
+            Query13.next;
+       end;
+       Query13.Close;
+
+       Table1.Close;
+       Query4.Open;
+       Application.CreateForm(TKart, Kart);
+       if MessageDlg('Распечатать?',
+          mtConfirmation, [mbYes, mbNo], 0) = mrYes then
+          Kart.Report.Print
+       else
+          Kart.Report.Preview;
+       Kart.Release;
+       Query4.Close;
+end;
+
+
+
+procedure TNewTov.Button3Click(Sender: TObject);
+var S, S1, S2 :String;
+    K, I : Integer;
+    NameNakl : array[0..24] of String;
+begin
+     Table1.Close;
+     Table1.Open;
+     Table1.EmptyTable;
+
+     S := Datamain.TovarCode.AsString;
+     NameNakl[0] := 'Rev';
+     NameNakl[1] := 'RevTN';
+     NameNakl[2] := 'NaklPrih';
+     NameNakl[3] := 'TNPrih';
+     NameNakl[4] := 'NaklVozv';
+     NameNakl[5] := 'TNVozv';
+     NameNakl[6] := 'IzlNakl';
+     NameNakl[7] := 'IzlTN';
+     NameNakl[8] := 'VitPrih';
+     NameNakl[9] := 'VitTPrih';
+     NameNakl[10] := 'CashNakl';
+     NameNakl[11] := 'CashTN';
+     NameNakl[12] := 'PredOtp';
+     NameNakl[13] := 'PredTN';
+     NameNakl[14] := 'VanOtp';
+     NameNakl[15] := 'VanOtpTN';
+     NameNakl[16] := 'VNakl';
+     NameNakl[17] := 'VTN';
+     NameNakl[18] := 'RoznNakl';
+     NameNakl[19] := 'RoznTN';
+     NameNakl[20] := 'NedNakl';
+     NameNakl[21] := 'NedTN';
+     NameNakl[22] := 'BrNakl';
+     NameNakl[23] := 'BrTN';
+     I := 0;
+
+     for K := 0 to 11 do
+     begin
+
+       Otp_Tov.Close;
+       Otp_Tov.Sql.Clear;
+       case I of
+            2 : begin
+                     S1 := 'Prov2D';
+                     S2 := 'Priz'
+                end;
+            0 : begin
+                     S1 := 'PrizData';
+                     S2 := 'Priz';
+                end;
+            4, 6, 8, 20, 22 : begin
+                     S1 := 'PrizDat';
+                     S2 := 'Priz';
+                end;
+            else
+                begin
+                     S1 := 'DataOtp';
+                     S2 := 'Otp';
+                end;
+       end;
+
+       Otp_Tov.SQL.Append('select C.Nomer, C.'+S1+' as DataOtp, TN.Kol,'+
+       ' TN.Price from ' + NameNakl[I] +' C, '+NameNakl[I+1] + ' TN where (TN.Nomer = C.Nomer) and (Tn.Code = '+S
+       +') and (C.'+S2+'=True)');
+       Otp_Tov.Open;
+       Otp_Tov.First;
+       while not(Otp_Tov.Eof) do
+       begin
+            Table1.Append;
+            Table1Nomer.AsString := Otp_Tov.FieldByName('Nomer').AsString;
+            Table1SchNom.AsInteger := 0;
+            Table1Ot.AsDateTime := Otp_Tov.FieldByName('DataOtp').AsDateTime;
+            case I of
+                 0,2,4,6 :
+                     begin
+                          Table1PKol.AsInteger := Otp_Tov.FieldByName('Kol').AsInteger;
+                          Table1PSumma.AsFloat := Otp_Tov.FieldByName('Kol').AsInteger * Otp_Tov.FieldByName('Price').AsFloat;
+                          Table1Kol.AsInteger := 0;
+                          Table1Summa.AsFloat := 0;
+                     end;
+                 else
+                     begin
+                          Table1Kol.AsInteger := Otp_Tov.FieldByName('Kol').AsInteger;
+                          Table1Summa.AsFloat := Otp_Tov.FieldByName('Kol').AsInteger * Otp_Tov.FieldByName('Price').AsFloat;
+                          Table1PKol.AsInteger := 0;
+                          Table1PSumma.AsFloat := 0;
+                     end;
+            end;
+            Table1.Post;
+            Otp_Tov.next;
+       end;
+       Otp_Tov.Close;
+
+
+       I := I + 2;
+     end;
+
+       Table1.Close;
+       Query4.Open;
+       Application.CreateForm(TKart, Kart);
+       if MessageDlg('Распечатать?',
+          mtConfirmation, [mbYes, mbNo], 0) = mrYes then
+          Kart.Report.Print
+       else
+          Kart.Report.Preview;
+       Kart.Release;
+       Query4.Close;
+end;
+
+procedure TNewTov.DBRadioGroup1Change(Sender: TObject);
+begin
+     Alko_StrEd.Enabled := DBRadioGroup1.ItemIndex > 0;
+     Alko_StrEd.Visible := DBRadioGroup1.ItemIndex > 0;
+     DalEd.Enabled := DBRadioGroup1.ItemIndex > 0;
+     DalEd.Visible := DBRadioGroup1.ItemIndex > 0;
+
+end;
+
+procedure TNewTov.CE1ButtonClick(Sender: TObject);
+var L : Boolean;
+begin
+// Редактирование товарной группы
+     try
+       Application.CreateForm(TTovar_Group, Tovar_Group);
+       Tovar_Group.N5.Enabled := True;
+       Tovar_Group.N5.Visible := True;
+       if Tovar_Group.ShowModal = mrOk then
+       begin
+            CE1.Tag := Tovar_Group.T_ID;
+            CE1.Text := Tovar_Group.T_Name;
+            L := (DataMain.Tovar.State = dsEdit) or (DataMain.Tovar.State = dsInsert);
+            if not L then DataMain.Tovar.Edit;
+            DataMain.TovarTGR_ID.AsInteger := CE1.Tag;
+            if not L then DataMain.Tovar.Post;
+       end;
+     finally
+       Tovar_Group.N5.Enabled := False;
+       Tovar_Group.N5.Visible := False;
+       Tovar_Group.Release;
+     end;
+end;
+
+procedure TNewTov.SpeedButton1Click(Sender: TObject);
+var L : boolean;
+begin
+  L := (DataMain.Tovar.State = dsEdit) or (DataMain.Tovar.State = dsInsert);
+  if not L then DataMain.Tovar.Edit;
+  DataMain.TovarTGR_ID.AsInteger := 0;
+  Ce1.Tag := 0;
+  CE1.Text := '';
+  if not L then DataMain.Tovar.Post;
+end;
+
+end.

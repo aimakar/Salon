@@ -1,0 +1,421 @@
+unit VozvFormF;
+
+interface
+
+uses
+  Windows, Messages, SysUtils, Classes, Graphics, Controls, Forms, Dialogs,
+  Grids, DBGrids, DB, StdCtrls, Buttons, DBTables, ExtCtrls, RXClock, FileCtrl;
+    procedure Check;
+type
+  TVozvForm = class(TForm)
+    DBGrid1: TDBGrid;
+    ToB: TBitBtn;
+    CB: TCheckBox;
+    BitBtn1: TBitBtn;
+    ExBtn: TBitBtn;
+    procedure DBGrid1KeyDown(Sender: TObject; var Key: Word;
+      Shift: TShiftState);
+    procedure FormKeyDown(Sender: TObject; var Key: Word;
+      Shift: TShiftState);
+    procedure FormActivate(Sender: TObject);
+    procedure FormDeactivate(Sender: TObject);
+    procedure ToBClick(Sender: TObject);
+    procedure DBGrid1DrawColumnCell(Sender: TObject; const Rect: TRect;
+      DataCol: Integer; Column: TColumn; State: TGridDrawState);
+    procedure BitBtn1Click(Sender: TObject);
+    procedure CBKeyDown(Sender: TObject; var Key: Word;
+      Shift: TShiftState);
+    procedure CBClick(Sender: TObject);
+    procedure Timer1Timer(Sender: TObject);
+    procedure FormDestroy(Sender: TObject);
+    procedure FormCreate(Sender: TObject);
+    procedure ExBtnClick(Sender: TObject);
+    procedure FormClose(Sender: TObject; var Action: TCloseAction);
+  private
+    { Private declarations }
+  public
+    { Public declarations }
+  end;
+
+var
+  VozvForm: TVozvForm;
+  Dost : String;
+implementation
+
+uses Data,  Pro, VozvnaklF, Sklad, PrintVozvRep, PrnVozvratF;
+
+{$R *.DFM}
+
+procedure TVozvForm.DBGrid1KeyDown(Sender: TObject; var Key: Word;
+  Shift: TShiftState);
+var S,S1 : String;
+    BM : TBookmark;
+    I : Integer;
+    L : Boolean;
+begin
+     L := False;
+     case Key of
+     VK_Space:  if NasDost(Dost[2]) then
+                if Datamain.NaklVozv.IsEmpty
+                      then
+                          ShowMessage('Че смотреть то будем, нет ничего еще!')
+                      else
+                          With DataMain do
+                              begin
+                                   if (NaklVozvPriz.AsBoolean) then VozvNakl.tag := 1 else VozvNakl.tag := 0;
+                                   VozvNakl.Label2.Caption := NaklVozvNomer.AsString;
+                                   VozvNakl.DE.Text := NaklVozvOt.AsString;
+                                   VozvNakl.ShowModal;
+                                   if NaklVozv.State = dsBrowse then NaklVozv.Edit;
+                                   NaklVozvOperac.AsString := DostupNaim.AsString;
+                                   NaklVozvOperacDat.AsdateTime := Now;
+                                   NaklVozvOt.AsString := VozvNakl.DE.Text;
+                                   NaklVozvSumma.AsFloat := StrToFloat(Trim(VozvNakl.Label11.Caption));
+                                   NaklVozv.Post;
+                              end;
+     VK_DELETE : if (NasDost(Dost[2]) and NasDost(Dost[3])) then
+                 if not(DataMain.NaklVozvPriz.AsBoolean )  then
+                  if MessageDlg('Удалить накладную?',
+                     mtConfirmation, [mbNo, mbYes], 0) = mrYes then
+                        With DataMain do begin
+                           Valyta.Open;
+                           Tovar.Open;
+                           Ost.Open;
+                           TNVozv.Open;
+                           TNVozv.First;
+                           While not(DataMain.TNVozv.Eof) do
+                                TNVozv.Delete;
+                           NaklVozv.Delete;
+                           TNVozv.Close;
+                           Ost.Close;
+                           Tovar.Close;
+                           Valyta.Close;
+                        end;
+     VK_INSERT : if (NasDost(Dost[2]) and NasDost(Dost[3])) then begin
+                        Datamain.NaklVozv.DisableControls;
+                        VozvNakl.Tag := 0;
+                        S1 := '-Вз';
+                        Datamain.ConfigVit.Open;
+                        DataMain.ConfigVit.Refresh;
+                        DataMain.ConfigVit.Edit;
+                        S := Trim(Datamain.ConfigVitNomer4.AsString);
+                        IncNom(S,S1);
+                        DataMain.ConfigVitNomer4.AsString := S;
+                        DataMain.ConfigVit.Post;
+                        Datamain.ConfigVit.Close;
+                        With DataMain.NaklVozv do
+                            begin
+                                 Append;
+                                 FieldByName('Operac').AsString := DataMain.DostupNaim.AsString;
+                                 FieldByName('OperacDat').AsdateTime := Now;
+                                 FieldByName('Prov1').AsString := DataMain.DostupNaim.AsString;
+                                 FieldByName('Prov1D').AsdateTime := Now;
+                                 FieldByName('Nomer').AsString := S;
+                                 FieldByName('Ot').AsDateTime := Date();
+                                 FieldByName('Priz').AsBoolean := False;
+                                 Post;
+                                 VozvNakl.Label2.Caption := FieldByName('Nomer').AsString;
+                                 VozvNakl.DE.Text := FieldByName('Ot').AsString;
+                                 DataMain.NaklVozv.EnableControls;
+                                 VozvNakl.ShowModal;
+                                 Edit;
+                                 FieldByName('Ot').AsString := VozvNakl.DE.Text;
+                                 FieldByName('Summa').AsFloat := StrToFloat(Trim(VozvNakl.Label11.Caption));
+                                 Post;
+                            end;
+                     end;
+     VK_F7 : begin
+             L := True;
+               if InputQuery('Поиск по клиенту','Введите подстроку',S) then
+                  With Datamain.NaklVozv do
+                       begin
+                            Tag := 0;
+                            DisableControls;
+                            while L do
+                                  if Pos(AnsiUpperCase(S),AnsiUpperCase(FieldByName('Naim').aSsTRING)) <> 0 then
+                                    L := False
+                                  else
+                                    begin
+                                      Next;
+                                      L := not(Eof);
+                                    end;
+                            enableControls;
+                       end;
+             end;
+     VK_F6 : if InputQuery('Поиск по номеру','Введите номер',S) then
+                  With Datamain.NaklVozv do
+                       begin
+                            DisableControls;
+                            Locate('Nomer',S,[loPartialKey]);
+                            enableControls;
+                       end;
+     VK_F8 : if InputQuery('Поиск по комментарию','Введите комментарий', S) then
+                  With Datamain.NaklVozv do
+                       begin
+                            DisableControls;
+                            L := False;
+                            BM := Datamain.NaklVozv.GetBookmark;
+                            while not eof do
+                            begin
+
+                                 if Pos(S,FieldByName('osn').AsString) > 0 then L := True;
+                                 if L then break;
+                                 next;
+                            end;
+                            if not L then Datamain.NaklVozv.GotoBookMark(BM);
+                            enableControls;
+                       end;
+     VK_F5 : if BitBtn1.Visible then
+            With PrintVozv do
+            begin
+             Query1.Close;
+             Query2.Close;
+             ShowModal;
+            end;
+
+   end;
+
+end;
+
+procedure TVozvForm.FormKeyDown(Sender: TObject; var Key: Word;
+  Shift: TShiftState);
+begin
+     if Key = VK_ESCAPE then
+        begin
+             VozvForm.Release;
+        end;
+
+end;
+
+procedure TVozvForm.FormActivate(Sender: TObject);
+begin
+     With DataMain do
+          begin
+               Valyta.Open;
+               Post.Open;
+               NaklVozv.Open;
+
+          end;
+  ExBtn.Visible := NasDost(Dost[8]);
+  Application.CreateForm(TVozvNakl, VozvNakl);
+  Application.CreateForm(TPrintVozv, PrintVozv);
+  Application.CreateForm(TPrnVozv, PrnVozv);
+
+end;
+
+procedure TVozvForm.FormDeactivate(Sender: TObject);
+begin
+CloseData;
+Vozvnakl.Release;
+PrintVozv.Release;
+PrnVozv.Release;
+
+end;
+
+procedure TVozvForm.ToBClick(Sender: TObject);
+var S,S1: String;
+begin
+           With DataMain do
+            begin
+             Valyta.Open;
+             Tovar.Open;
+             Ost.Open;
+             Ost.First;
+             TNVozv.Open;
+             TNVozv.First;
+             while not(TNVozv.EOF) do
+              begin
+               Ost.FindKey([TNVozvCode.AsInteger]);
+               Ost.Edit;
+               OstKol2.AsInteger := OstKol2.AsInteger + TNVozvKol.AsInteger;
+               OstKol1.AsInteger := OstKol1.AsInteger + TNVozvKol.AsInteger;
+               Ost.post;
+               TNVozv.Next;
+              end;
+             TNVozv.Close;
+             Tovar.Close;
+             Valyta.Close;
+{Вставить обработку операциониста}
+
+             NaklVozv.Edit;
+             NaklVozvPriz.AsBoolean := True;
+             NaklVozvPrizDat.AsDateTime := Now;
+             NaklVozvProv2.AsString := DostupNaim.AsString;
+             NaklVozvProv2D.AsDateTime := Now;
+             NaklVozv.Post;
+             VozvForm.ToB.Enabled := False;
+            end;
+
+
+end;
+
+procedure TVozvForm.DBGrid1DrawColumnCell(Sender: TObject;
+  const Rect: TRect; DataCol: Integer; Column: TColumn;
+  State: TGridDrawState);
+var a, b, c, Ex : Boolean;
+begin
+a := DataMain.NaklVozvPriz.AsBoolean;
+ex := DataMain.NaklVozvExp.AsBoolean;
+
+with DBGrid1.Canvas do begin
+     if a and (not (gdFocused in State)) then
+      begin
+       Font.Color := clGreen;
+       FillRect (Rect);
+       TextOut(Rect.Left,Rect.Top,Column.Field.Text);
+       c := false;
+      end
+     else DBGrid1.DefaultDrawColumnCell(Rect,DataCol,Column,State);
+     if gdFocused in State then
+      begin
+       if Ex then
+          ExBtn.Font.Color := clRed
+       else
+           ExBtn.Font.Color := clBlack;
+       if a then
+          ToB.Enabled := False
+       else
+          ToB.Enabled := True;
+      end;
+
+end;
+
+end;
+
+procedure Check;
+begin
+     if VozvForm.CB.Checked then
+      begin
+       DataMain.NaklVozv.Filter := 'not([Priz])';
+       DataMain.NaklVozv.Filtered := True;
+      end
+     else
+      begin
+       DataMain.NaklVozv.Filtered := False;
+      end;
+end;
+
+
+
+procedure TVozvForm.CBKeyDown(Sender: TObject; var Key: Word;
+  Shift: TShiftState);
+begin
+  Check;
+end;
+
+procedure TVozvForm.CBClick(Sender: TObject);
+begin
+ Check;
+end;
+
+
+procedure TVozvForm.BitBtn1Click(Sender: TObject);
+var S : string;
+begin
+     With PrintVozv do begin
+     Query1.Close;
+     Query2.Close;
+     Query1.ParamByName('Nomer').AsString := DataMain.NaklVozvNomer.AsString;
+     Query2.ParamByName('Nomer').AsString := DataMain.NaklVozvNomer.AsString;
+     S := DataMain.NaklVozvNOMER.AsString;
+     Delete(S,Pos('-',S),Length(S));
+     DataMain.NaklVozv.Tag := StrToInt(S);
+     DataMain.NaklVozv.Filtered := False;
+     DataMain.NaklVozv.Filter := '';
+     DataMain.NaklVozv.Filtered := True;
+
+     DataMain.NaklVozv.Refresh;
+     PrintVozv.Table1.Open;
+     ShowModal;
+     PrintVozv.Table1.Close;
+     DataMain.NaklVozv.Filtered := False;
+     end;
+end;
+
+procedure TVozvForm.Timer1Timer(Sender: TObject);
+begin
+     DataMain.NaklVozv.Refresh;
+end;
+
+procedure TVozvForm.FormDestroy(Sender: TObject);
+begin
+     With DataMain do
+          begin
+               NaklVozv.Close;
+               Post.Close;
+               Valyta.Close;
+          end;
+Main.N3.Enabled := True;
+CloseData;
+end;
+
+procedure TVozvForm.FormCreate(Sender: TObject);
+begin
+     Main.N3.Enabled := False;
+     Dost := DataMain.DostupDost1.AsString;
+     BitBtn1.Visible := NasDost(Dost[5]);
+     ToB.Visible := NasDost(Dost[4]);
+
+end;
+
+procedure TVozvForm.ExBtnClick(Sender: TObject);
+var F : TextFile;
+    S : String;
+begin
+     With DataMain do
+      begin
+        if not(NaklVozvOtk.AsBoolean) then
+         begin
+              S := NaklVozvNOMER.AsString;
+              NaklVozv.Edit;
+              NaklVozvOtk.ASBoolean := True;
+              NaklVozv.Post;
+              if not(DirectoryExists('Q:\New\Export')) then ForceDirectories('Q:\New\Export');
+              AssignFile(F, 'Q:\New\Export\'+NaklVozvNomer.AsString+'.nkl');
+              Rewrite(F);
+              WriteLN(F,'Накладная;',
+                        NaklVozvNomer.AsString + ';',
+                        NaklVozvOt.AsString + ';',
+                        NaklVozvNaim.AsString + ';',
+                        NaklVozvSumma.AsString + ';',
+                        ';',
+                        ';',
+                        ';',
+                        ';',
+                        ';',
+                        ';',
+                        trim(NaklVozvOsn.AsString)+';',
+                        ';',
+                        ';');
+              TnVozv.Open;
+              TnVozv.First;
+              while not(TnVozv.Eof) do
+               begin
+                 WriteLN(F,'Товар;',
+                        TnVozvNomer.AsString + ';',
+                        TnVozvNaim.AsString + ';',
+                        TnVozvKol.AsString + ';',
+                        FloatToStrF((TnVozvPrice.AsFloat),ffFixed,14,2) + ';',
+                        TnVozvMesto.asString + ';',
+                        TnVozvUp.AsString + ';',
+                        TnVozvV_Up.AsString+';');
+                 TnVozv.Next;
+               end;
+              TnVozv.Close;
+              CloseFile(F);
+              NaklVozv.Edit;
+              NaklVozvOtk.ASBoolean := False;
+              NaklVozvExp.AsBoolean := True;
+              NaklVozv.Post;
+
+         end;
+      end;
+
+end;
+
+procedure TVozvForm.FormClose(Sender: TObject; var Action: TCloseAction);
+begin
+     Action := caFree;
+end;
+
+end.

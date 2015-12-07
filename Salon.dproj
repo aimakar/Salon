@@ -1,0 +1,342 @@
+﻿	<Project xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+		<PropertyGroup>
+			<ProjectGuid>{e2c196f7-05cd-4d8b-af6d-ef73f4091753}</ProjectGuid>
+			<MainSource>Salon.dpr</MainSource>
+			<Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
+			<DCC_DCCCompiler>DCC32</DCC_DCCCompiler>
+			<DCC_DependencyCheckOutputName>e:\sklad\exe\Salon.exe</DCC_DependencyCheckOutputName>
+			<ProjectVersion>12.2</ProjectVersion>
+			<Base>True</Base>
+			<Config Condition="'$(Config)'==''">Debug</Config>
+			<Platform>Win32</Platform>
+			<AppType>Application</AppType>
+			<FrameworkType>VCL</FrameworkType>
+		</PropertyGroup>
+		<PropertyGroup Condition="'$(Config)'=='Base' or '$(Base)'!=''">
+			<Base>true</Base>
+		</PropertyGroup>
+		<PropertyGroup Condition="'$(Config)'=='Release' or '$(Cfg_1)'!=''">
+			<Cfg_1>true</Cfg_1>
+			<CfgParent>Base</CfgParent>
+			<Base>true</Base>
+		</PropertyGroup>
+		<PropertyGroup Condition="'$(Config)'=='Debug' or '$(Cfg_2)'!=''">
+			<Cfg_2>true</Cfg_2>
+			<CfgParent>Base</CfgParent>
+			<Base>true</Base>
+		</PropertyGroup>
+		<PropertyGroup Condition="'$(Base)'!=''">
+			<DCC_UsePackage>vclimg;vcl;vclx;dbrtl;Rave90VCL;bdertl;VclSmp;rtl;svnui;svn;TeeUI;TeeDB;Tee;vclactnband;vcldb;vcldbx;vcltouch;xmlrtl;dsnap;dsnapcon;vclib;ibxpress;adortl;IndyCore;IndySystem;IndyProtocols;inet;intrawebdb_110_150;Intraweb_110_150;vclie;websnap;webdsnap;inetdb;inetdbbde;inetdbxpress;soaprtl;vclribbon;dbexpress;DbxCommonDriver;DataSnapIndy10ServerTransport;DataSnapProviderClient;DbxClientDriver;DataSnapClient;dbxcds;DataSnapServer;AzureCloud;DBXInterBaseDriver;DBXMySQLDriver;DBXFirebirdDriver;DBXSybaseASEDriver;DBXSybaseASADriver;DBXOracleDriver;DBXMSSQLDriver;DBXInformixDriver;DBXDb2Driver;CodeSiteExpressVcl;ARExcelRptDXE;JclDeveloperTools;Jcl;JclVcl;JclContainers;JvCore;JvSystem;JvStdCtrls;JvAppFrm;JvBands;JvDB;JvDlgs;JvBDE;JvControls;JvCmp;JvCrypt;JvCustom;JvDocking;JvDotNetCtrls;JvGlobus;JvHMI;JvJans;JvManagedThreads;JvMM;JvNet;JvPageComps;JvPascalInterpreter;JvPluginSystem;JvPrintPreview;JvRuntimeDesign;JvTimeFramework;JvWizards;JvXPCtrls</DCC_UsePackage>
+			<DCC_UnitAlias>WinTypes=Windows;WinProcs=Windows;DbiTypes=BDE;DbiProcs=BDE;DbiErrs=BDE;$(DCC_UnitAlias)</DCC_UnitAlias>
+		</PropertyGroup>
+		<PropertyGroup Condition="'$(Cfg_1)'!=''">
+			<Version>7.0</Version>
+			<DCC_Alignment>1</DCC_Alignment>
+			<DCC_DebugInformation>False</DCC_DebugInformation>
+			<DCC_WriteableConstants>True</DCC_WriteableConstants>
+			<DCC_LocalDebugSymbols>False</DCC_LocalDebugSymbols>
+			<DCC_SymbolReferenceInfo>0</DCC_SymbolReferenceInfo>
+			<DCC_ExeOutput>e:\sklad\exe</DCC_ExeOutput>
+			<DCC_Define>RELEASE;$(DCC_Define)</DCC_Define>
+		</PropertyGroup>
+		<PropertyGroup Condition="'$(Cfg_2)'!=''">
+			<Version>7.0</Version>
+			<DCC_WriteableConstants>True</DCC_WriteableConstants>
+			<DCC_SymbolReferenceInfo>0</DCC_SymbolReferenceInfo>
+			<DCC_ExeOutput>z:\salon\exe</DCC_ExeOutput>
+			<DCC_Define>DEBUG;$(DCC_Define)</DCC_Define>
+		</PropertyGroup>
+		<ProjectExtensions>
+			<Borland.Personality>Delphi.Personality.12</Borland.Personality>
+			<Borland.ProjectType>VCLApplication</Borland.ProjectType>
+			<BorlandProject>
+				<Delphi.Personality>
+					<Parameters/>
+					<VersionInfo>
+						<VersionInfo Name="IncludeVerInfo">False</VersionInfo>
+						<VersionInfo Name="AutoIncBuild">False</VersionInfo>
+						<VersionInfo Name="MajorVer">1</VersionInfo>
+						<VersionInfo Name="MinorVer">0</VersionInfo>
+						<VersionInfo Name="Release">0</VersionInfo>
+						<VersionInfo Name="Build">0</VersionInfo>
+						<VersionInfo Name="Debug">False</VersionInfo>
+						<VersionInfo Name="PreRelease">False</VersionInfo>
+						<VersionInfo Name="Special">False</VersionInfo>
+						<VersionInfo Name="Private">False</VersionInfo>
+						<VersionInfo Name="DLL">False</VersionInfo>
+						<VersionInfo Name="Locale">1049</VersionInfo>
+						<VersionInfo Name="CodePage">1251</VersionInfo>
+					</VersionInfo>
+					<VersionInfoKeys>
+						<VersionInfoKeys Name="CompanyName"/>
+						<VersionInfoKeys Name="FileDescription"/>
+						<VersionInfoKeys Name="FileVersion">1.0.0.0</VersionInfoKeys>
+						<VersionInfoKeys Name="InternalName"/>
+						<VersionInfoKeys Name="LegalCopyright"/>
+						<VersionInfoKeys Name="LegalTrademarks"/>
+						<VersionInfoKeys Name="OriginalFilename"/>
+						<VersionInfoKeys Name="ProductName"/>
+						<VersionInfoKeys Name="ProductVersion">1.0.0.0</VersionInfoKeys>
+						<VersionInfoKeys Name="Comments"/>
+					</VersionInfoKeys>
+					<Source>
+						<Source Name="MainSource">Salon.dpr</Source>
+					</Source>
+					<Excluded_Packages>
+						<Excluded_Packages Name="$(BDSBIN)\dcloffice2k150.bpl">Microsoft Office 2000 Sample Automation Server Wrapper Components</Excluded_Packages>
+						<Excluded_Packages Name="$(BDSBIN)\dclofficexp150.bpl">Microsoft Office XP Sample Automation Server Wrapper Components</Excluded_Packages>
+					</Excluded_Packages>
+				</Delphi.Personality>
+				<Platforms>
+					<Platform value="Win32">True</Platform>
+				</Platforms>
+				<ModelSupport>True</ModelSupport>
+			</BorlandProject>
+			<ProjectFileVersion>12</ProjectFileVersion>
+		</ProjectExtensions>
+		<ItemGroup>
+			<DelphiCompile Include="Salon.dpr">
+				<MainSource>MainSource</MainSource>
+			</DelphiCompile>
+			<DCCReference Include="Sklad.pas">
+				<Form>Main</Form>
+			</DCCReference>
+			<DCCReference Include="Pro.pas">
+				<Form>Pro</Form>
+			</DCCReference>
+			<DCCReference Include="SpravTov.pas">
+				<Form>SprTov</Form>
+			</DCCReference>
+			<DCCReference Include="SprNovTov.pas">
+				<Form>NewTov</Form>
+			</DCCReference>
+			<DCCReference Include="SprNewGrTov.pas">
+				<Form>NewGroup</Form>
+			</DCCReference>
+			<DCCReference Include="RedGrTov.pas">
+				<Form>Pereim</Form>
+			</DCCReference>
+			<DCCReference Include="SpravPokup.pas">
+				<Form>SprPokup</Form>
+			</DCCReference>
+			<DCCReference Include="SprNewPredpr.pas">
+				<Form>NewPredpr</Form>
+			</DCCReference>
+			<DCCReference Include="SprPostF.pas">
+				<Form>SprPost</Form>
+			</DCCReference>
+			<DCCReference Include="NewPostF.pas">
+				<Form>NewPost</Form>
+			</DCCReference>
+			<DCCReference Include="SpravProiz.pas">
+				<Form>SprProiz</Form>
+			</DCCReference>
+			<DCCReference Include="NewProizF.pas">
+				<Form>NewProiz</Form>
+			</DCCReference>
+			<DCCReference Include="ProverkaF.pas">
+				<Form>Prov</Form>
+			</DCCReference>
+			<DCCReference Include="NomForm.pas">
+				<Form>NomF</Form>
+			</DCCReference>
+			<DCCReference Include="Data.pas">
+				<Form>DataMain</Form>
+				<DesignClass>TDataModule</DesignClass>
+			</DCCReference>
+			<DCCReference Include="AddKolF.pas">
+				<Form>AddKol</Form>
+			</DCCReference>
+			<DCCReference Include="IzlFormF.pas">
+				<Form>IzlForm</Form>
+			</DCCReference>
+			<DCCReference Include="IzlTF.pas">
+				<Form>IzlT</Form>
+			</DCCReference>
+			<DCCReference Include="AddKolIzlF.pas">
+				<Form>AddKolIzl</Form>
+			</DCCReference>
+			<DCCReference Include="BrakFormF.pas">
+				<Form>BrakForm</Form>
+			</DCCReference>
+			<DCCReference Include="BrakTF.pas">
+				<Form>BrakT</Form>
+			</DCCReference>
+			<DCCReference Include="PrihodFormF.pas">
+				<Form>PrihodForm</Form>
+			</DCCReference>
+			<DCCReference Include="PrihodNaklF.pas">
+				<Form>PrihodNakl</Form>
+			</DCCReference>
+			<DCCReference Include="VozvFormF.pas">
+				<Form>VozvForm</Form>
+			</DCCReference>
+			<DCCReference Include="VozvnaklF.pas">
+				<Form>VozvNakl</Form>
+			</DCCReference>
+			<DCCReference Include="CashFormF.pas">
+				<Form>CashForm</Form>
+			</DCCReference>
+			<DCCReference Include="CashTF.pas">
+				<Form>CashT</Form>
+			</DCCReference>
+			<DCCReference Include="DobTovCF.pas">
+				<Form>DobTovC</Form>
+			</DCCReference>
+			<DCCReference Include="InvF.pas">
+				<Form>Inv</Form>
+			</DCCReference>
+			<DCCReference Include="DobTovVozvF.pas">
+				<Form>DobTovVozv</Form>
+			</DCCReference>
+			<DCCReference Include="DobTovPrihF.pas">
+				<Form>DobTovPrih</Form>
+			</DCCReference>
+			<DCCReference Include="OplDataF.pas">
+				<Form>OplData</Form>
+			</DCCReference>
+			<DCCReference Include="PassDlgF.pas">
+				<Form>PassDlg</Form>
+			</DCCReference>
+			<DCCReference Include="KartF.pas">
+				<Form>Kart</Form>
+			</DCCReference>
+			<DCCReference Include="SprPostVybF.pas">
+				<Form>SprPostVyb</Form>
+			</DCCReference>
+			<DCCReference Include="DobTovBrF.pas">
+				<Form>DobTovBr</Form>
+			</DCCReference>
+			<DCCReference Include="DobTovIzlF.pas">
+				<Form>DobTovIzl</Form>
+			</DCCReference>
+			<DCCReference Include="CheckDBF.pas">
+				<Form>CheckDB</Form>
+			</DCCReference>
+			<DCCReference Include="SprPVF.pas">
+				<Form>SprPV</Form>
+			</DCCReference>
+			<DCCReference Include="NacMsgDlgF.pas">
+				<Form>NacMsgDlg</Form>
+			</DCCReference>
+			<DCCReference Include="VvodNaimF.pas">
+				<Form>VvodNaim</Form>
+			</DCCReference>
+			<DCCReference Include="TovMoveF.pas">
+				<Form>TovMove</Form>
+			</DCCReference>
+			<DCCReference Include="Tovar_GroupF.pas">
+				<Form>Tovar_Group</Form>
+			</DCCReference>
+			<DCCReference Include="Forms\Spr_RekvF.pas">
+				<Form>Spr_Rekv</Form>
+			</DCCReference>
+			<DCCReference Include="Forms\Plan1F.pas">
+				<Form>Plan1</Form>
+			</DCCReference>
+			<DCCReference Include="Dialogs\Plan_AddF.pas">
+				<Form>Plan_Add</Form>
+			</DCCReference>
+			<DCCReference Include="Dialogs\Vvod_OplF.pas">
+				<Form>Vvod_Opl</Form>
+			</DCCReference>
+			<DCCReference Include="Dialogs\Find_StrF.pas">
+				<Form>Find_Str</Form>
+			</DCCReference>
+			<DCCReference Include="Forms\Plan2F.pas">
+				<Form>Plan2</Form>
+			</DCCReference>
+			<DCCReference Include="SpravMaster.pas">
+				<Form>SprMaster</Form>
+			</DCCReference>
+			<DCCReference Include="SprNewMaster.pas">
+				<Form>NewMaster</Form>
+			</DCCReference>
+			<DCCReference Include="OtchMF.pas">
+				<Form>OtchM</Form>
+			</DCCReference>
+			<DCCReference Include="ObVedF.pas">
+				<Form>ObVed</Form>
+			</DCCReference>
+			<DCCReference Include="Rep1F.pas">
+				<Form>Rep_1</Form>
+			</DCCReference>
+			<DCCReference Include="Rep2F.pas">
+				<Form>Rep_2</Form>
+			</DCCReference>
+			<DCCReference Include="Rep3F.pas">
+				<Form>Rep_3</Form>
+			</DCCReference>
+			<None Include="ModelSupport_Salon\default.txvpck"/>
+			<None Include="ModelSupport_Salon\PrihodNaklF\default.txvpck"/>
+			<None Include="ModelSupport_Salon\SprNewMaster\default.txvpck"/>
+			<None Include="ModelSupport_Salon\Rep2F\default.txvpck"/>
+			<None Include="ModelSupport_Salon\CheckDBF\default.txvpck"/>
+			<None Include="ModelSupport_Salon\ProverkaF\default.txvpck"/>
+			<None Include="ModelSupport_Salon\SpravMaster\default.txvpck"/>
+			<None Include="ModelSupport_Salon\DobTovPrihF\default.txvpck"/>
+			<None Include="ModelSupport_Salon\CashFormF\default.txvpck"/>
+			<None Include="ModelSupport_Salon\SprNewPredpr\default.txvpck"/>
+			<None Include="ModelSupport_Salon\SpravProiz\default.txvpck"/>
+			<None Include="ModelSupport_Salon\KartF\default.txvpck"/>
+			<None Include="ModelSupport_Salon\NewPostF\default.txvpck"/>
+			<None Include="ModelSupport_Salon\AddKolIzlF\default.txvpck"/>
+			<None Include="ModelSupport_Salon\Plan_AddF\default.txvpck"/>
+			<None Include="ModelSupport_Salon\Data\default.txvpck"/>
+			<None Include="ModelSupport_Salon\NewProizF\default.txvpck"/>
+			<None Include="ModelSupport_Salon\Pro\default.txvpck"/>
+			<None Include="ModelSupport_Salon\SpravTov\default.txvpck"/>
+			<None Include="ModelSupport_Salon\RedGrTov\default.txvpck"/>
+			<None Include="ModelSupport_Salon\AddKolF\default.txvpck"/>
+			<None Include="ModelSupport_Salon\SprPostVybF\default.txvpck"/>
+			<None Include="ModelSupport_Salon\DobTovVozvF\default.txvpck"/>
+			<None Include="ModelSupport_Salon\DobTovBrF\default.txvpck"/>
+			<None Include="ModelSupport_Salon\Sklad\default.txvpck"/>
+			<None Include="ModelSupport_Salon\VvodNaimF\default.txvpck"/>
+			<None Include="ModelSupport_Salon\Find_StrF\default.txvpck"/>
+			<None Include="ModelSupport_Salon\Rep3F\default.txvpck"/>
+			<None Include="ModelSupport_Salon\NacMsgDlgF\default.txvpck"/>
+			<None Include="ModelSupport_Salon\Plan2F\default.txvpck"/>
+			<None Include="ModelSupport_Salon\PassDlgF\default.txvpck"/>
+			<None Include="ModelSupport_Salon\SprPVF\default.txvpck"/>
+			<None Include="ModelSupport_Salon\DobTovIzlF\default.txvpck"/>
+			<None Include="ModelSupport_Salon\BrakFormF\default.txvpck"/>
+			<None Include="ModelSupport_Salon\OplDataF\default.txvpck"/>
+			<None Include="ModelSupport_Salon\SprNovTov\default.txvpck"/>
+			<None Include="ModelSupport_Salon\CashTF\default.txvpck"/>
+			<None Include="ModelSupport_Salon\NomForm\default.txvpck"/>
+			<None Include="ModelSupport_Salon\Salon\default.txvpck"/>
+			<None Include="ModelSupport_Salon\VozvFormF\default.txvpck"/>
+			<None Include="ModelSupport_Salon\VozvnaklF\default.txvpck"/>
+			<None Include="ModelSupport_Salon\Tovar_GroupF\default.txvpck"/>
+			<None Include="ModelSupport_Salon\InvF\default.txvpck"/>
+			<None Include="ModelSupport_Salon\SpravPokup\default.txvpck"/>
+			<None Include="ModelSupport_Salon\BrakTF\default.txvpck"/>
+			<None Include="ModelSupport_Salon\TovMoveF\default.txvpck"/>
+			<None Include="ModelSupport_Salon\IzlFormF\default.txvpck"/>
+			<None Include="ModelSupport_Salon\Rep1F\default.txvpck"/>
+			<None Include="ModelSupport_Salon\Vvod_OplF\default.txvpck"/>
+			<None Include="ModelSupport_Salon\Spr_RekvF\default.txvpck"/>
+			<None Include="ModelSupport_Salon\ObVedF\default.txvpck"/>
+			<None Include="ModelSupport_Salon\DobTovCF\default.txvpck"/>
+			<None Include="ModelSupport_Salon\OtchMF\default.txvpck"/>
+			<None Include="ModelSupport_Salon\IzlTF\default.txvpck"/>
+			<None Include="ModelSupport_Salon\Plan1F\default.txvpck"/>
+			<None Include="ModelSupport_Salon\SprPostF\default.txvpck"/>
+			<None Include="ModelSupport_Salon\SprNewGrTov\default.txvpck"/>
+			<None Include="ModelSupport_Salon\PrihodFormF\default.txvpck"/>
+			<BuildConfiguration Include="Debug">
+				<Key>Cfg_2</Key>
+				<CfgParent>Base</CfgParent>
+			</BuildConfiguration>
+			<BuildConfiguration Include="Base">
+				<Key>Base</Key>
+			</BuildConfiguration>
+			<BuildConfiguration Include="Release">
+				<Key>Cfg_1</Key>
+				<CfgParent>Base</CfgParent>
+			</BuildConfiguration>
+		</ItemGroup>
+		<Import Condition="Exists('$(BDS)\Bin\CodeGear.Delphi.Targets')" Project="$(BDS)\Bin\CodeGear.Delphi.Targets"/>
+		<Import Condition="Exists('$(APPDATA)\Embarcadero\$(BDSAPPDATABASEDIR)\8.0\UserTools.proj')" Project="$(APPDATA)\Embarcadero\$(BDSAPPDATABASEDIR)\8.0\UserTools.proj"/>
+	</Project>

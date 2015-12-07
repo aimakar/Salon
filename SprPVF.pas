@@ -1,0 +1,67 @@
+unit SprPVF;
+
+interface
+
+uses
+  Windows, Messages, SysUtils, Classes, Graphics, Controls, Forms, Dialogs,
+  Grids, DBGrids, StdCtrls, Db, DBTables;
+
+type
+  TSprPV = class(TForm)
+    DBGrid1: TDBGrid;
+    Query1: TQuery;
+    DataSource1: TDataSource;
+    Query1code_pr: TFloatField;
+    Query1naim: TStringField;
+    procedure DBGrid1KeyDown(Sender: TObject; var Key: Word;
+      Shift: TShiftState);
+    procedure FormKeyDown(Sender: TObject; var Key: Word;
+      Shift: TShiftState);
+    procedure FormCreate(Sender: TObject);
+    procedure FormDestroy(Sender: TObject);
+  private
+    { Private declarations }
+  public
+    { Public declarations }
+  end;
+
+var
+  SprPV: TSprPV;
+  Dost : String;
+
+implementation
+
+uses Data, Pro;
+
+{$R *.DFM}
+
+procedure TSprPV.DBGrid1KeyDown(Sender: TObject; var Key: Word;
+  Shift: TShiftState);
+var I : Integer;
+    NameI : String;
+begin
+     case Key of
+          VK_Return : Begin
+                   SprPV.Tag := Query1Code_PR.AsInteger;
+                   SprPV.ModalResult := mrOk;
+                      end;
+     end;
+end;
+
+procedure TSprPV.FormKeyDown(Sender: TObject; var Key: Word;
+  Shift: TShiftState);
+begin
+     if Key = VK_Escape then SprPV.ModalResult := mrCancel;
+end;
+
+procedure TSprPV.FormCreate(Sender: TObject);
+begin
+  Query1.Open;
+end;
+
+procedure TSprPV.FormDestroy(Sender: TObject);
+begin
+  Query1.Close;
+end;
+
+end.

@@ -1,0 +1,53 @@
+unit RedGrTov;
+
+interface
+
+uses
+  Windows, Messages, SysUtils, Classes, Graphics, Controls, Forms, Dialogs,
+  StdCtrls, Mask, DBCtrls;
+
+type
+  TPereim = class(TForm)
+    DBEdit1: TDBEdit;
+    procedure FormActivate(Sender: TObject);
+    procedure DBEdit1KeyDown(Sender: TObject; var Key: Word;
+      Shift: TShiftState);
+  private
+    { Private declarations }
+  public
+    { Public declarations }
+  end;
+
+var
+  Pereim: TPereim;
+
+implementation
+
+uses Data, SprNewGrTov;
+
+{$R *.DFM}
+
+procedure TPereim.FormActivate(Sender: TObject);
+begin
+     DataMain.GrTovar.Edit;
+  
+end;
+
+procedure TPereim.DBEdit1KeyDown(Sender: TObject; var Key: Word;
+  Shift: TShiftState);
+begin
+     case Key of
+          VK_RETURN : begin
+                        DataMain.GrTovar.Post;
+                        Pereim.ModalResult := 1;
+                        DataMain.GrTovar.ApplyUpdates;
+                      end;
+          VK_ESCAPE : begin
+                        DataMain.GrTovar.Cancel;
+                        Pereim.ModalResult := 1;
+                        DataMain.GrTovar.ApplyUpdates;
+                      end;
+      end;
+end;
+
+end.

@@ -1,0 +1,272 @@
+unit SpravPokup;
+
+interface
+
+uses
+  Windows, Messages, SysUtils, Classes, Graphics, Controls, Forms, Dialogs,
+  Grids, DBGrids, StdCtrls, Db, DBTables, Menus;
+
+type
+  TSprPokup = class(TForm)
+    DBGrid1: TDBGrid;
+    Edit1: TEdit;
+    CB: TCheckBox;
+    Table1: TTable;
+    DBGrid2: TDBGrid;
+    PM1: TPopupMenu;
+    N1: TMenuItem;
+    N2: TMenuItem;
+    procedure FormActivate(Sender: TObject);
+    procedure DBGrid1KeyDown(Sender: TObject; var Key: Word;
+      Shift: TShiftState);
+    procedure FormDeactivate(Sender: TObject);
+    procedure FormDestroy(Sender: TObject);
+    procedure CBClick(Sender: TObject);
+    procedure CBKeyDown(Sender: TObject; var Key: Word;
+      Shift: TShiftState);
+    procedure FormKeyDown(Sender: TObject; var Key: Word;
+      Shift: TShiftState);
+    procedure FormClose(Sender: TObject; var Action: TCloseAction);
+    procedure Edit1KeyDown(Sender: TObject; var Key: Word;
+      Shift: TShiftState);
+    procedure N1Click(Sender: TObject);
+    procedure N2Click(Sender: TObject);
+  private
+    { Private declarations }
+  public
+    { Public declarations }
+  end;
+
+var
+  SprPokup: TSprPokup;
+  Dost : String;
+implementation
+
+uses Data, SprNewPredpr, Sklad, Pro, SprPrSkPostF;
+
+{$R *.DFM}
+
+procedure TSprPokup.FormActivate(Sender: TObject);
+begin
+     Dost := DataMain.DostupDost1.AsString;
+     DataMain.Predpr.Tag := 1;
+     DataMain.Predpr.Open;
+     DataMain.PAddress.Open;
+     Application.CreateForm(TNewPredpr, NewPredpr);
+     DBGrid1.PopupMenu := PM1;
+     if NasDost(Dost[106]) then
+     begin
+        N1.Visible := true;
+        N2.Visible := false;
+     end
+     else
+     begin
+        N2.Visible := true;
+        N1.Visible := false;
+     end;
+end;
+
+procedure TSprPokup.DBGrid1KeyDown(Sender: TObject; var Key: Word;
+  Shift: TShiftState);
+var I, I2 : Integer;
+//    NameI : String;
+    S : Boolean;
+    Ts : Array [1..7] of String;
+begin
+     case Key of
+          VK_RETURN : Begin
+                    NewPredpr.Caption := 'Просмотр данных о клиенте';
+                    NewPredpr.CheckBox1.Enabled := False;
+                    NewPredpr.CheckBox2.Enabled := False;
+                    DataMain.Predpr.Edit;
+                    if NewPredpr.ShowModal = mrCancel then
+                          DataMain.Predpr.Cancel
+                      else
+                          DataMain.Predpr.Post;
+                      End;
+
+          VK_ESCAPE : SprPokup.Release;
+          VK_DELETE : Begin
+                    if MessageDlg('Удалить запись?',
+                        mtConfirmation, [mbYes, mbNo], 0) = mrYes then
+                        begin
+                             S := False;
+                             I2 := dataMain.PredprCODE_PR.AsInteger;
+                             Ts[1] := 'NaklVozv.dbf';
+                             Ts[2] := 'CashNakl.dbf';
+                             Ts[3] := 'PredOtp.dbf';
+                             Ts[4] := 'VanOtp.dbf';
+                             Ts[5] := 'Vnakl.dbf';
+                             Ts[6] := 'RoznNakl.dbf';
+                             Ts[7] := 'AktNakl.dbf';
+                             for I := 1 to 7 do
+                                 begin
+                                      if not(S) then
+                                         begin
+                                              Table1.TableName := Ts[I];
+                                              Table1.IndexName := 'Code_Pr';
+                                              Table1.Open;
+                                              Table1.First;
+                                              S := Table1.FindKey([I2]);
+                                              Table1.Close;
+                                         end;
+                                 end;
+                             if not(S) then
+                                DataMain.Predpr.Delete
+                             else
+                                ShowMessage('По данному клиенту было движение, удаление невозможно!');
+                        end;
+
+                      end;
+          VK_INSERT : if NasDost(Dost[105]) then
+                    if not(DataMain.Predpr.Filtered) then
+                    begin
+
+                    NewPredpr.CheckBox1.Enabled := True;
+                    NewPredpr.CheckBox2.Enabled := True;
+                    With DataMain do begin
+                         Predpr.Refresh;
+                         NewPredpr.Caption := 'Добавление клиента';
+                         ConfigVit.Open;
+                         I := ConfigVitNomer15.AsInteger + 1;
+                         ConfigVit.Edit;
+                         ConfigVitNomer15.AsInteger := I;
+                         ConfigVit.post;
+                         ConFigVit.Close;
+                         Predpr.Append;
+                         PredprCode_pr.AsInteger := I;
+                         Predpr.Post;
+                         Predpr.Edit;
+                         if NewPredpr.ShowModal = mrCancel then
+                             begin
+                                  Predpr.Cancel;
+                                  Predpr.Delete;
+                             end
+                         else
+                            Predpr.Post;
+                         If NewPredpr.CheckBox1.Checked then
+                            begin
+                                 Post.Open;
+                                 ConfigVit.Open;
+                                 I := ConfigVitNomer16.AsInteger + 1;
+                                 ConfigVit.Edit;
+                                 ConfigVitNomer16.AsInteger := I;
+                                 ConfigVit.post;
+                                 ConFigVit.Close;
+                                 Post.Append;
+                                 PostCODE_POST.AsInteger := I;
+                                 PostNAIM.AsString := PredprNaim.AsString;
+                                 Post.Post;
+                                 Post.Close;
+                            end;
+                         If NewPredpr.CheckBox2.Checked then
+                            begin
+                                 Proiz.Open;
+                                 ConfigVit.Open;
+                                 I := ConfigVitNomer17.AsInteger + 1;
+                                 ConfigVit.Edit;
+                                 ConfigVitNomer17.AsInteger := I;
+                                 ConfigVit.post;
+                                 ConFigVit.Close;
+                                 Proiz.Append;
+                                 ProizCODE_Proiz.AsInteger := I;
+                                 ProizNAIM.AsString := PredprNaim.AsString;
+                                 Proiz.Post;
+                                 Proiz.Close;
+                            end;
+                    end;
+                    end;
+     end;
+
+end;
+
+procedure TSprPokup.FormDeactivate(Sender: TObject);
+begin
+     Datamain.Predpr.Filtered := False;
+     DataMain.Predpr.Refresh;
+     CB.Checked := False;
+     DataMain.PAddress.Open;
+//     DataMain.Predpr.Close;
+
+     NewPredpr.Release;
+
+end;
+
+procedure TSprPokup.FormDestroy(Sender: TObject);
+begin
+     Main.N14.Enabled := True;
+end;
+
+procedure TSprPokup.CBClick(Sender: TObject);
+begin
+     Edit1.Enabled := CB.Checked;
+     DataMain.Predpr.Filtered := CB.Checked;
+     if CB.Checked then SprPokup.ActiveControl := Edit1;
+end;
+
+procedure TSprPokup.CBKeyDown(Sender: TObject; var Key: Word;
+  Shift: TShiftState);
+begin
+     Edit1.Enabled := CB.Checked;
+     DataMain.Predpr.Filtered := CB.Checked;
+     if CB.Checked then SprPokup.ActiveControl := Edit1;     
+end;
+
+procedure TSprPokup.FormKeyDown(Sender: TObject; var Key: Word;
+  Shift: TShiftState);
+begin
+     if Key = VK_Escape then SprPokup.Release;
+end;
+
+procedure TSprPokup.FormClose(Sender: TObject; var Action: TCloseAction);
+begin
+     Action := caFree;
+end;
+
+procedure TSprPokup.Edit1KeyDown(Sender: TObject; var Key: Word;
+  Shift: TShiftState);
+begin
+     if Key = VK_RETURN then
+        Datamain.Predpr.Refresh;
+end;
+
+procedure TSprPokup.N1Click(Sender: TObject);
+begin
+if NasDost(Dost[106]) then
+try
+  Application.CreateForm(TSprPrSkPost,SprPrSkPost);
+  SprPrSkPost.Tag := DataMain.PredprCode_Pr.AsInteger;
+  SprPrSkPost.PrSkPost.Filtered := False;
+  SprPrSkPost.PrSkPost.Filter := '[Code_PR] = '+ trim(DataMain.PredprCode_Pr.ASString);
+  SprPrSkPost.PrSkPost.Filtered := True;
+  SprPrSkPost.Post.Open;
+  SprPrSkPost.PrSkPost.Open;
+  SprPrSkPost.PrSkPost.refresh;
+  SprPrSkPost.ShowModal;
+finally
+  SprPrSkPost.PrSkPost.Filtered := False;
+  SprPrSkPost.Release;
+end;
+end;
+
+procedure TSprPokup.N2Click(Sender: TObject);
+begin
+try
+  Application.CreateForm(TSprPrSkPost,SprPrSkPost);
+  SprPrSkPost.Tag := DataMain.PredprCode_Pr.AsInteger;
+  SprPrSkPost.PrSkPost.Filtered := False;
+  SprPrSkPost.PrSkPost.Filter := '[Code_PR] = '+ trim(DataMain.PredprCode_Pr.ASString);
+  SprPrSkPost.PrSkPost.Filtered := True;
+  SprPrSkPost.Post.Open;
+  SprPrSkPost.PrSkPost.Open;
+  SprPrSkPost.PrSkPost.refresh;
+  SprPrSkPost.DBGrid1.PopupMenu := nil;
+  SprPrSkPost.ShowModal;
+finally
+  SprPrSkPost.PrSkPost.Filtered := False;
+  SprPrSkPost.Release;
+end;
+
+end;
+
+end.

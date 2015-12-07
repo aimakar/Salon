@@ -1,0 +1,272 @@
+unit SprNewPredpr;
+
+interface
+
+uses
+  Windows, Messages, SysUtils, Classes, Graphics, Controls, Forms, Dialogs,
+  StdCtrls, Mask, DBCtrls, Buttons, ExtCtrls, Grids, DBGrids, ComCtrls,
+  ToolEdit, DB;
+
+type
+  TNewPredpr = class(TForm)
+    DBEdit1: TDBEdit;
+    Label1: TLabel;
+    Label2: TLabel;
+    Label3: TLabel;
+    Label4: TLabel;
+    Label5: TLabel;
+    Label6: TLabel;
+    Label7: TLabel;
+    Label8: TLabel;
+    Label9: TLabel;
+    DBEdit2: TDBEdit;
+    DBEdit3: TDBEdit;
+    Bevel1: TBevel;
+    DBEdit4: TDBEdit;
+    DBEdit5: TDBEdit;
+    DBEdit6: TDBEdit;
+    DBEdit7: TDBEdit;
+    DBEdit8: TDBEdit;
+    DBEdit9: TDBEdit;
+    BitBtn1: TBitBtn;
+    BitBtn2: TBitBtn;
+    DBText1: TDBText;
+    Label11: TLabel;
+    DBEdit11: TDBEdit;
+    BitBtn3: TBitBtn;
+    DBCheckBox1: TDBCheckBox;
+    PageControl1: TPageControl;
+    TabSheet1: TTabSheet;
+    TabSheet2: TTabSheet;
+    DBGrid1: TDBGrid;
+    CheckBox1: TCheckBox;
+    CheckBox2: TCheckBox;
+    Bevel2: TBevel;
+    Bevel3: TBevel;
+    DBCheckBox2: TDBCheckBox;
+    Label10: TLabel;
+    Label12: TLabel;
+    DBEdit10: TDBEdit;
+    Bevel4: TBevel;
+    DBCheckBox3: TDBCheckBox;
+    DBCheckBox4: TDBCheckBox;
+    Label13: TLabel;
+    DBEdit12: TDBEdit;
+    CE1: TComboEdit;
+    SpeedButton1: TSpeedButton;
+    Label14: TLabel;
+    procedure BitBtn2Click(Sender: TObject);
+    procedure BitBtn1Click(Sender: TObject);
+    procedure DBEdit1KeyDown(Sender: TObject; var Key: Word;
+      Shift: TShiftState);
+    procedure DBEdit2KeyDown(Sender: TObject; var Key: Word;
+      Shift: TShiftState);
+    procedure DBEdit3KeyDown(Sender: TObject; var Key: Word;
+      Shift: TShiftState);
+    procedure DBEdit4KeyDown(Sender: TObject; var Key: Word;
+      Shift: TShiftState);
+    procedure DBEdit9KeyDown(Sender: TObject; var Key: Word;
+      Shift: TShiftState);
+    procedure DBEdit5KeyDown(Sender: TObject; var Key: Word;
+      Shift: TShiftState);
+    procedure DBEdit7KeyDown(Sender: TObject; var Key: Word;
+      Shift: TShiftState);
+    procedure DBEdit8KeyDown(Sender: TObject; var Key: Word;
+      Shift: TShiftState);
+    procedure DBEdit6KeyDown(Sender: TObject; var Key: Word;
+      Shift: TShiftState);
+    procedure DBEdit10KeyDown(Sender: TObject; var Key: Word;
+      Shift: TShiftState);
+    procedure DBEdit11KeyDown(Sender: TObject; var Key: Word;
+      Shift: TShiftState);
+    procedure DBGrid1KeyDown(Sender: TObject; var Key: Word;
+      Shift: TShiftState);
+    procedure BitBtn3Click(Sender: TObject);
+    procedure FormActivate(Sender: TObject);
+    procedure SpeedButton1Click(Sender: TObject);
+  private
+    { Private declarations }
+  public
+    { Public declarations }
+  end;
+
+var
+  NewPredpr: TNewPredpr;
+
+implementation
+
+uses Data, UrPredF, Pro, Predpr_GroupF;
+
+{$R *.DFM}
+
+procedure TNewPredpr.BitBtn2Click(Sender: TObject);
+begin
+     NewPredpr.ModalResult := mrCancel;
+end;
+
+procedure TNewPredpr.BitBtn1Click(Sender: TObject);
+begin
+     NewPredpr.ModalResult := mrOk;
+end;
+
+procedure TNewPredpr.DBEdit1KeyDown(Sender: TObject; var Key: Word;
+  Shift: TShiftState);
+begin
+     case Key of
+          VK_RETURN : NewPredpr.ActiveControl := DBEdit2;
+     end;
+end;
+
+procedure TNewPredpr.DBEdit2KeyDown(Sender: TObject; var Key: Word;
+  Shift: TShiftState);
+begin
+     case Key of
+          VK_RETURN : NewPredpr.ActiveControl := DBEdit3;
+     end;
+
+end;
+
+procedure TNewPredpr.DBEdit3KeyDown(Sender: TObject; var Key: Word;
+  Shift: TShiftState);
+begin
+     case Key of
+          VK_RETURN : NewPredpr.ActiveControl := DBEdit4;
+     end;
+
+end;
+
+procedure TNewPredpr.DBEdit4KeyDown(Sender: TObject; var Key: Word;
+  Shift: TShiftState);
+begin
+     case Key of
+          VK_RETURN : NewPredpr.ActiveControl := DBEdit11;
+     end;
+
+end;
+
+procedure TNewPredpr.DBEdit9KeyDown(Sender: TObject; var Key: Word;
+  Shift: TShiftState);
+begin
+     case Key of
+          VK_RETURN : NewPredpr.ActiveControl := DBEdit5;
+     end;
+
+end;
+
+procedure TNewPredpr.DBEdit5KeyDown(Sender: TObject; var Key: Word;
+  Shift: TShiftState);
+begin
+     case Key of
+          VK_RETURN : NewPredpr.ActiveControl := DBEdit6;
+     end;
+
+end;
+
+procedure TNewPredpr.DBEdit7KeyDown(Sender: TObject; var Key: Word;
+  Shift: TShiftState);
+begin
+     case Key of
+          VK_RETURN : NewPredpr.ActiveControl := DBEdit8;
+     end;
+
+end;
+
+procedure TNewPredpr.DBEdit8KeyDown(Sender: TObject; var Key: Word;
+  Shift: TShiftState);
+begin
+     case Key of
+          VK_RETURN : NewPredpr.ActiveControl := BitBtn1;
+     end;
+
+end;
+
+procedure TNewPredpr.DBEdit6KeyDown(Sender: TObject; var Key: Word;
+  Shift: TShiftState);
+begin
+     case Key of
+          VK_RETURN : NewPredpr.ActiveControl := DBEdit7;
+     end;
+
+end;
+
+procedure TNewPredpr.DBEdit10KeyDown(Sender: TObject; var Key: Word;
+  Shift: TShiftState);
+begin
+     case Key of
+          VK_RETURN : NewPredpr.ActiveControl := DBEdit9;
+     end;
+
+end;
+
+procedure TNewPredpr.DBEdit11KeyDown(Sender: TObject; var Key: Word;
+  Shift: TShiftState);
+begin
+     case Key of
+          VK_RETURN : NewPredpr.ActiveControl := DBGrid1;
+     end;
+end;
+
+procedure TNewPredpr.DBGrid1KeyDown(Sender: TObject; var Key: Word;
+  Shift: TShiftState);
+var S, S1 : String;
+begin
+     case Key of
+          VK_RETURN : begin
+                      S := DataMain.PAddressAddress.AsString;
+                      S1 := DataMain.PAddressOther_Code.AsString;
+                      if InputQuery('¬вод адреса','¬ведите адрес доставки',S) then
+                       begin
+                         Datamain.PAddress.Edit;
+                         Datamain.PAddressAddress.AsString := AnsiUpperCase(S);
+                         if InputQuery('¬вод адреса', '¬ведите код адреса (если он существует)', S1) then
+                            DataMain.PAddressOther_Code.AsString := S1;
+                         DataMain.PAddress.Post;
+                       end;
+                      end;
+          VK_INSERT : if InputQuery('¬вод адреса','¬ведите адрес доставки',S) then
+                      begin
+                         InputQuery('¬вод адреса', '¬ведите код адреса (если он существует)', S1);
+                         Datamain.PAddress.AppendRecord([DataMain.PredprCode_Pr.AsInteger, AnsiUpperCase(S), S1]);
+                      end;
+          VK_DELETE : if MessageDlg('”далить текущий адрес доставки?',
+                      mtConfirmation, [mbYes, mbNo], 0) = mrYes then
+                         DataMain.PAddress.Delete;
+     end;
+end;
+
+procedure TNewPredpr.BitBtn3Click(Sender: TObject);
+begin
+     Application.CreateForm(TUrPred, UrPred);
+     UrPred.ShowModal;
+
+
+
+     UrPred.Release;
+end;
+
+procedure TNewPredpr.FormActivate(Sender: TObject);
+begin
+  if DataMain.PredprPGR_ID.AsInteger > -1 then
+  begin
+       CE1.tag := DataMain.PredprPGR_ID.AsInteger;
+       CE1.Text := DataMain.find_Predpr_group(CE1.tag);
+  end
+  else
+  begin
+      CE1.tag := 0;
+      CE1.text := '';
+  end;
+
+end;
+
+procedure TNewPredpr.SpeedButton1Click(Sender: TObject);
+var L : boolean;
+begin
+  L := (DataMain.Predpr.State = dsEdit) or (DataMain.Predpr.State = dsInsert);
+  if not L then DataMain.Predpr.Edit;
+  DataMain.PredprPGR_ID.AsInteger := 0;
+  Ce1.Tag := 0;
+  CE1.Text := '';
+  if not L then DataMain.Predpr.Post;
+end;
+end.

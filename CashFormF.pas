@@ -1,0 +1,457 @@
+unit CashFormF;
+
+interface
+
+uses
+  Windows, Messages, SysUtils, Classes, Graphics, Controls, Forms, Dialogs,
+  Grids, DBGrids, DB, StdCtrls, Buttons, DBTables, ExtCtrls, FileCtrl, ActnList,
+  XPStyleActnCtrls, ActnMan, JvExDBGrids, JvDBGrid, ToolWin, ActnCtrls,
+  IBCustomDataSet, IBQuery;
+    procedure Prin;
+const Pos_cou = 'select count(code) co from %s where nomer = :nomer';
+type
+  TCashForm = class(TForm)
+    ActionManager2: TActionManager;
+    A_Ins: TAction;
+    A_Edit: TAction;
+    A_Del: TAction;
+    Action2: TAction;
+    Action4: TAction;
+    A_WinCr: TAction;
+    ActionToolBar1: TActionToolBar;
+    JvDBGrid1: TJvDBGrid;
+    A_Prov: TAction;
+    procedure FormKeyDown(Sender: TObject; var Key: Word;
+      Shift: TShiftState);
+    procedure FormActivate(Sender: TObject);
+    procedure FormDeactivate(Sender: TObject);
+    procedure DBGrid1DrawColumnCell(Sender: TObject; const Rect: TRect;
+      DataCol: Integer; Column: TColumn; State: TGridDrawState);
+    procedure Timer1Timer(Sender: TObject);
+    procedure FormDestroy(Sender: TObject);
+    procedure FormClose(Sender: TObject; var Action: TCloseAction);
+    procedure DBGrid1TitleClick(Column: TColumn);
+    procedure FormCreate(Sender: TObject);
+    procedure A_WinCrExecute(Sender: TObject);
+    procedure Action3Execute(Sender: TObject);
+    procedure A_ProvExecute(Sender: TObject);
+    procedure A_EditExecute(Sender: TObject);
+    procedure A_DelExecute(Sender: TObject);
+    procedure A_InsExecute(Sender: TObject);
+    procedure Action2Execute(Sender: TObject);
+  private
+    { Private declarations }
+  public
+    { Public declarations }
+  end;
+
+var
+  CashForm: TCashForm;
+  Dost : String;
+implementation
+
+uses Data, Pro,Sklad, CashTF,  OplDataF, Vvod_OplF;
+
+{$R *.DFM}
+procedure refr;
+var
+  nomer: string;
+begin
+with datamain do
+    begin
+      if CashNakl.RecordCount = 0 then exit;
+      nomer := CashNakl.FieldByName('NOMER').AsString;
+      CashNakl.Close;
+      CashNakl.Open;
+      CashNakl.Locate('NOMER', nomer, []);
+    end;
+
+end;
+
+procedure TCashForm.FormKeyDown(Sender: TObject; var Key: Word;
+  Shift: TShiftState);
+begin
+     if Key = VK_ESCAPE then
+        begin
+             CashForm.Release;
+        end;
+end;
+
+procedure TCashForm.FormActivate(Sender: TObject);
+begin
+     With DataMain do
+          begin
+              if not IBTCash.InTransaction then  IBTCash.StartTransaction;
+              if not IBT.InTransaction then  IBT.StartTransaction;
+               if not Predpr.Active then Predpr.Open;
+               if not CashNakl.Active then CashNakl.Open;
+          end;
+    Dost := DataMain.Dost;
+     DataMain.CashNakl.Filtered := False;
+end;
+
+procedure TCashForm.FormDeactivate(Sender: TObject);
+begin
+    // Query1.Close;
+end;
+
+procedure TCashForm.DBGrid1DrawColumnCell(Sender: TObject;
+  const Rect: TRect; DataCol: Integer; Column: TColumn;
+  State: TGridDrawState);
+var a, b, c, d, e, f, g, ex, end_rab: string;
+begin
+
+With DataMain do begin
+if CashNakl.RecordCount<>0 then
+begin
+//a := (CashNaklOpl.AsBoolean) or (CashNaklRazrL.AsBoolean);
+if (trim(CashNaklOpl.AsString)='1') or (trim(CashNaklRazrL.AsString)='1') then a := '1';
+b := trim(CashNaklOpl.AsString); // Оплата
+c := trim(CashNaklRazrL.AsString); // Разрешение
+d := trim(CashNaklPostupL.AsString); // Поступление на склад
+e := trim(CashNaklOtp.AsString); // Отпущено со склада
+f := trim(CashNaklPoluchL.AsString); // Получено клиентом
+ex := trim(CashNaklExp.AsString);
+end_rab := trim(CashNaklEnd_Rab.AsString);
+end;
+g := '1';
+if DataMain.CashNakl.RecordCount <>0 then
+begin
+with JvDBGrid1.Canvas do begin
+
+     if (end_rab='1') and not((b='1') or (c='1')) and (not (gdFocused in State)) then
+      begin
+       Font.Color := clGray;
+       FillRect (Rect);
+       TextOut(Rect.Left,Rect.Top,Column.Field.Text);
+//       g := false;
+      end;
+
+     if (a='1') and not(d='1') and (not (gdFocused in State)) then
+      begin
+       Font.Color := clRed;
+       FillRect (Rect);
+       TextOut(Rect.Left,Rect.Top,Column.Field.Text);
+       g := '0';
+      end;
+     if (d='1') and not(e='1') and (not (gdFocused in State)) then
+      begin
+       Font.Color := clBlue;
+       FillRect (Rect);
+       TextOut(Rect.Left,Rect.Top,Column.Field.Text);
+       g := '0';
+      end;
+     if (e='1') and not(F='1') and (not (gdFocused in State)) then
+      begin
+       Font.Color := clFuchsia;
+       FillRect (Rect);
+       TextOut(Rect.Left,Rect.Top,Column.Field.Text);
+       g := '0';
+      end;
+     if (F='1') and (not (gdFocused in State)) then
+      begin
+       Font.Color := clGreen;
+       FillRect (Rect);
+       TextOut(Rect.Left,Rect.Top,Column.Field.Text);
+       g := '0';
+      end;
+
+
+     if (g='1') then JvDBGrid1.DefaultDrawColumnCell(Rect,DataCol,Column,State);
+     if gdFocused in State then
+      begin
+       if (f='1') then
+          A_Prov.Enabled := False
+       else
+          A_Prov.Enabled :=True;
+      end;
+
+end;
+end;
+end;
+end;
+
+
+
+
+procedure TCashForm.Action2Execute(Sender: TObject);
+var s : string;
+begin
+if InputQuery('Поиск по номеру','Введите номер',S) then
+                  With Datamain.CashNakl do
+                       begin
+                            DisableControls;
+                            Locate('Nomer',S,[loPartialKey]);
+                            enableControls;
+                       end;
+end;
+
+procedure TCashForm.Action3Execute(Sender: TObject);
+begin
+  Prin;
+end;
+
+procedure TCashForm.A_DelExecute(Sender: TObject);
+var i : integer;
+  L : boolean;
+begin
+  if not(trim(DataMain.CashNaklPoluchL.AsString)='1')  then
+    if MessageDlg('Удалить накладную?', mtConfirmation, [mbNo, mbYes], 0) = mrYes then
+      With DataMain do
+      begin
+        Tovar.Open;
+        Ost.Open;
+        CashTN.Open;
+        CashTN.First;
+        While not(DataMain.CashTN.Eof) do
+        begin
+          I := CashTNKol.AsInteger;
+          Tovar.Locate('Code', CashTNCode.AsInteger,[]);
+          if Tovarvid.AsInteger = 0 then
+          begin
+            Ost.Locate('Code', CashTNCode.AsInteger,[]);
+            Ost.Edit;
+            OstKol1.AsInteger := OstKol1.AsInteger + I;
+            Ost.Post;
+          end;
+            CashTN.Delete;
+            CashTN.ApplyUpdates;
+            DataMain.IBTCash.CommitRetaining;
+            DataMain.IBT.CommitRetaining;
+        end;
+        CashNakl.Delete;
+       // CashTN.Close;
+     //   Ost.Close;
+     //   Tovar.Close;
+        CashNakl.ApplyUpdates;
+        DataMain.IBTCash.CommitRetaining;
+      end;
+
+end;
+
+procedure TCashForm.A_EditExecute(Sender: TObject);
+begin
+  With DataMain do
+    try
+      Application.CreateForm(TCashT, CashT);
+      CashT.PC1.ActivePage := CashT.PC1.Pages[1];
+      CashT.Label2.Caption := CashNaklNomer.AsString;
+      CashT.DE.Text := CashNaklOt.AsString;
+      CashT.ED.Text := CashNaklSkidka.AsString;
+      CashNakl.Edit;
+      if (trim(CashNaklPoluchL.AsString)='1') then CashT.tag := 1 else CashT.tag := 0;
+      CashT.ShowModal;
+      if CashNakl.State = dsBrowse then CashNakl.Edit;
+      CashNaklOt.AsString := CashT.DE.Text;
+      Try
+        CashNaklSkidka.AsInteger := StrToInt(Trim(CashT.ED.Text));
+      except
+        CashNaklSkidka.AsInteger := 0;
+      end;
+      Try
+        CashNaklSumma.AsFloat := StrToFloat(Trim(CashT.Label11.Caption));
+      Except
+        CashNaklSumma.AsFloat := 0;
+      end;
+      CashNakl.Post;
+      CashNakl.ApplyUpdates;
+      DataMain.IBTCash.CommitRetaining;
+    finally
+      CashT.Release;
+    end;
+  Refr;
+end;
+
+procedure TCashForm.A_InsExecute(Sender: TObject);
+var S : string;
+begin
+  Datamain.CashNakl.DisableControls;
+  DataMain.CashNakl.Filtered := False;
+  DataMain.CashNakl.Refresh;
+  DataMain.CashNakl.Last;
+  try
+    Application.CreateForm(TCashT, CashT);
+    CashT.PC1.ActivePage := CashT.PC1.Pages[0];
+    CashT.Tag := 0;
+    With DataMain.CashNakl do
+    begin
+      Datamain.Config.Open;
+      DataMain.Config.Edit;
+      S := Trim(Datamain.ConfigNomer2.AsString);
+      IncNom(S,'-Расх');
+      DataMain.ConfigNomer2.AsString := S;
+      DataMain.Config.Post;
+      DataMain.Config.Close;
+      Append;
+      FieldByName('Exp').ASString := '0';
+      FieldByname('Data').AsDateTime := Now;
+      FieldByname('Prov1D').AsDateTime := Now;
+      FieldByName('PostupL').AsString := '0';
+      FieldByName('Gruz').AsString := '1';
+      FieldByName('Code_Gruz').AsInteger := 0;
+      FieldByName('Opl').AsString := '0';
+      FieldByName('Otp').AsString := '0';
+      FieldByName('PoluchL').AsString := '0';
+      FieldByName('RazrL').AsString := '0';
+      FieldByName('OTK').AsString := '1';
+      FieldByName('Nomer').AsString := S;
+      FieldByName('DOSTADD').AsString := 'САМОВЫВОЗ';
+      FieldByName('Ot').AsDateTime := Date();
+      FieldByName('Schet').AsString := '0';
+      FieldByName('Nal').AsString := '1';
+      FieldByName('Code_Pr').AsInteger := 0;
+      FieldByname('Oper').AsInteger := 1;
+      FieldByname('Schnom').AsInteger := 0;
+      FieldByname('Dost').AsString := '0';
+      FieldByname('Skidka').AsInteger := 0;
+      FieldByname('Code_Firm').AsInteger := 1;
+      Post;
+      CashT.Label2.Caption := FieldByName('Nomer').AsString;
+      CashT.DE.Text := FieldByName('Ot').AsString;
+      CashT.ED.Text := DataMain.CashNaklSkidka.AsString;
+      DataMain.CashNakl.EnableControls;
+      CashT.ShowModal;
+      Edit;
+      FieldByName('Ot').AsString := CashT.DE.Text;
+      FieldByName('Skidka').AsInteger := StrToInt(Trim(CashT.ED.Text));
+      try
+        FieldByName('Summa').AsFloat := StrToFloat(Trim(CashT.Label11.Caption));
+      except
+        FieldByName('Summa').AsFloat := 0;
+      end;
+      FieldByName('OTK').AsString := '0';
+      Post;
+      ApplyUpdates;
+      DataMain.IBTCash.CommitRetaining;
+      DataMain.IBT.CommitRetaining;
+    end;
+  finally
+    CashT.Release;
+  end;
+  Refr;
+end;
+
+procedure TCashForm.A_ProvExecute(Sender: TObject);
+var i, rrr, bonus, kkk : integer;
+begin
+  with datamain do
+  begin
+    if not(trim(CashNaklPoluchL.AsString)='1') and (CashNaklSumma.AsFloat>0) then
+    try
+      Application.CreateForm(TVvod_Opl, Vvod_opl);
+    //  CashNakl.Refresh;
+      Vvod_opl.nomer := CashNaklnomer.asString;
+      Vvod_opl.s1 := CashNaklsumma.AsFloat;
+      Vvod_opl.s2 := CashNaklbonus.AsInteger;
+      kkk := CashNaklid_kart.AsInteger;
+      Vvod_opl.id_kart := CashNaklid_kart.AsInteger;
+      Vvod_opl.predpr := CashNaklpredpr.AsString;
+      Vvod_opl.A_WinCr.Execute;
+      bonus := 0;
+      rrr := Vvod_opl.ShowModal;
+
+      if rrr = mrOk then // оплата налом
+      begin
+        bonus := 0;
+        kkk := round(Vvod_opl.id_kart);
+      end
+      else
+      if rrr = mrAll then // оплата бонусами+налом
+      begin
+        bonus := CashNaklbonus.AsInteger;
+        kkk := round(Vvod_opl.id_kart);
+      end;
+
+      if (rrr = mrok) or (rrr = mrAll) then
+      begin
+        CashNakl.Edit;
+        CashNaklotp.AsString := '1';
+        CashNaklDataOtp.AsDateTime := now;
+        CashNaklPoluchL.AsString := '1';
+        CashNaklPoluchDat.AsDateTime := date();
+        CashNaklbonus_opl.ASInteger := bonus;
+        CashNaklid_kart.AsInteger := kkk;
+        CashNakl.Post;
+        CashNakl.ApplyUpdates;
+        DataMain.IBTCash.CommitRetaining;
+        Set_bonus(CashNaklcode_pr.AsInteger);
+        A_Prov.Enabled := False;
+        Tovar.Open;
+        Ost.Open;
+        CashTN.Open;
+        while not(CashTN.eof) do
+        begin
+         Tovar.Locate('Code', CashTNCode.AsInteger,[]);
+          if Tovarvid.AsInteger = 0 then
+          begin
+            Ost.Locate('Code', CashTNCode.AsInteger,[]);
+            Ost.Edit;
+            OstKol2.AsInteger := Ostkol2.AsInteger - CashTNKol.AsInteger;
+            Ost.post;
+          end;
+          CashTN.Next;
+        end;
+        CashTn.ApplyUpdates;
+        CashNakl.ApplyUpdates;
+        DataMain.IBTCash.CommitRetaining;
+        DataMain.IBT.CommitRetaining;
+       // CashTN.Close;
+     //   Ost.Close;
+     //   Tovar.Close;
+      end;
+
+    finally
+      Vvod_opl.Release;
+    end;
+  end;
+  Refr;
+end;
+
+procedure TCashForm.A_WinCrExecute(Sender: TObject);
+begin
+    DataMain.CashNakl.Filtered := False;
+end;
+
+procedure Prin;
+begin
+end;
+
+
+procedure TCashForm.Timer1Timer(Sender: TObject);
+begin
+     DataMain.CashNakl.Refresh;
+end;
+
+procedure TCashForm.FormDestroy(Sender: TObject);
+begin
+  //   CloseData;
+  //   Quer1.UnPrepare;
+
+
+end;
+
+procedure TCashForm.FormClose(Sender: TObject; var Action: TCloseAction);
+begin
+if  DataMain.IBTCash.InTransaction then  DataMain.IBTCash.Commit;
+if  DataMain.IBT.InTransaction then  DataMain.IBT.Commit;
+//    DataMain.Ost.Close;
+     Action := caFree;
+end;
+
+procedure TCashForm.DBGrid1TitleClick(Column: TColumn);
+begin
+{     if not((Column.FieldName = 'Predpr') or (Column.FieldName = 'Schet') or (Column.FieldName = 'DOSTDAT') or (Column.FieldName = 'Summa')) then
+     DataMain.CashNakl.IndexName := Column.FieldName
+     else
+         if (Column.FieldName = 'Schet') then DataMain.CashNakl.IndexName := 'SchNom';   }
+
+end;
+
+procedure TCashForm.FormCreate(Sender: TObject);
+begin
+ { Quer1.SQL.Clear;
+  Quer1.SQL.Add(Format(Pos_Cou, ['CashTN']));
+  Quer1.Prepare;  }
+end;
+
+end.

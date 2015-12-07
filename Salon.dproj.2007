@@ -1,0 +1,568 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <PropertyGroup>
+    <ProjectGuid>{e2c196f7-05cd-4d8b-af6d-ef73f4091753}</ProjectGuid>
+    <MainSource>Salon.dpr</MainSource>
+    <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
+    <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
+    <DCC_DCCCompiler>DCC32</DCC_DCCCompiler>
+    <DCC_DependencyCheckOutputName>e:\sklad\exe\Salon.exe</DCC_DependencyCheckOutputName>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
+    <Version>7.0</Version>
+    <DCC_Alignment>1</DCC_Alignment>
+    <DCC_DebugInformation>False</DCC_DebugInformation>
+    <DCC_WriteableConstants>True</DCC_WriteableConstants>
+    <DCC_LocalDebugSymbols>False</DCC_LocalDebugSymbols>
+    <DCC_SymbolReferenceInfo>0</DCC_SymbolReferenceInfo>
+    <DCC_ExeOutput>e:\sklad\exe</DCC_ExeOutput>
+    <DCC_Define>RELEASE</DCC_Define>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
+    <Version>7.0</Version>
+    <DCC_WriteableConstants>True</DCC_WriteableConstants>
+    <DCC_SymbolReferenceInfo>0</DCC_SymbolReferenceInfo>
+    <DCC_ExeOutput>e:\sklad\exe</DCC_ExeOutput>
+    <DCC_Define>DEBUG</DCC_Define>
+  </PropertyGroup>
+  <ProjectExtensions>
+    <Borland.Personality>Delphi.Personality</Borland.Personality>
+    <Borland.ProjectType>VCLApplication</Borland.ProjectType>
+    <BorlandProject>
+<BorlandProject><Delphi.Personality><Parameters><Parameters Name="UseLauncher">False</Parameters><Parameters Name="LoadAllSymbols">True</Parameters><Parameters Name="LoadUnspecifiedSymbols">False</Parameters></Parameters><VersionInfo><VersionInfo Name="IncludeVerInfo">False</VersionInfo><VersionInfo Name="AutoIncBuild">False</VersionInfo><VersionInfo Name="MajorVer">1</VersionInfo><VersionInfo Name="MinorVer">0</VersionInfo><VersionInfo Name="Release">0</VersionInfo><VersionInfo Name="Build">0</VersionInfo><VersionInfo Name="Debug">False</VersionInfo><VersionInfo Name="PreRelease">False</VersionInfo><VersionInfo Name="Special">False</VersionInfo><VersionInfo Name="Private">False</VersionInfo><VersionInfo Name="DLL">False</VersionInfo><VersionInfo Name="Locale">1049</VersionInfo><VersionInfo Name="CodePage">1251</VersionInfo></VersionInfo><VersionInfoKeys><VersionInfoKeys Name="CompanyName"></VersionInfoKeys><VersionInfoKeys Name="FileDescription"></VersionInfoKeys><VersionInfoKeys Name="FileVersion">1.0.0.0</VersionInfoKeys><VersionInfoKeys Name="InternalName"></VersionInfoKeys><VersionInfoKeys Name="LegalCopyright"></VersionInfoKeys><VersionInfoKeys Name="LegalTrademarks"></VersionInfoKeys><VersionInfoKeys Name="OriginalFilename"></VersionInfoKeys><VersionInfoKeys Name="ProductName"></VersionInfoKeys><VersionInfoKeys Name="ProductVersion">1.0.0.0</VersionInfoKeys><VersionInfoKeys Name="Comments"></VersionInfoKeys></VersionInfoKeys><Source><Source Name="MainSource">Salon.dpr</Source></Source></Delphi.Personality></BorlandProject></BorlandProject>
+  </ProjectExtensions>
+  <Import Project="$(MSBuildBinPath)\Borland.Delphi.Targets" />
+  <ItemGroup>
+    <DelphiCompile Include="Salon.dpr">
+      <MainSource>MainSource</MainSource>
+    </DelphiCompile>
+    <DCCReference Include="..\Отчеты\PrnPrihSCHF.pas">
+      <Form>PrnPrihSCH</Form>
+    </DCCReference>
+    <DCCReference Include="AddKolF.pas">
+      <Form>AddKol</Form>
+    </DCCReference>
+    <DCCReference Include="AddKolIzlF.pas">
+      <Form>AddKolIzl</Form>
+    </DCCReference>
+    <DCCReference Include="AktFormF.pas">
+      <Form>AktForm</Form>
+    </DCCReference>
+    <DCCReference Include="AktTF.pas">
+      <Form>AktT</Form>
+    </DCCReference>
+    <DCCReference Include="BaseChangeF.pas">
+      <Form>BaseChange</Form>
+    </DCCReference>
+    <DCCReference Include="BrakFormF.pas">
+      <Form>BrakForm</Form>
+    </DCCReference>
+    <DCCReference Include="BrakTF.pas">
+      <Form>BrakT</Form>
+    </DCCReference>
+    <DCCReference Include="CashFormF.pas">
+      <Form>CashForm</Form>
+    </DCCReference>
+    <DCCReference Include="CashTF.pas">
+      <Form>CashT</Form>
+    </DCCReference>
+    <DCCReference Include="CheckDBF.pas">
+      <Form>CheckDB</Form>
+    </DCCReference>
+    <DCCReference Include="CheckSertF.pas">
+      <Form>CheckSert</Form>
+    </DCCReference>
+    <DCCReference Include="Data.pas">
+      <Form>DataMain</Form>
+    </DCCReference>
+    <DCCReference Include="DelPosNF.pas">
+      <Form>DelPosN</Form>
+    </DCCReference>
+    <DCCReference Include="Dialogs\AboutBoxF.pas">
+      <Form>AboutBox</Form>
+    </DCCReference>
+    <DCCReference Include="Dialogs\Plan_AddF.pas">
+      <Form>Plan_Add</Form>
+    </DCCReference>
+    <DCCReference Include="DobTovBrF.pas">
+      <Form>DobTovBr</Form>
+    </DCCReference>
+    <DCCReference Include="DobTovCF.pas">
+      <Form>DobTovC</Form>
+    </DCCReference>
+    <DCCReference Include="DobTovIzlF.pas">
+      <Form>DobTovIzl</Form>
+    </DCCReference>
+    <DCCReference Include="DobTovNedF.pas">
+      <Form>DobTovNed</Form>
+    </DCCReference>
+    <DCCReference Include="DobTovPrihF.pas">
+      <Form>DobTovPrih</Form>
+    </DCCReference>
+    <DCCReference Include="DobTovRevF.pas">
+      <Form>DobTovRev</Form>
+    </DCCReference>
+    <DCCReference Include="DobTovVozvF.pas">
+      <Form>DobTovVozv</Form>
+    </DCCReference>
+    <DCCReference Include="Find_SchF.pas">
+      <Form>Find_Sch</Form>
+    </DCCReference>
+    <DCCReference Include="Forms\Plan1F.pas">
+      <Form>Plan1</Form>
+    </DCCReference>
+    <DCCReference Include="Forms\Spr_RekvF.pas">
+      <Form>Spr_Rekv</Form>
+    </DCCReference>
+    <DCCReference Include="InvF.pas">
+      <Form>Inv</Form>
+    </DCCReference>
+    <DCCReference Include="IzlFormF.pas">
+      <Form>IzlForm</Form>
+    </DCCReference>
+    <DCCReference Include="IzlTF.pas">
+      <Form>IzlT</Form>
+    </DCCReference>
+    <DCCReference Include="KartF.pas">
+      <Form>Kart</Form>
+    </DCCReference>
+    <DCCReference Include="Kart_Tov_RoznF.pas">
+      <Form>Kart_Tov_Rozn</Form>
+    </DCCReference>
+    <DCCReference Include="Klad_SprF.pas">
+      <Form>Klad_Spr</Form>
+    </DCCReference>
+    <DCCReference Include="NacMsgDlgF.pas">
+      <Form>NacMsgDlg</Form>
+    </DCCReference>
+    <DCCReference Include="NaklRest.pas">
+      <Form>TovChe1</Form>
+    </DCCReference>
+    <DCCReference Include="NedFormF.pas">
+      <Form>NedForm</Form>
+    </DCCReference>
+    <DCCReference Include="NedTF.pas">
+      <Form>NedT</Form>
+    </DCCReference>
+    <DCCReference Include="NedT_PrihF.pas">
+      <Form>NedT_Prih</Form>
+    </DCCReference>
+    <DCCReference Include="NedVyborF.pas">
+      <Form>NedVybor</Form>
+    </DCCReference>
+    <DCCReference Include="NewGrValF.pas">
+      <Form>NewGrVal</Form>
+    </DCCReference>
+    <DCCReference Include="NewOperF.pas">
+      <Form>NewOper</Form>
+    </DCCReference>
+    <DCCReference Include="NewPostF.pas">
+      <Form>NewPost</Form>
+    </DCCReference>
+    <DCCReference Include="NewProizF.pas">
+      <Form>NewProiz</Form>
+    </DCCReference>
+    <DCCReference Include="NomForm.pas">
+      <Form>NomF</Form>
+    </DCCReference>
+    <DCCReference Include="OplDataF.pas">
+      <Form>OplData</Form>
+    </DCCReference>
+    <DCCReference Include="OstAllF.pas">
+      <Form>OstAll</Form>
+    </DCCReference>
+    <DCCReference Include="OstGrF.pas">
+      <Form>OstGr</Form>
+    </DCCReference>
+    <DCCReference Include="OstMF.pas">
+      <Form>OstM</Form>
+    </DCCReference>
+    <DCCReference Include="OstPostF.pas">
+      <Form>OstPost</Form>
+    </DCCReference>
+    <DCCReference Include="OtpGr1F.pas">
+      <Form>OtpGr1</Form>
+    </DCCReference>
+    <DCCReference Include="OtpGrF.pas">
+      <Form>OtpGr</Form>
+    </DCCReference>
+    <DCCReference Include="OtpGrVid1F.pas">
+      <Form>OtpGrVid1</Form>
+    </DCCReference>
+    <DCCReference Include="OtpGrVidF.pas">
+      <Form>OtpGrVid</Form>
+    </DCCReference>
+    <DCCReference Include="OtpKLF.pas">
+      <Form>OtpKL</Form>
+    </DCCReference>
+    <DCCReference Include="OtpTovF.pas">
+      <Form>OtpTov</Form>
+    </DCCReference>
+    <DCCReference Include="OtpusTovF.pas">
+      <Form>OtpusTov</Form>
+    </DCCReference>
+    <DCCReference Include="PassDlgF.pas">
+      <Form>PassDlg</Form>
+    </DCCReference>
+    <DCCReference Include="Perenos1CF.pas">
+      <Form>Perenos1C</Form>
+    </DCCReference>
+    <DCCReference Include="PerenosRoznF.pas">
+      <Form>PerenosRozn</Form>
+    </DCCReference>
+    <DCCReference Include="Predpr_GroupF.pas">
+      <Form>Predpr_Group</Form>
+    </DCCReference>
+    <DCCReference Include="Predpr_Group_editF.pas">
+      <Form>Predpr_Group_edit</Form>
+    </DCCReference>
+    <DCCReference Include="PriceAllF.pas">
+      <Form>PriceAll</Form>
+    </DCCReference>
+    <DCCReference Include="PriceGrF.pas">
+      <Form>PriceGr</Form>
+    </DCCReference>
+    <DCCReference Include="PriceTorgF.pas">
+      <Form>PriceTorg</Form>
+    </DCCReference>
+    <DCCReference Include="PrihodFormF.pas">
+      <Form>PrihodForm</Form>
+    </DCCReference>
+    <DCCReference Include="PrihodNaklF.pas">
+      <Form>PrihodNakl</Form>
+    </DCCReference>
+    <DCCReference Include="PrintAktF.pas">
+      <Form>PrintAkt</Form>
+    </DCCReference>
+    <DCCReference Include="PrintBrakF.pas">
+      <Form>PrintBrak</Form>
+    </DCCReference>
+    <DCCReference Include="PrintCashF.pas">
+      <Form>PrintCash</Form>
+    </DCCReference>
+    <DCCReference Include="PrintIzlF.pas">
+      <Form>PrintIzl</Form>
+    </DCCReference>
+    <DCCReference Include="PrintNedF.pas">
+      <Form>PrintNed</Form>
+    </DCCReference>
+    <DCCReference Include="PrintPrihRep.pas">
+      <Form>PrintPrih</Form>
+    </DCCReference>
+    <DCCReference Include="PrintVozvRep.pas">
+      <Form>PrintVozv</Form>
+    </DCCReference>
+    <DCCReference Include="Print\SchVozv.pas">
+      <Form>SchVozvF</Form>
+    </DCCReference>
+    <DCCReference Include="PrnBrakF.pas">
+      <Form>PrnBrak</Form>
+    </DCCReference>
+    <DCCReference Include="PrnCashChKasF.pas">
+      <Form>PrnCashChKas</Form>
+    </DCCReference>
+    <DCCReference Include="PrnCashCHKF.pas">
+      <Form>PrnCashCHK</Form>
+    </DCCReference>
+    <DCCReference Include="PrnCashRBBF.pas">
+      <Form>PrnCashRB</Form>
+    </DCCReference>
+    <DCCReference Include="PrnCashRBF.pas">
+      <Form>PrnCashRS</Form>
+    </DCCReference>
+    <DCCReference Include="PrnCashSCHF.pas">
+      <Form>PrnCashSCH</Form>
+    </DCCReference>
+    <DCCReference Include="PrnCashSclF.pas">
+      <Form>PrnCashScl</Form>
+    </DCCReference>
+    <DCCReference Include="PrnChKasF.pas">
+      <Form>PrnChKas</Form>
+    </DCCReference>
+    <DCCReference Include="PrnChKlF.pas">
+      <Form>PrnChKl</Form>
+    </DCCReference>
+    <DCCReference Include="PrnIzlF.pas">
+      <Form>PrnIzl</Form>
+    </DCCReference>
+    <DCCReference Include="PrnNedF.pas">
+      <Form>PrnNed</Form>
+    </DCCReference>
+    <DCCReference Include="PrnNTDF.pas">
+      <Form>PrnNTD</Form>
+    </DCCReference>
+    <DCCReference Include="PrnPriceTorgF.pas">
+      <Form>PrnPriceTorg</Form>
+    </DCCReference>
+    <DCCReference Include="PrnPrihF.pas">
+      <Form>PrnPrih</Form>
+    </DCCReference>
+    <DCCReference Include="PrnReF.pas">
+      <Form>PrnRe</Form>
+    </DCCReference>
+    <DCCReference Include="PrnResBF.pas">
+      <Form>PrnResB</Form>
+    </DCCReference>
+    <DCCReference Include="PrnResSF.pas">
+      <Form>PrnResS</Form>
+    </DCCReference>
+    <DCCReference Include="PrnRe_PredF.pas">
+      <Form>PrnRe_Pred</Form>
+    </DCCReference>
+    <DCCReference Include="PrnSCHet1F.pas">
+      <Form>PrnSCHet1</Form>
+    </DCCReference>
+    <DCCReference Include="PrnSvodAkt1F.pas">
+      <Form>PrnSvodAkt1</Form>
+    </DCCReference>
+    <DCCReference Include="PrnSvodAktF.pas">
+      <Form>PrnSvodAkt</Form>
+    </DCCReference>
+    <DCCReference Include="PrnSvodCash1F.pas">
+      <Form>PrnSvodCash1</Form>
+    </DCCReference>
+    <DCCReference Include="PrnSvodCash2F.pas">
+      <Form>PrnSvodCash2</Form>
+    </DCCReference>
+    <DCCReference Include="PrnSvodCash3F.pas">
+      <Form>PrnSvodCash3</Form>
+    </DCCReference>
+    <DCCReference Include="PrnSvodCash4F.pas">
+      <Form>PrnSvodCash4</Form>
+    </DCCReference>
+    <DCCReference Include="PrnSvodCash5F.pas">
+      <Form>PrnSvodCash5</Form>
+    </DCCReference>
+    <DCCReference Include="PrnSvodCashF.pas">
+      <Form>PrnSvodCash</Form>
+    </DCCReference>
+    <DCCReference Include="PrnSvodSCHF.pas">
+      <Form>PrnSvodSCH</Form>
+    </DCCReference>
+    <DCCReference Include="PrnSvodSCHMF.pas">
+      <Form>PrnSvodSCHM</Form>
+    </DCCReference>
+    <DCCReference Include="PrnSvodVF.pas">
+      <Form>PrnSvodV</Form>
+    </DCCReference>
+    <DCCReference Include="PrnVF.pas">
+      <Form>PrnV</Form>
+    </DCCReference>
+    <DCCReference Include="PrnVozvratF.pas">
+      <Form>PrnVozv</Form>
+    </DCCReference>
+    <DCCReference Include="Pro.pas">
+      <Form>Pro</Form>
+    </DCCReference>
+    <DCCReference Include="ProverkaF.pas">
+      <Form>Prov</Form>
+    </DCCReference>
+    <DCCReference Include="PrSkNazF.pas">
+      <Form>PrSkNaz</Form>
+    </DCCReference>
+    <DCCReference Include="RedGrTov.pas">
+      <Form>Pereim</Form>
+    </DCCReference>
+    <DCCReference Include="RevBlF.pas">
+      <Form>RevBL</Form>
+    </DCCReference>
+    <DCCReference Include="RevDataF.pas">
+      <Form>RevData</Form>
+    </DCCReference>
+    <DCCReference Include="RevF.pas">
+      <Form>Rev</Form>
+    </DCCReference>
+    <DCCReference Include="RevPodgF.pas">
+      <Form>RevPodg</Form>
+    </DCCReference>
+    <DCCReference Include="RevPrintF.pas">
+      <Form>RevPrn</Form>
+    </DCCReference>
+    <DCCReference Include="RevSvedF.pas">
+      <Form>RevSved</Form>
+    </DCCReference>
+    <DCCReference Include="RevSvedPRNF.pas">
+      <Form>RevSvedPRN</Form>
+    </DCCReference>
+    <DCCReference Include="RevTF.pas">
+      <Form>RevT</Form>
+    </DCCReference>
+    <DCCReference Include="Sklad.pas">
+      <Form>Main</Form>
+    </DCCReference>
+    <DCCReference Include="SpravPokup.pas">
+      <Form>SprPokup</Form>
+    </DCCReference>
+    <DCCReference Include="SpravProiz.pas">
+      <Form>SprProiz</Form>
+    </DCCReference>
+    <DCCReference Include="SpravTov.pas">
+      <Form>SprTov</Form>
+    </DCCReference>
+    <DCCReference Include="SprNewGrTov.pas">
+      <Form>NewGroup</Form>
+    </DCCReference>
+    <DCCReference Include="SprNewPredpr.pas">
+      <Form>NewPredpr</Form>
+    </DCCReference>
+    <DCCReference Include="SprNovTov.pas">
+      <Form>NewTov</Form>
+    </DCCReference>
+    <DCCReference Include="SprOperF.pas">
+      <Form>SprOper</Form>
+    </DCCReference>
+    <DCCReference Include="SprPokVybF.pas">
+      <Form>SprPokVyb</Form>
+    </DCCReference>
+    <DCCReference Include="SprPostF.pas">
+      <Form>SprPost</Form>
+    </DCCReference>
+    <DCCReference Include="SprPostVybF.pas">
+      <Form>SprPostVyb</Form>
+    </DCCReference>
+    <DCCReference Include="SprPredstavEDF.pas">
+      <Form>SprPredstavED</Form>
+    </DCCReference>
+    <DCCReference Include="SprPrSkPostF.pas">
+      <Form>SprPrSkPost</Form>
+    </DCCReference>
+    <DCCReference Include="SprPVF.pas">
+      <Form>SprPV</Form>
+    </DCCReference>
+    <DCCReference Include="SprSkladF.pas">
+      <Form>SprSklad</Form>
+    </DCCReference>
+    <DCCReference Include="SprSklBoxF.pas">
+      <Form>SprSklBox</Form>
+    </DCCReference>
+    <DCCReference Include="SprSklEdF.pas">
+      <Form>SprSklEd</Form>
+    </DCCReference>
+    <DCCReference Include="SprVanSkUrovF.pas">
+      <Form>SprVanSkUrov</Form>
+    </DCCReference>
+    <DCCReference Include="SvodAkt1F.pas">
+      <Form>SvodAkt1</Form>
+    </DCCReference>
+    <DCCReference Include="SvodAktF.pas">
+      <Form>SvodAkt</Form>
+    </DCCReference>
+    <DCCReference Include="SvodAktSodF.pas">
+      <Form>SvodAktSod</Form>
+    </DCCReference>
+    <DCCReference Include="SvodBrakF.pas">
+      <Form>SvodBrak</Form>
+    </DCCReference>
+    <DCCReference Include="SvodCash1F.pas">
+      <Form>Svodcash1</Form>
+    </DCCReference>
+    <DCCReference Include="SvodCash2F.pas">
+      <Form>Svodcash2</Form>
+    </DCCReference>
+    <DCCReference Include="SvodCash3F.pas">
+      <Form>Svodcash3</Form>
+    </DCCReference>
+    <DCCReference Include="SvodCash4F.pas">
+      <Form>Svodcash4</Form>
+    </DCCReference>
+    <DCCReference Include="SvodCash5F.pas">
+      <Form>Svodcash5</Form>
+    </DCCReference>
+    <DCCReference Include="SvodCashF.pas">
+      <Form>Svodcash</Form>
+    </DCCReference>
+    <DCCReference Include="SvodCashSkF.pas">
+      <Form>SvodCashSk</Form>
+    </DCCReference>
+    <DCCReference Include="SvodDatF.pas">
+      <Form>SvodDat</Form>
+    </DCCReference>
+    <DCCReference Include="SvodIzlF.pas">
+      <Form>SvodIzl</Form>
+    </DCCReference>
+    <DCCReference Include="SvodNedF.pas">
+      <Form>SvodNed</Form>
+    </DCCReference>
+    <DCCReference Include="SvodObF.pas">
+      <Form>SvodOb</Form>
+    </DCCReference>
+    <DCCReference Include="SvodObPrnF.pas">
+      <Form>SvodObPrn</Form>
+    </DCCReference>
+    <DCCReference Include="SvodOplF.pas">
+      <Form>SvodOpl</Form>
+    </DCCReference>
+    <DCCReference Include="SvodPrihF.pas">
+      <Form>SvodPrih</Form>
+    </DCCReference>
+    <DCCReference Include="SvodSCHF.pas">
+      <Form>SvodSCH</Form>
+    </DCCReference>
+    <DCCReference Include="SvodV1F.pas">
+      <Form>SvodV1</Form>
+    </DCCReference>
+    <DCCReference Include="SvodV2F.pas">
+      <Form>SvodV2</Form>
+    </DCCReference>
+    <DCCReference Include="SvodV3F.pas">
+      <Form>SvodV3</Form>
+    </DCCReference>
+    <DCCReference Include="SvodV4F.pas">
+      <Form>SvodV4</Form>
+    </DCCReference>
+    <DCCReference Include="SvodV5F.pas">
+      <Form>SvodV5</Form>
+    </DCCReference>
+    <DCCReference Include="SvodVF.pas">
+      <Form>SvodV</Form>
+    </DCCReference>
+    <DCCReference Include="SvodVozvF.pas">
+      <Form>SvodVozv</Form>
+    </DCCReference>
+    <DCCReference Include="Svod_Dviz_PokF.pas">
+      <Form>Svod_Dviz_Pok</Form>
+    </DCCReference>
+    <DCCReference Include="Svod_Dviz_PredF.pas">
+      <Form>Svod_Dviz_Pred</Form>
+    </DCCReference>
+    <DCCReference Include="Text_EnterF.pas">
+      <Form>Text_Enter</Form>
+    </DCCReference>
+    <DCCReference Include="TipTovF.pas">
+      <Form>TipTov</Form>
+    </DCCReference>
+    <DCCReference Include="Tovar_GroupF.pas">
+      <Form>Tovar_Group</Form>
+    </DCCReference>
+    <DCCReference Include="TovCh.pas">
+      <Form>TovChe</Form>
+    </DCCReference>
+    <DCCReference Include="TovMoveF.pas">
+      <Form>TovMove</Form>
+    </DCCReference>
+    <DCCReference Include="TovTransNaklF.pas">
+      <Form>TovTransNakl</Form>
+    </DCCReference>
+    <DCCReference Include="TPSKUrF.pas">
+      <Form>TPSKUr</Form>
+    </DCCReference>
+    <DCCReference Include="VozvFormF.pas">
+      <Form>VozvForm</Form>
+    </DCCReference>
+    <DCCReference Include="VozvnaklF.pas">
+      <Form>VozvNakl</Form>
+    </DCCReference>
+    <DCCReference Include="VSchetF.pas">
+      <Form>VSchet</Form>
+    </DCCReference>
+    <DCCReference Include="VSklF.pas">
+      <Form>VSkl</Form>
+    </DCCReference>
+    <DCCReference Include="VTF.pas">
+      <Form>VT</Form>
+    </DCCReference>
+    <DCCReference Include="VvodNaimF.pas">
+      <Form>VvodNaim</Form>
+    </DCCReference>
+  </ItemGroup>
+</Project>

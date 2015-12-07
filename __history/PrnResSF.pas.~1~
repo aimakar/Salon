@@ -1,0 +1,256 @@
+unit PrnResSF;
+
+interface
+
+uses
+  Windows, Messages, SysUtils, Classes, Graphics, Controls, Forms, Dialogs,
+  ExtCtrls, quickrpt, Qrctrls, StdCtrls;
+
+type
+  TPrnResS = class(TForm)
+    CashTovC: TQuickRep;
+    SummaryBand1: TQRBand;
+    TitleBand1: TQRBand;
+    PageHeaderBand1: TQRBand;
+    QRSysData1: TQRSysData;
+    QRSysData2: TQRSysData;
+    QRLabel1: TQRLabel;
+    QRLabel2: TQRLabel;
+    QRLabel3: TQRLabel;
+    QRLabel4: TQRLabel;
+    QRLabel5: TQRLabel;
+    QRLabel7: TQRLabel;
+    QRDBText1: TQRDBText;
+    QRDBText2: TQRDBText;
+    QRGroup1: TQRGroup;
+    QRSubDetail1: TQRSubDetail;
+    QRShape1: TQRShape;
+    QRShape2: TQRShape;
+    QRShape3: TQRShape;
+    QRShape4: TQRShape;
+    QRLabel9: TQRLabel;
+    QRLabel10: TQRLabel;
+    QRLabel12: TQRLabel;
+    QRLabel15: TQRLabel;
+    QRLabel22: TQRLabel;
+    QRLabel11: TQRLabel;
+    QRShape7: TQRShape;
+    QRShape8: TQRShape;
+    QRShape9: TQRShape;
+    QRShape10: TQRShape;
+    QRShape12: TQRShape;
+    QRExpr1: TQRExpr;
+    QRDBText4: TQRDBText;
+    QRDBText6: TQRDBText;
+    QRDBText7: TQRDBText;
+    QRLabel23: TQRLabel;
+    QRExpr8: TQRExpr;
+    QRDBText3: TQRDBText;
+    QRLabel8: TQRLabel;
+    QRDBRichText2: TQRDBRichText;
+    QRDBText15: TQRDBText;
+    QRLabel30: TQRLabel;
+    QRDBText12: TQRDBText;
+    QRLabel28: TQRLabel;
+    QRDBText13: TQRDBText;
+    QRLabel29: TQRLabel;
+    QRDBText14: TQRDBText;
+    QRExpr5: TQRExpr;
+    QRShape14: TQRShape;
+    QRLabel34: TQRLabel;
+    QRShape16: TQRShape;
+    QRExpr7: TQRExpr;
+    QRDBText5: TQRDBText;
+    QRDBText9: TQRDBText;
+    QRExpr13: TQRExpr;
+    QRDBText10: TQRDBText;
+    QRLabel6: TQRLabel;
+    QRDBText11: TQRDBText;
+    QRLabel31: TQRLabel;
+    QRLabel32: TQRLabel;
+    QRMemo1: TQRMemo;
+    QRLabel25: TQRLabel;
+    QRLabel26: TQRLabel;
+    QRLabel27: TQRLabel;
+    QRLabel35: TQRLabel;
+    Sm: TQRLabel;
+    QRLabel17: TQRLabel;
+    QRDBText8: TQRDBText;
+    QRLabel18: TQRLabel;
+    procedure QRExpr1Print(sender: TObject; var Value: String);
+    procedure QRExpr2Print(sender: TObject; var Value: String);
+    procedure QRExpr3Print(sender: TObject; var Value: String);
+    procedure QRExpr4Print(sender: TObject; var Value: String);
+    procedure QRExpr8Print(sender: TObject; var Value: String);
+    procedure QRExpr5Print(sender: TObject; var Value: String);
+    procedure QRExpr6Print(sender: TObject; var Value: String);
+    procedure QRExpr10Print(sender: TObject; var Value: String);
+    procedure QRExpr12Print(sender: TObject; var Value: String);
+    procedure QRExpr11Print(sender: TObject; var Value: String);
+    procedure QRExpr9Print(sender: TObject; var Value: String);
+    procedure QRExpr13Print(sender: TObject; var Value: String);
+    procedure FormDestroy(Sender: TObject);
+    procedure QRExpr14Print(sender: TObject; var Value: String);
+    procedure CashTovCBeforePrint(Sender: TQuickRep;
+      var PrintReport: Boolean);
+    procedure SmPrint(sender: TObject; var Value: String);
+    procedure QRLabel35Print(sender: TObject; var Value: String);
+  private
+    { Private declarations }
+  public
+    { Public declarations }
+    NDS : Boolean;
+  end;
+
+var
+  PrnResS: TPrnResS;
+  I1, D1, D, NDS_Val : Real;
+implementation
+
+uses Pro, Data, PrnResBF, PrintRezPred;
+
+{$R *.DFM}
+
+procedure TPrnResS.QRExpr1Print(sender: TObject; var Value: String);
+begin
+     PrnResS.Tag := PrnResS.Tag + 1;
+     Value := IntToStr(PrnResS.Tag);
+end;
+
+procedure TPrnResS.QRExpr2Print(sender: TObject; var Value: String);
+var I : Real;
+begin
+if NDS then
+  NDS_Val := PrintPred.Table1NDS.AsInteger
+else
+  NDS_Val := 0;
+     With DataMain do
+       if PrintPred.Table1SPC.AsBoolean then
+          I := (PrintPred.Table1Price.AsFloat*100/(100+ConfigNalog.AsInteger))*100/(100+NDS_Val)
+       else
+          I := PrintPred.Table1Price.AsFloat*100/(NDS_Val+100);
+     Value := FloatToStrF(I,ffFixed,12,2);
+end;
+
+procedure TPrnResS.QRExpr3Print(sender: TObject; var Value: String);
+var I : Real;
+begin
+if NDS then
+  NDS_Val := PrintPred.Table1NDS.AsInteger
+else
+  NDS_Val := 0;
+     With DataMain do
+       if PrintPred.Table1SPC.AsBoolean then
+          I := (PrintPred.Table1Price.AsFloat*100/(100+ConfigNalog.AsInteger))*100/(100+NDS_Val)
+       else
+          I := PrintPred.Table1Price.AsFloat*100/(NDS_Val+100);
+     I1 := I1 + I*PrintPred.Table1Kol.AsInteger;
+     Value := FloatToStrF(I*PrintPred.Table1Kol.AsInteger,ffFixed,12,2);
+
+end;
+
+procedure TPrnResS.QRExpr4Print(sender: TObject; var Value: String);
+var I : Real;
+begin
+     With DataMain do
+       if PrintPred.Table1SPC.AsBoolean then
+          I := (PrintPred.Table1Price.AsFloat*100/(100+ConfigNalog.AsInteger))
+       else
+          I := PrintPred.Table1Price.AsFloat;
+     D := D + I * PrintPred.Table1Kol.AsInteger;
+     Value := FloatToStrF(I * PrintPred.Table1Kol.AsInteger,ffFixed,12,2);
+end;
+
+procedure TPrnResS.QRExpr8Print(sender: TObject; var Value: String);
+begin
+         Value :=AnsiUpperCase(TextSum(Datamain.PredOtpSumma.AsFloat));
+end;
+
+procedure TPrnResS.QRExpr5Print(sender: TObject; var Value: String);
+var I : Real;
+begin
+     With DataMain do
+//       if PrintPred.Table1SPC.AsBoolean then
+//          I := (PrintPred.Table1Price.AsFloat*100/(100+ConfigNalog.AsInteger))
+//       else
+          I := PrintPred.Table1Price.AsFloat;
+     Value := FloatToStrF(I,ffFixed,12,2);
+end;
+
+procedure TPrnResS.QRExpr6Print(sender: TObject; var Value: String);
+var I : Real;
+begin
+     With DataMain do
+       if PrintPred.Table1SPC.AsBoolean then begin
+          I := (PrintPred.Table1Price.AsFloat*PrintPred.Table1Kol.AsInteger*100/(100+ConfigNalog.AsInteger));
+          I := PrintPred.Table1Price.AsFloat*PrintPred.Table1Kol.AsInteger - I;
+          D1 := D1+I;
+          Value := FloatToStrF(I,ffFixed,12,2);
+       end
+       else begin
+          Value := '---';
+       end;
+end;
+
+procedure TPrnResS.QRExpr10Print(sender: TObject; var Value: String);
+begin
+     Value := FloatToStrF(D,ffFixed,12,2);
+end;
+
+procedure TPrnResS.QRExpr12Print(sender: TObject; var Value: String);
+begin
+     Value := FloatToStrF(D1,ffFixed,12,2);
+end;
+
+procedure TPrnResS.QRExpr11Print(sender: TObject; var Value: String);
+begin
+     Value := FloatToStrF(D-I1,ffFixed,12,2);
+end;
+
+procedure TPrnResS.QRExpr9Print(sender: TObject; var Value: String);
+begin
+     Value := FloatToStrF(I1,ffFixed,12,2);
+end;
+
+procedure TPrnResS.QRExpr13Print(sender: TObject; var Value: String);
+begin
+     Value := Trim(PrintPred.Table1Comm1.AsString)+' '+Trim(PrintPred.Table1COMM2.AsString);
+end;
+
+procedure TPrnResS.FormDestroy(Sender: TObject);
+begin
+     I1 := 0;
+     D := 0;
+     D1 := 0;
+
+end;
+
+procedure TPrnResS.QRExpr14Print(sender: TObject; var Value: String);
+begin
+if NDS then
+  NDS_Val := PrintPred.Table1NDS.AsInteger
+else
+  NDS_Val := 0;
+
+  Value := FloatToStrF(NDS_Val, ffFixed, 2, 0);
+end;
+
+procedure TPrnResS.CashTovCBeforePrint(Sender: TQuickRep;
+  var PrintReport: Boolean);
+begin
+     D1 := 0;
+     I1 := 0;
+     D := 0;
+end;
+
+procedure TPrnResS.SmPrint(sender: TObject; var Value: String);
+begin
+     Value := FloatToStrF(DataMain.PredOtpSumma.AsFloat, ffFixed, 12,2);
+end;
+
+procedure TPrnResS.QRLabel35Print(sender: TObject; var Value: String);
+begin
+     Value := DataMain.PredOtpNOMER.AsString;
+end;
+
+end.

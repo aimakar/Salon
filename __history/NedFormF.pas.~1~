@@ -1,0 +1,391 @@
+unit NedFormF;
+
+interface
+
+uses
+  Windows, Messages, SysUtils, Classes, Graphics, Controls, Forms, Dialogs,
+  Grids, DBGrids, DB, StdCtrls, Buttons, DBTables, ExtCtrls, JvClock, FileCtrl,
+  ActnList, XPStyleActnCtrls, ActnMan;
+    procedure Prin;
+
+type
+  TNedForm = class(TForm)
+    DBGrid1: TDBGrid;
+    ToB: TBitBtn;
+    BitBtn1: TBitBtn;
+    Query1: TQuery;
+    Q1: TQuery;
+    Q1Summa: TFloatField;
+    ActionManager1: TActionManager;
+    A_Ins: TAction;
+    A_Edit: TAction;
+    A_Del: TAction;
+    Action1: TAction;
+    Action2: TAction;
+    Action3: TAction;
+    A_WinCr: TAction;
+    procedure DBGrid1KeyDown(Sender: TObject; var Key: Word;
+      Shift: TShiftState);
+    procedure FormKeyDown(Sender: TObject; var Key: Word;
+      Shift: TShiftState);
+    procedure FormActivate(Sender: TObject);
+    procedure FormDeactivate(Sender: TObject);
+    procedure ToBClick(Sender: TObject);
+    procedure DBGrid1DrawColumnCell(Sender: TObject; const Rect: TRect;
+      DataCol: Integer; Column: TColumn; State: TGridDrawState);
+    procedure BitBtn1Click(Sender: TObject);
+    procedure Timer1Timer(Sender: TObject);
+    procedure FormClose(Sender: TObject; var Action: TCloseAction);
+  private
+    { Private declarations }
+  public
+    { Public declarations }
+  end;
+
+var
+  NedForm: TNedForm;
+  Dost : String;
+
+implementation
+
+uses Data, Pro, NedTF, Sklad, PrintNedF, NedVyborF, NedT_PrihF ;
+
+{$R *.DFM}
+
+procedure TNedForm.DBGrid1KeyDown(Sender: TObject; var Key: Word;
+  Shift: TShiftState);
+var S,S1 : String;
+    I : Integer;
+    L : Boolean;
+begin
+     L := False;
+     case Key of
+     VK_Space: if NasDost(Dost[36]) then
+               if Datamain.NedNakl.IsEmpty
+                      then
+                          ShowMessage('Че смотреть то будем, нет ничего еще!')
+                      else
+                      begin
+                      if (DataMain.NedNaklType_.AsInteger = 1 ) then
+                          With DataMain do
+                              begin
+                                 try
+                                   Application.CreateForm(TNedT_Prih, NedT_Prih);
+                                   if (NedNaklPriz.AsBoolean) then NedT_Prih.tag := 1 else NedT_Prih.tag := 0;
+                                   NedT_Prih.Label2.Caption := NedNakl.FieldByName('Nomer').AsString;
+                                   NedT_Prih.DE.Text := NedNakl.FieldByName('Ot').AsString;
+                                   if (NedT_prih.Tag = 0) then NedNakl.Edit;
+                                   NedT_Prih.ShowModal;
+
+                                   if NedNakl.State = dsBrowse then NedNakl.Edit;
+                                   NedNakl.FieldByName('Ot').AsString := NedT_Prih.DE.Text;
+                                   NedNakl.FieldByName('Summa').AsFloat := StrToFloat(Trim(NedT_Prih.Label11.Caption));
+                                   NedNakl.Post;
+                                 finally
+                                   NedT_Prih.Release;
+                                 end;
+                              end
+                          else
+                          With DataMain do
+                              begin
+                                   Application.CreateForm(TNedT, NedT);
+                                   if (NedNaklPriz.AsBoolean) then NedT.tag := 1 else NedT.tag := 0;
+                                   NedT.Label2.Caption := NedNakl.FieldByName('Nomer').AsString;
+                                   NedT.DE.Text := NedNakl.FieldByName('Ot').AsString;
+                                   if (NedT.Tag = 0) then NedNakl.Edit;
+                                   NedT.ShowModal;
+                                   if NedNakl.State = dsBrowse then NedNakl.Edit;
+                                   NedNakl.FieldByName('Ot').AsString := NedT.DE.Text;
+                                   NedNakl.FieldByName('Summa').AsFloat := StrToFloat(Trim(NedT.Label11.Caption));
+                                   NedNakl.Post;
+                                   NedT.Release;
+                              end;
+                      end;
+     VK_DELETE : if (NasDost(Dost[36]) and nasDost(Dost[37])) then
+                 if not(DataMain.NedNakl.FieldByName('Priz').AsBoolean)  then
+                  if MessageDlg('Удалить накладную?',
+                     mtConfirmation, [mbNo, mbYes], 0) = mrYes then
+                        With DataMain do begin
+                           Tovar.Open;
+                           Ost.Open;
+                           NedTn.Open;
+                           NedTn.First;
+                           While not(DataMain.NedTn.Eof) do
+                             begin
+                             I := NedTn.FieldByName('Kol').AsInteger;
+                             if not(Ost.FindKey([NedTn.FieldByName('Code').AsInteger])) and not(I=0) then
+                                begin
+                                ShowMessage('А как это??? Как Вы его смогли отписать то????');
+                                NedTn.Next;
+                                L := True;
+                                end
+                             else
+                                 begin
+                                Ost.Edit;
+                                Ost.FieldByName('Kol1').AsInteger := Ost.FieldByName('Kol1').AsInteger + I;
+                                Ost.Post;
+                                NedTn.Delete;
+                                end;
+                             end;
+                           if not(L) then NedNakl.Delete;
+                           NedTn.Close;
+                           Ost.Close;
+                           Tovar.Close;
+                        end;
+     VK_INSERT :    try
+                    Application.CreateForm(TNedVybor, NedVybor);
+                   if NedVybor.ShowModal = mrOk then
+                   begin
+
+
+                     if (NasDost(Dost[36]) and nasDost(Dost[37])) then begin
+                        if (NedVybor.LB1.ItemIndex = 1) then
+                        begin
+                          try
+                            Application.CreateForm(TNedT_Prih, NedT_Prih);
+
+                             S1 := '-Нед';
+                             Datamain.NedNakl.DisableControls;
+                             DataMain.NedNakl.Filtered := False;
+                             DataMain.NedNakl.Last;
+                             NedT_Prih.Tag := 0;
+                             DataMain.NedNakl.Refresh;
+                             DataMain.ConfigVit.Open;
+                             DataMain.ConfigVit.Edit;
+                             S := Trim(Datamain.ConfigVit.FieldByName('Nomer12').AsString);
+                             IncNom(S,S1);
+                             DataMain.ConfigVit.FieldByName('Nomer12').AsString := S;
+                             DataMain.ConfigVit.Post;
+                             DataMain.Config.Close;
+                             With DataMain.NedNakl do
+                             begin
+                                 Append;
+                                 FieldByName('Nomer').AsString := S;
+                                 FieldByName('Ot').AsDateTime := Date();
+                                 FieldByName('Priz').AsBoolean := False;
+                                 FieldByName('Type_').Asinteger := 1;
+                                 Post;
+                                 NedT_Prih.Label2.Caption := FieldByName('Nomer').AsString;
+                                 NedT_Prih.DE.Text := FieldByName('Ot').AsString;
+                                 DataMain.NedNakl.EnableControls;
+                                 DataMain.NedNakl.Edit;
+                                 NedT_Prih.ShowModal;
+                                 if DataMain.NedNakl.State = dsBrowse then DataMain.NedNakl.Edit;
+                                 FieldByName('Ot').AsString := NedT_Prih.DE.Text;
+                                 FieldByName('Summa').AsFloat := StrToFloat(Trim(NedT_Prih.Label11.Caption));
+                                 Post;
+                            end;
+                          finally
+                            NedT_Prih.Release;
+                          end;
+                        end
+                        else
+                        begin
+
+                        S1 := '-Нед';
+                        Datamain.NedNakl.DisableControls;
+                        DataMain.NedNakl.Filtered := False;
+                        DataMain.NedNakl.Last;
+                        Application.CreateForm(TNedT, Nedt);
+                        NedT.Tag := 0;
+                        DataMain.NedNakl.Refresh;
+                        DataMain.ConfigVit.Open;
+                        DataMain.ConfigVit.Edit;
+                        S := Trim(Datamain.ConfigVit.FieldByName('Nomer12').AsString);
+                        IncNom(S,S1);
+                        DataMain.ConfigVit.FieldByName('Nomer12').AsString := S;
+                        DataMain.ConfigVit.Post;
+                        DataMain.Config.Close;
+                        With DataMain.NedNakl do
+                            begin
+                                 Append;
+                                 FieldByName('OperacDat').AsDateTime := Now;
+                                 FieldByName('Nomer').AsString := S;
+                                 FieldByName('Ot').AsDateTime := Date();
+                                 FieldByName('Priz').AsBoolean := False;
+                                 FieldByName('Type_').Asinteger := 0;
+                                 Post;
+                                 NedT.Label2.Caption := FieldByName('Nomer').AsString;
+                                 NedT.DE.Text := FieldByName('Ot').AsString;
+                                 DataMain.NedNakl.EnableControls;
+                                 DataMain.NedNakl.Edit;
+                                 NedT.ShowModal;
+                                 if DataMain.NedNakl.State = dsBrowse then DataMain.NedNakl.Edit;
+                                 FieldByName('Ot').AsString := NedT.DE.Text;
+                                 FieldByName('Summa').AsFloat := StrToFloat(Trim(NedT.Label11.Caption));
+                                 Post;
+                            end;
+                        NedT.Release;
+                     end;
+
+                        end;
+                     end;
+                   finally
+                  NedVybor.Release;
+                  end;
+     VK_F6 : if InputQuery('Поиск по номеру','Введите номер',S) then
+                  With Datamain.NedNakl do
+                       begin
+                            DisableControls;
+                            Locate('Nomer',S,[loPartialKey]);
+                            enableControls;
+                       end;
+     VK_F5 : Prin;
+   end;
+
+end;
+
+procedure TNedForm.FormKeyDown(Sender: TObject; var Key: Word;
+  Shift: TShiftState);
+begin
+     if Key = VK_ESCAPE then
+        begin
+             NedForm.Release;
+        end;
+
+end;
+
+procedure TNedForm.FormActivate(Sender: TObject);
+begin
+     DataMain.NedNakl.Open;
+     Dost := DataMain.Dost;
+
+end;
+
+procedure TNedForm.FormDeactivate(Sender: TObject);
+begin
+//CloseData;
+
+end;
+
+procedure TNedForm.ToBClick(Sender: TObject);
+var S,S1: String;
+begin
+     with DataMain do begin
+     Tovar.Open;
+     Ost.Open;
+     NedTn.Open;
+     NedTn.First;
+     while not(NedTn.EOF) do
+          begin
+
+               Ost.FindKey([NedTnCode.AsInteger]);
+               Ost.Edit;
+               OstKol2.AsInteger := OstKol2.AsInteger - NedTnKol.AsInteger;
+               Ost.post;
+               NedTn.Next;
+          end;
+               NedTn.Close;
+               Tovar.Close;
+
+             NedForm.ToB.Enabled := False;
+            end;
+
+end;
+
+procedure TNedForm.DBGrid1DrawColumnCell(Sender: TObject;
+  const Rect: TRect; DataCol: Integer; Column: TColumn;
+  State: TGridDrawState);
+var a, b, c, ex : Boolean;
+begin
+a := DataMain.NedNaklPriz.AsBoolean;
+ex := DataMain.NedNaklExp.AsBoolean;
+c := True;
+with DBGrid1.Canvas do begin
+     if a and (not (gdFocused in State)) then
+      begin
+       Font.Color := clGreen;
+       FillRect (Rect);
+       TextOut(Rect.Left,Rect.Top,Column.Field.Text);
+       c := false;
+      end
+     else DBGrid1.DefaultDrawColumnCell(Rect,DataCol,Column,State);
+     if gdFocused in State then
+      begin
+
+       if a then
+          ToB.Enabled := False
+       else
+          ToB.Enabled := True;
+      end;
+
+end;
+
+end;
+
+
+procedure Prin;
+var S, S1 : String;
+begin
+  with NedForm do
+   begin
+    DataMain.NedNakl.DisableControls;
+    Query1.Close;
+    Application.CreateForm(TPrintNed, PrintNed);
+    S := DataMain.NedNaklNOMER.AsString;
+    Query1.ParamByName('Nomer').AsString := S;
+    Query1.Open;
+    with DataMain.Nednakl do begin
+       Edit;
+       FieldByname('Summa').AsFloat := Query1.FieldByname('summa').AsFloat;
+       Post;
+    end;
+    DataMain.NedNakl.Tag := 1;
+    DataMain.NedNaklPrim.DisplayLabel := S;
+    DataMain.NedNakl.Filtered := False;
+    DataMain.NedNakl.Filter := '';
+    DataMain.NedNakl.Filtered := True;
+    DataMain.NedNakl.Refresh;
+    PrintNed.SHowModal;
+    DataMain.NedNaklPrim.DisplayLabel := 'Prim';
+    DataMain.NedNakl.Tag := 0;
+    DataMain.NedNakl.Filtered := False;
+    PrintNed.Release;
+    DataMain.NedNakl.Locate('Nomer',S,[]);
+    DataMain.NedNakl.EnableControls;
+   end;
+end;
+
+
+
+
+procedure TNedForm.BitBtn1Click(Sender: TObject);
+var S, S1 : String;
+begin
+    DataMain.NedNakl.DisableControls;
+    Query1.Close;
+    Application.CreateForm(TPrintNed, PrintNed);
+    S := DataMain.NedNaklNOMER.AsString;
+    Query1.ParamByName('Nomer').AsString := S;
+    Query1.Open;
+    with DataMain.Nednakl do begin
+       Edit;
+       FieldByname('Summa').AsFloat := Query1.FieldByname('summa').AsFloat;
+       Post;
+    end;
+    DataMain.NedNakl.Tag := 1;
+    DataMain.NedNaklPrim.DisplayLabel := S;
+    DataMain.NedNakl.Filtered := False;
+    DataMain.NedNakl.Filter := '';
+    DataMain.NedNakl.Filtered := True;
+    DataMain.NedNakl.Refresh;
+    PrintNed.SHowModal;
+    DataMain.NedNaklPrim.DisplayLabel := 'Prim';
+    DataMain.NedNakl.Tag := 0;
+    DataMain.NedNakl.Filtered := False;
+    PrintNed.Release;
+    DataMain.NedNakl.Locate('Nomer',S,[]);
+    DataMain.NedNakl.EnableControls;
+end;
+
+procedure TNedForm.Timer1Timer(Sender: TObject);
+begin
+     DataMain.NedNakl.Refresh;
+end;
+
+procedure TNedForm.FormClose(Sender: TObject; var Action: TCloseAction);
+begin
+     Action := caFree;
+end;
+
+end.

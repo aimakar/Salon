@@ -1,0 +1,1217 @@
+unit CashTF;
+
+interface
+
+uses
+  Windows, Messages, SysUtils, Classes, Graphics, Controls, Forms, Dialogs,
+  DBCtrls, ExtCtrls, StdCtrls, Mask, Grids, DBGrids, Db, DBTables,
+  Buttons, ToolEdit, ComCtrls;
+
+  procedure SumTxt1;
+  procedure UstSkidka;
+  function FindSl : Boolean;
+
+
+type
+  TCashT = class(TForm)
+    Q1: TQuery;
+    Table1: TTable;
+    Table1NOMER: TStringField;
+    Table1CODE: TFloatField;
+    Table1PRICE: TFloatField;
+    Table1KOL: TFloatField;
+    Table1UP: TFloatField;
+    Table1PRICEB: TFloatField;
+    Table1Price_B: TFloatField;
+    Query1: TQuery;
+    Query1Nomer: TStringField;
+    Q1Summa: TFloatField;
+    PC1: TPageControl;
+    TabSheet1: TTabSheet;
+    TabSheet2: TTabSheet;
+    DG: TDBGrid;
+    Panel1: TPanel;
+    Panel2: TPanel;
+    Label1: TLabel;
+    Label2: TLabel;
+    DE: TDateEdit;
+    CBFact: TCheckBox;
+    OperCB: TDBLookupComboBox;
+    Label12: TLabel;
+    PRL: TDBLookupComboBox;
+    Label5: TLabel;
+    Panel3: TPanel;
+    Label9: TLabel;
+    Label11: TLabel;
+    Label7: TLabel;
+    ED: TMaskEdit;
+    SB1: TSpeedButton;
+    Label8: TLabel;
+    Label10: TLabel;
+    Label3: TLabel;
+    DBText2: TDBText;
+    GroupBox1: TGroupBox;
+    GroupBox3: TGroupBox;
+    Label4: TLabel;
+    DBEdit1: TDBEdit;
+    Label6: TLabel;
+    DBMemo1: TDBMemo;
+    Label14: TLabel;
+    BitBtn1: TBitBtn;
+    Label13: TLabel;
+    DBText1: TDBText;
+    Gruz_CB: TDBLookupComboBox;
+    Label15: TLabel;
+    CheckBox1: TDBCheckBox;
+    MyFirmBtn: TBitBtn;
+    Label16: TLabel;
+    Table1SK: TFloatField;
+    SpirtCB: TDBCheckBox;
+    Table1Price_Pr: TFloatField;
+    Table1PRICE_PRIH: TFloatField;
+    CheckBox2: TDBCheckBox;
+    procedure FormActivate(Sender: TObject);
+    procedure FormKeyDown(Sender: TObject; var Key: Word;
+      Shift: TShiftState);
+    procedure FormDeactivate(Sender: TObject);
+    procedure DGKeyDown(Sender: TObject; var Key: Word;
+      Shift: TShiftState);
+    procedure DGKeyPress(Sender: TObject; var Key: Char);
+    procedure EDExit(Sender: TObject);
+    procedure DGEnter(Sender: TObject);
+    procedure DGExit(Sender: TObject);
+    procedure EDKeyDown(Sender: TObject; var Key: Word;
+      Shift: TShiftState);
+    procedure PRLKeyDown(Sender: TObject; var Key: Word;
+      Shift: TShiftState);
+    procedure BitBtn1Click(Sender: TObject);
+    procedure DEKeyDown(Sender: TObject; var Key: Word;
+      Shift: TShiftState);
+    procedure OperCBKeyDown(Sender: TObject; var Key: Word;
+      Shift: TShiftState);
+    procedure DE2KeyDown(Sender: TObject; var Key: Word;
+      Shift: TShiftState);
+    procedure BitBtn2Click(Sender: TObject);
+    procedure Table1FilterRecord(DataSet: TDataSet; var Accept: Boolean);
+    procedure SB1Click(Sender: TObject);
+    procedure EDEnter(Sender: TObject);
+    procedure FormCreate(Sender: TObject);
+    procedure FormDestroy(Sender: TObject);
+    procedure CBFactClick(Sender: TObject);
+    procedure Osh;
+    procedure CheckBox1Click(Sender: TObject);
+    procedure Gruz_CBKeyDown(Sender: TObject; var Key: Word;
+      Shift: TShiftState);
+    procedure CheckBox2Click(Sender: TObject);
+
+  private
+  Sk : String;
+    { Private declarations }
+  public
+    { Public declarations }
+  end;
+
+var
+  CashT: TCashT;
+  Podstroka, Dost : String;
+  Fact_Sk : integer = 0;
+
+implementation
+
+uses Data, Pro, NomForm, SprNewPredpr,
+  VDostF, VSchetF, DelPosNF, CashFormF, SprPokVybF, DobTovCF;
+
+{$R *.DFM}
+
+procedure TCashT.Osh;
+var L : Boolean;
+begin
+// Запись признака ошибки
+with DataMain.CashNakl do
+begin
+   L := False;
+   if State = dsBrowse then
+   begin
+        Edit;
+        L := True;
+   end;
+   try
+      FieldByName('Osh').AsBoolean := True;
+   except
+   end;
+   Post;
+   if L then Edit;
+end;
+end;
+
+
+procedure TCashT.FormKeyDown(Sender: TObject; var Key: Word;
+  Shift: TShiftState);
+begin
+if Key=VK_ESCAPE then
+ begin
+   if ((DataMain.CashnaklCode_pr.AsInteger = 0) and (CashT.tag <> 1)) then
+      begin
+           ShowMessage('Не выбран покупатель!');
+           Key := 0;
+           CashT.ActiveControl := PRL;
+      end
+   else
+      CashT.ModalResult := mrOk;
+ end
+else
+    if Key=VK_F9 then
+      begin
+          SumTXT1;
+          DataMain.CashNakl.Edit;
+          try
+          DataMain.CashNaklSUMMA.AsFloat := StrToFloat(Label11.Caption);
+          except
+          DataMain.CashNaklSUMMA.AsFloat := 0;
+          end;
+          DataMain.CashNakl.Post;
+      end;
+
+end;
+
+procedure TCashT.FormActivate(Sender: TObject);
+begin
+     Visible := False;
+
+     With DataMain do
+     begin
+       if (CashNaklRazrL.AsBoolean or CashNaklOpl.AsBoolean) then CashT.tag := 1 else CashT.tag := 0;
+       Oper.Close;
+       Oper.Filtered :=False;
+       Oper.Filter := '[CodeOper] = 2';
+       Oper.Filtered := True;
+       Oper.Open;
+       GrVal.Open;
+       Valyta.Open;
+       CashTN.Open;
+       Dost := DostupDost1.AsString;
+
+     end;
+
+     Try
+       Label11.Caption := FloatToStr(DataMain.CashNaklSUMMA.AsFloat);
+     Except
+       Label11.Caption := '0';
+     end;
+
+     CBFact.Checked := DataMain.CashNaklFact.AsBoolean;
+
+     CashT.ActiveControl := DE;
+     Datamain.CashTN.First;
+     if ((not(NasDost(Dost[47]))) and (CashT.Tag<>1)) then CashT.Tag := 1;
+
+     if not(Datamain.CashNaklrazr.AsBoolean) and not(Datamain.CashNaklOpl.AsBoolean) then
+        CBFact.Enabled := NasDost(Dost[107])
+     else
+         CBFact.Enabled := False;
+
+
+     if CashT.Tag = 1 then begin
+        DE.Enabled := False;
+        PRL.Enabled := False;
+        OperCB.Enabled := False;
+        DBMemo1.Enabled := False;
+        ED.Enabled := False;
+        BitBtn1.Enabled := False;
+        SB1.Enabled := False;
+        DBEdit1.Enabled := False;
+        CheckBox1.Enabled := False;
+        SpirtCB.Enabled := False;
+        CheckBox2.Enabled := False;
+        CheckBox2.OnClick := nil;
+
+       end
+     else
+       begin
+        DBEdit1.Enabled := True;
+        DE.Enabled := True;
+        PRL.Enabled := True;
+        OperCB.Enabled := True;
+        DBMemo1.Enabled := True;
+        ED.Enabled := True;
+        BitBtn1.Enabled := True;
+        CheckBox1.Enabled := True;
+
+        SB1.Enabled := True;
+        SpirtCB.Enabled := DataMain.CashTN.RecordCount = 0;
+        CheckBox2.Enabled := True;
+        CheckBox2.OnClick := CheckBox2Click;
+       end;
+
+  Application.CreateForm(TVDost, VDost);
+  Application.CreateForm(TDobTovC, DobTovC);
+  Application.CreateForm(TVSchet, VSchet);
+  Application.CreateForm(TSprPokVyb, SprPokVyb);
+  Application.CreateForm(TNewPredpr, NewPredpr);
+  Application.CreateForm(TNomF, NomF);
+  Application.CreateForm(TDelPosN, DelPosN);
+
+  SK := Ed.Text;
+//  DataMain.Oper.Open;
+  Visible := True;
+end;
+
+procedure TCashT.FormDeactivate(Sender: TObject);
+begin
+
+     With DataMain do
+          begin
+          if Sk <> Ed.text then
+           begin
+               ustskidka;
+               sumtxt1;
+           end;
+//               Oper.Close;
+               Valyta.Close;
+               CashTN.Close;
+          end;
+
+     q1.Close;
+     Query1.Close;
+        DE.Enabled := True;
+        PRL.Enabled := True;
+        OperCB.Enabled := True;
+        DBMemo1.Enabled := True;
+        ED.Enabled := True;
+        BitBtn1.Enabled := True;
+//        BitBtn2.Enabled := True;
+        SB1.Enabled := True;
+
+  VDost.Release;
+  DobTovC.Release;
+  VSchet.Release;
+  NewPredpr.Release;
+  NomF.Release;
+  DelPosN.Release;
+  SprPokVyb.Release;
+
+
+
+end;
+
+
+
+procedure TCashT.DGKeyDown(Sender: TObject; var Key: Word;
+  Shift: TShiftState);
+var S : String;
+    L : Boolean;
+    Year, Month, Day: Word;
+    K1, K2, I, I1 : Integer;
+begin
+S := '';
+if CashT.Tag = 0 then
+     case Key of
+          VK_INSERT : begin
+                     if ( SpirtCB.checked ) then
+                        Datamain.Tovar.Filter := '(' + rozn_tov_filter + ') and ([ALKO] > 0)'
+                     else
+                        Datamain.Tovar.Filter := '(' + rozn_tov_filter + ') and ([ALKO] < 1)';
+                     DataMain.Tovar.Filtered := true;
+
+                     DataMain.CashTn.OnCalcFields := nil;
+                     DobTovC.ShowModal;
+                     ustSkidka;
+                     SumTXT1;
+                     DataMain.CashTn.OnCalcFields := DataMain.CashTNCalcFields;
+                     Datamain.CashTN.Refresh;
+                     SpirtCB.Enabled := DataMain.CashTN.RecordCount = 0;
+                     DataMain.Tovar.Filtered := false;
+
+                      end;
+          VK_DELETE : if MessageDlg('Удалить позицию?',
+                         mtConfirmation, [mbYes, mbNo], 0) = mrYes then
+                         begin
+                         DataMain.Ost.FindKey([DataMain.CashTNCode.AsInteger]);
+                         DataMain.Ost.Edit;
+                         DataMain.OstKol1.AsInteger := DataMain.CashTNKol.AsInteger+DataMain.OstKol1.AsInteger;
+                         DataMain.Ost.Post;
+                         DataMain.CashTN.Delete;
+                         SumTxt1;
+                         DataMain.CashTN.Refresh;
+                         SpirtCB.Enabled := DataMain.CashTN.RecordCount = 0;
+
+                         end;
+          VK_ESCAPE : CashT.ActiveControl := ED;
+          VK_F6 : if InputQuery('Поиск по наименованию','Введите подстроку',Podstroka) then
+                  With Datamain.CashTN do
+                       begin
+                            DisableControls;
+                            L := not(Eof);
+                            while L do begin
+                              if Pos(AnsiUpperCase(Podstroka),AnsiUpperCase(FieldByName('Naim').AsString))=0 then
+                                 Next
+                              else
+                                  L :=False;
+                              if Eof then L := False;
+                            end;
+                            enableControls;
+                       end;
+
+     end
+else
+    if KEY = VK_F6 then
+       begin
+          if InputQuery('Поиск по наименованию','Введите подстроку',Podstroka) then
+                  With Datamain.CashTN do
+                       begin
+                            DisableControls;
+                            L := not(Eof);
+                            while L do begin
+                              if Pos(AnsiUpperCase(Podstroka),AnsiUpperCase(FieldByName('Naim').AsString))=0 then
+                                 Next
+                              else
+                                  L :=False;
+                              if Eof then L := False;
+                            end;
+                            enableControls;
+                       end;
+
+       end
+    else
+    if NasDost(Dost[48]) then
+    If not(Datamain.CashNaklPoluchL.AsBoolean) then
+    with DataMain do begin
+         DelPosN.ED.Text := CashTNKol.AsString;
+    if CashNaklPostupL.AsBoolean   then DelPosN.BitBtn1.Visible := True else DelPosN.BitBtn1.Visible := False;
+    if CashNaklOtp.AsBoolean   then DelPosN.BitBtn5.Visible := True else DelPosN.BitBtn5.Visible := False;
+    case Key of
+         VK_DELETE : case DelposN.ShowModal of
+// Недостача на складе
+                   1 : begin
+                            Osh;
+                            I1 := StrToInt(Trim(DelPosN.Ed.Text));
+                            AktNakl.IndexName := 'Nomer';
+                            AktNakl.Open;
+                            AktTN.Open;
+                            if (not(AktNakl.FindKey([CashnaklNomer.AsString])) or AktNakl.IsEmpty) then
+                               begin
+                                    AktNakl.Append;
+                                    AktNaklNomer.AsString := CashnaklNomer.AsString;
+                                    AktNaklCode_PR.AsInteger := CashnaklCode_PR.AsInteger;
+                                    AktNaklSumma.AsFloat := CashnaklSumma.AsFloat;
+                                    AktNaklOt.AsDateTime := CashnaklOt.AsDatetime;
+                                    AktNaklOper.AsInteger := CashnaklOper.AsInteger;
+                                    AktNaklOperac.AsString := Label10.Caption;
+                                    AktNaklOperacDat.AsDateTime := date();
+                                    AktNakl.Post;
+                               end;
+                            AktTN.Append;
+                            AktTNNomer.AsString := CashTNNomer.AsString;
+                            AktTNCode.AsInteger := CashTNCode.AsInteger;
+                            AktTNPrice.AsFloat := CashTNPrice.AsFloat;
+                            AktTNKol.AsInteger := I1;
+                            AktTNPrim.AsString := 'Недостача на складе';
+                            AktTNOperac.AsString := Label10.Caption;
+                            AktTNOperacDat.AsDateTime := date();
+                            AktTN.Post;
+                            AktTN.Close;
+                            AktNakl.Close;
+                            NedNakl.Open;
+                            DecodeDate(Now,Year, Month, Day);
+                            if not(NedNakl.FindKey([IntToStr(Day)+'/'+IntToStr(Month)])) then
+                               begin
+                                    NedNakl.Append;
+                                    NedNaklNomer.AsString := IntToStr(Day)+'/'+IntToStr(Month);
+                                    NedNaklOt.AsDateTime := Now;
+                                    NedNaklOperac.AsString := Label10.Caption;
+                                    NedNaklOperacDat.AsDateTime := Now;
+                                    NedNakl.Post;
+                                    NedNakl.Close;
+                               end;
+                            Ost.FindKey([CashTNCode.AsInteger]);
+                            if CashNaklOtp.AsBoolean then
+                              begin
+                                K2 := OstKol2.AsInteger + I1;
+                                Ost.Edit;
+                                OstKol2.AsInteger := K2;
+                                Ost.Post;
+                              end;
+
+                            NedTN.Open;
+                            Query1.Close;
+                            Query1.ParamByName('Code').AsInteger := CashTNCode.AsInteger;
+                            Query1.Open;
+                   if not(FindSl()) then
+                   begin
+                            if not(NedTN.Locate('Nomer;Code',VarArrayOf([(IntToStr(Day)+'/'+IntToStr(Month)),CashTNCode.AsInteger]),[])) then begin
+                            if not(GrVal.Active) then begin
+                               GrVal.Open;
+                               I := 1;
+                            end
+                               else
+                                 I := 0;
+                            Tovar.Locate('Code',CashTNCode.AsInteger,[]);
+                            NedTN.Append;
+                            NedTNNomer.AsString := IntToStr(Day)+'/'+IntToStr(Month);
+                            NedTNCode.AsInteger := CashTNCode.AsInteger;
+                            NedTNKol.AsInteger := I1;
+                            NedTNPrice.AsFloat := TovarPrihodInValyta.AsFloat;
+                            NedTNPrim.AsString := 'Недостача по накладной №'+Trim(CashTNNomer.AsString);
+                            NedTN.Post;
+                            NedTN.Close;
+                            if I = 1 then
+                             begin
+                              GrVal.Close;
+                              I := 0;
+                             end;
+                            End
+                            else
+                                begin
+                            NedTN.Edit;
+                            NedTNKol.AsInteger := NedTNKol.AsInteger+I1;
+                            NedTNPrim.AsString := 'Недостача по накладной №'+Trim(CashTNNomer.AsString);
+                            NedTN.Post;
+                            NedTN.Close;
+                                end;
+                   end
+                   else  // накладная есть
+                   begin
+                        NedTN.Locate('Nomer;Code',varArrayOf([Query1Nomer.AsString,CashTNCode.asInteger]),[]);
+                        NedTN.Edit;
+                        NedTNKol.AsInteger := NedTNKol.AsInteger+I1;
+                        NedTNPrim.AsString := 'Недостача по накладной №'+Trim(CashTNNomer.AsString);
+                        NedTN.Post;
+                        NedTN.Close;
+                   end;
+
+                            if I1 = CashTNKol.AsInteger then
+                               begin
+                                    CashTN.Delete;
+                               end
+                            else
+                                begin
+                                     CashTN.Edit;
+                                     CashTnUp.AsInteger := 0;
+                                     CashTNKol.AsInteger := CashTNKol.AsInteger - I1;
+                                     CashTN.Post;
+                                end;
+                            SumTXT1;
+
+                       end;
+// Отказ клиента
+                   2 : begin
+                            I1 := StrToInt(Trim(DelPosN.Ed.Text));
+                            AktNakl.IndexName := 'Nomer';
+                            AktNakl.Open;
+                            AktTN.Open;
+                            if (not(AktNakl.FindKey([CashnaklNomer.AsString])) or AktNakl.IsEmpty) then
+                               begin
+                                    AktNakl.Append;
+                                    AktNaklNomer.AsString := CashnaklNomer.AsString;
+                                    AktNaklCode_PR.AsInteger := CashnaklCode_PR.AsInteger;
+                                    AktNaklSumma.AsFloat := CashnaklSumma.AsFloat;
+                                    AktNaklOt.AsDateTime := CashnaklOt.AsDatetime;
+                                    AktNaklOper.AsInteger := CashnaklOper.AsInteger;
+                                    AktNaklOperac.AsString := Label10.Caption;
+                                    AktNaklOperacDat.AsDateTime := date();
+                                    AktNakl.Post;
+                               end;
+                            AktTN.Append;
+                            AktTNNomer.AsString := CashTNNomer.AsString;
+                            AktTNCode.AsInteger := CashTNCode.AsInteger;
+                            AktTNPrice.AsFloat := CashTNPrice.AsFloat;
+                            AktTNKol.AsInteger := I1;
+                            AktTNPrim.AsString := 'Отказ клиента';
+                            AktTNOperac.AsString := Label10.Caption;
+                            AktTNOperacDat.AsDateTime := date();
+                            AktTN.Post;
+                            AktTN.Close;
+                            AktNakl.Close;
+                            Ost.FindKey([CashTNCode.AsInteger]);
+                            K1 := OstKol1.AsInteger + I1;
+                            if CashNaklOtp.AsBoolean then
+                            K2 := OstKol2.AsInteger + I1
+                            else
+                            K2 := OstKol2.AsInteger;
+                            Ost.Edit;
+                            OstKol1.AsInteger := K1;
+                            OstKol2.AsInteger := K2;
+                            Ost.Post;
+
+
+                            if StrToInt(Trim(DelPosN.Ed.Text)) = CashTNKol.AsInteger then
+                               begin
+                                    CashTN.Delete;
+                               end
+                            else
+                                begin
+                                     CashTN.Edit;
+                                     CashTnUp.AsInteger := 0;
+                                     CashTNKol.AsInteger := CashTNKol.AsInteger - I1;
+                                     CashTN.Post;
+                                end;
+                            SumTXT1;
+
+                       end;
+// Ошибка набора накладной
+                   3 : begin
+                            I1 := StrToInt(Trim(DelPosN.Ed.Text));
+                            AktNakl.IndexName := 'Nomer';
+                            AktNakl.Open;
+                            AktTN.Open;
+                            if (not(AktNakl.FindKey([CashnaklNomer.AsString])) or AktNakl.IsEmpty) then
+                               begin
+                                    AktNakl.Append;
+                                    AktNaklNomer.AsString := CashnaklNomer.AsString;
+                                    AktNaklCode_PR.AsInteger := CashnaklCode_PR.AsInteger;
+                                    AktNaklSumma.AsFloat := CashnaklSumma.AsFloat;
+                                    AktNaklOt.AsDateTime := CashnaklOt.AsDatetime;
+                                    AktNaklOper.AsInteger := CashnaklOper.AsInteger;
+                                    AktNaklOperac.AsString := Label10.Caption;
+                                    AktNaklOperacDat.AsDateTime := date();
+                                    AktNakl.Post;
+                               end;
+                            AktTN.Append;
+                            AktTNNomer.AsString := CashTNNomer.AsString;
+                            AktTNCode.AsInteger := CashTNCode.AsInteger;
+                            AktTNPrice.AsFloat := CashTNPrice.AsFloat;
+                            AktTNKol.AsInteger := I1;
+                            AktTNPrim.AsString := 'Ошибка набора';
+                            AktTNOperac.AsString := Label10.Caption;
+                            AktTNOperacDat.AsDateTime := date();
+                            AktTN.Post;
+                            AktTN.Close;
+                            AktNakl.Close;
+                            Ost.FindKey([CashTNCode.AsInteger]);
+                            K1 := OstKol1.AsInteger + I1;
+                            if CashNaklOtp.AsBoolean then
+                            K2 := OstKol2.AsInteger + I1
+                            else
+                            K2 := OstKol2.AsInteger;
+                            Ost.Edit;
+                            OstKol1.AsInteger := K1;
+                            OstKol2.AsInteger := K2;
+                            Ost.Post;
+                            if I1 = CashTNKol.AsInteger then
+                               begin
+                                    CashTN.Delete;
+                               end
+                            else
+                                begin
+                                     CashTN.Edit;
+                                     CashTnUp.AsInteger := 0;
+                                     CashTNKol.AsInteger := CashTNKol.AsInteger - I1;
+                                     CashTN.Post;
+                                end;
+                            SumTXT1;
+
+                       end;
+// Недовоз товара
+                   5 : begin
+                            Osh;
+                            I1 := StrToInt(Trim(DelPosN.Ed.Text));
+                            AktNakl.IndexName := 'Nomer';
+                            AktNakl.Open;
+                            AktTN.Open;
+                            if (not(AktNakl.FindKey([CashnaklNomer.AsString])) or AktNakl.IsEmpty) then
+                               begin
+                                    AktNakl.Append;
+                                    AktNaklNomer.AsString := CashnaklNomer.AsString;
+                                    AktNaklCode_PR.AsInteger := CashnaklCode_PR.AsInteger;
+                                    AktNaklSumma.AsFloat := CashnaklSumma.AsFloat;
+                                    AktNaklOt.AsDateTime := CashnaklOt.AsDatetime;
+                                    AktNaklOper.AsInteger := CashnaklOper.AsInteger;
+                                    AktNaklOperac.AsString := Label10.Caption;
+                                    AktNaklOperacDat.AsDateTime := date();
+                                    AktNakl.Post;
+                               end;
+                            AktTN.Append;
+                            AktTNNomer.AsString := CashTNNomer.AsString;
+                            AktTNCode.AsInteger := CashTNCode.AsInteger;
+                            AktTNPrice.AsFloat := CashTNPrice.AsFloat;
+                            AktTNKol.AsInteger := I1;
+                            AktTNPrim.AsString := 'Недовоз товара';
+                            AktTNOperac.AsString := Label10.Caption;
+                            AktTNOperacDat.AsDateTime := date();
+                            AktTN.Post;
+                            AktTN.Close;
+                            AktNakl.Close;
+                            NedNakl.Open;
+                            DecodeDate(Now,Year, Month, Day);
+                            if not(NedNakl.FindKey([IntToStr(Day)+'/'+IntToStr(Month)])) then
+                               begin
+                                    NedNakl.Append;
+                                    NedNaklNomer.AsString := IntToStr(Day)+'/'+IntToStr(Month);
+                                    NedNaklOt.AsDateTime := Now;
+                                    NedNaklOperac.AsString := Label10.Caption;
+                                    NedNaklOperacDat.AsDateTime := Now;
+                                    NedNakl.Post;
+                                    NedNakl.Close;
+                               end;
+                            Ost.FindKey([CashTNCode.AsInteger]);
+                            if CashNaklOtp.AsBoolean then
+                              begin
+                                K2 := OstKol2.AsInteger + I1;
+                                Ost.Edit;
+                                OstKol2.AsInteger := K2;
+                                Ost.Post;
+                              end;
+
+                            NedTN.Open;
+                            Query1.Close;
+                            Query1.ParamByName('Code').AsInteger := CashTNCode.AsInteger;
+                            Query1.Open;
+                   if not(FindSl()) then
+                   begin
+                            if not(NedTN.Locate('Nomer;Code',VarArrayOf([(IntToStr(Day)+'/'+IntToStr(Month)),CashTNCode.AsInteger]),[])) then begin
+                            if not(GrVal.Active) then begin
+                               GrVal.Open;
+                               I := 1;
+                            end
+                               else
+                                 I := 0;
+                            Tovar.Locate('Code',CashTNCode.AsInteger,[]);
+                            NedTN.Append;
+                            NedTNNomer.AsString := IntToStr(Day)+'/'+IntToStr(Month);
+                            NedTNCode.AsInteger := CashTNCode.AsInteger;
+                            NedTNKol.AsInteger := I1;
+                            NedTNPrice.AsFloat := TovarPrihodInValyta.AsFloat;
+                            NedTNPrim.AsString := 'Недовоз по накладной №'+Trim(CashTNNomer.AsString);
+                            NedTN.Post;
+                            NedTN.Close;
+                            if I = 1 then
+                             begin
+                              GrVal.Close;
+                              I := 0;
+                             end;
+                            End
+                            else
+                                begin
+                            NedTN.Edit;
+                            NedTNKol.AsInteger := NedTNKol.AsInteger+I1;
+                            NedTNPrim.AsString := 'Недовоз по накладной №'+Trim(CashTNNomer.AsString);
+                            NedTN.Post;
+                            NedTN.Close;
+                                end;
+                   end
+                   else  // накладная есть
+                   begin
+                        NedTN.Locate('Nomer;Code',varArrayOf([Query1Nomer.AsString,CashTNCode.asInteger]),[]);
+                        NedTN.Edit;
+                        NedTNKol.AsInteger := NedTNKol.AsInteger+I1;
+                        NedTNPrim.AsString := 'Недовоз по накладной №'+Trim(CashTNNomer.AsString);
+                        NedTN.Post;
+                        NedTN.Close;
+                   end;
+
+                            if I1 = CashTNKol.AsInteger then
+                               begin
+                                    CashTN.Delete;
+                               end
+                            else
+                                begin
+                                     CashTN.Edit;
+                                     CashTnUp.AsInteger := 0;
+                                     CashTNKol.AsInteger := CashTNKol.AsInteger - I1;
+                                     CashTN.Post;
+                                end;
+                            SumTXT1;
+
+                       end;
+                   end;
+
+    end;
+    end;
+
+end;
+
+function FindSl(): Boolean;
+var L : Boolean;
+begin
+     With CashT do begin
+     Query1.First;
+     L := True;
+     while (not(Query1.Eof) and L) do
+           begin
+                if Pos('/',Query1Nomer.AsString)<>0 then L := False;
+                Query1.Next;
+           end;
+     end;
+     FindSl := not(L);
+
+end;
+
+
+procedure SumTxt1;
+var S,S1 : String;
+begin
+with CashT do begin
+    Q1.Close;
+    Q1.ParamByName('Nakl').AsString := Datamain.CashNaklNomer.AsString;
+    Q1.Open;
+    Q1.First;
+    try
+    Label11.Caption := Q1Summa.AsString;
+    except
+    Label11.Caption := '0';
+    end;
+    Q1.Close;
+end;
+end;
+
+
+procedure TCashT.DGKeyPress(Sender: TObject; var Key: Char);
+var A,B,C : Integer;
+    S : String;
+begin
+     if CashT.Tag = 0
+      then
+        case DG.SelectedIndex of
+        2 : case Key of
+               #13 : begin
+                  B := DataMain.CashTN.FieldByName('Kol').AsInteger;
+                  NomF.Edit1.Text := '';
+                  NomF.Edit1.EditMask := '99999;; ';
+                  if NomF.ShowModal = mrOk
+                   then
+                     with datamain do begin
+                     A := StrToInt(Trim(NomF.Edit1.Text));
+                     C := A*CashTN.FieldBYName('V_Up').AsInteger;
+                     Ost.Refresh;
+                     if C <= CashTN.FieldByName('Ost').AsInteger+B
+                      then
+                          begin
+                               Ost.FindKey([CashTN.FieldBYName('Code').AsInteger]);
+                               Ost.Edit;
+                               Ost.FieldByName('Kol1').AsInteger := Ost.FieldByName('Kol1').AsInteger + B - C;
+                               Ost.Post;
+
+                               CashTN.Edit;
+                               CashTN.FieldByName('Up').AsInteger := A;
+                               CashTN.FieldByName('Kol').AsInteger := C;
+                               CashTN.Post;
+                               SumTxt1;
+                          end
+                      else
+                          ShowMessage ('На складе нет данного количества товара!'+#13+#13+
+                           'Остаток '+IntToStr(CashTN.FieldByName('Ost').AsInteger+B));
+                     end;
+                   end;
+             End;
+        3 : case Key of
+               #13 : begin
+                  B := DataMain.CashTN.FieldByName('Kol').AsInteger;
+                  NomF.Edit1.Text := '';
+                  NomF.Edit1.EditMask := '99999;; ';
+                  if NomF.ShowModal = mrOk
+                   then
+                     with datamain do begin
+                     A := StrToInt(Trim(NomF.Edit1.Text));
+                     Ost.Refresh;
+                     if A <= CashTN.FieldByName('Ost').AsInteger+B
+                      then
+                          begin
+                               Ost.FindKey([CashTN.FieldBYName('Code').AsInteger]);
+                               Ost.Edit;
+                               Ost.FieldByName('Kol1').AsInteger := Ost.FieldByName('Kol1').AsInteger + B - A;
+                               Ost.Post;
+
+                               CashTN.Edit;
+                               CashTN.FieldByName('Up').AsInteger := 0;
+                               CashTN.FieldByName('Kol').AsInteger := A;
+                               CashTN.Post;
+                               SumTxt1;
+                          end
+                      else
+                          ShowMessage ('На складе нет данного количества товара!'+#13+#13+
+                           'Остаток '+IntToStr(CashTN.FieldByName('Ost').AsInteger+B));
+                     end;
+                   end;
+             End;
+        4 : case Key of
+               #13 : begin
+                  NomF.Edit1.Text := '';
+                  NomF.Edit1.EditMask := '99999,99;; ';
+                  if NomF.ShowModal = mrOk
+                   then
+                     with datamain do begin
+                     S := '';
+                     S := NomF.Edit1.Text;
+                     TrimAll(S);
+                     CashTN.Edit;
+                     CashTN.FieldByName('Price').AsFloat := StrToFloat(S);
+                     CashTN.FieldByName('Sk').AsFloat := 100 - StrToFloat(S)/CashTNPrice_b.AsFloat * 100;
+                     CashTN.Post;
+                     SumTxt1;
+                     end;
+                  end;
+             End;
+
+        end;
+if DataMain.Ost.State = dsBrowse then DataMain.Ost.Refresh;
+if DataMain.CashTN.State = dsBrowse then DataMain.CashTN.Refresh;
+
+
+end;
+
+//end;
+
+procedure TCashT.EDExit(Sender: TObject);
+begin
+if Sk <> Ed.Text then
+ begin
+   ustskidka;
+   sumtxt1;
+   DataMain.CashTN.Refresh;
+   Sk := Ed.Text;
+ end;
+end;
+
+procedure TCashT.DGEnter(Sender: TObject);
+begin
+     if CashT.Tag = 0 then
+     CashT.KeyPreview := False;
+end;
+
+procedure TCashT.DGExit(Sender: TObject);
+begin
+     if CashT.Tag = 0 then
+     CashT.KeyPreview := True;
+end;
+
+procedure TCashT.EDKeyDown(Sender: TObject; var Key: Word;
+  Shift: TShiftState);
+begin
+
+     if Key=VK_RETURN then
+        begin
+             CashT.ActiveControl := CheckBox2;
+             ustskidka;
+             sumtxt1;
+             DataMain.CashTN.Refresh;
+             Sk := Ed.Text;
+        end
+     else if Key =  VK_ESCAPE then CashT.ActiveControl := CheckBox2;
+
+end;
+
+procedure TCashT.PRLKeyDown(Sender: TObject; var Key: Word;
+  Shift: TShiftState);
+var NameI : String;
+    I : Integer;
+begin
+     If CashT.Tag = 0 then
+     case Key of
+          VK_DOWN,VK_UP : if not(CashT.Prl.ListVisible) then Key := 0;
+          VK_SPACE : if not(CashT.Prl.ListVisible) then
+                     begin
+                          CashT.Prl.DropDown;
+                          if CheckBox1.Checked then
+                          begin
+                               DataMain.CashNakl.Edit;
+                               DataMain.CashNaklCode_Gruz.AsInteger := DataMain.CashNaklCode_Pr.AsInteger;
+                               DataMain.CashNaklDostAdd.AsString := 'САМОВЫВОЗ';
+                               Datamain.CashNakl.Post;
+                          end;
+
+                     end;
+          VK_RETURN : begin
+                        CashT.Prl.CloseUp(True);
+                        DataMain.CashNakl.Edit;
+                        DataMain.CashNaklPrim.AsString := DataMain.PredprVydan.AsString;
+                        if CheckBox1.Checked then
+                        begin
+                             DataMain.CashNaklCode_Gruz.AsInteger := DataMain.CashNaklCode_Pr.AsInteger;
+                             DataMain.CashNaklDostAdd.AsString := 'САМОВЫВОЗ';
+                        end;
+                        Datamain.CashNakl.Post;
+                        CashT.ActiveControl := OperCB;
+                      end;
+          VK_F6 : begin
+
+                SprPokVyb.ShowModal;
+                if SprPokVyb.Tag <> 0 then begin
+                DataMain.CashNakl.Edit;
+                DataMain.CashNaklCode_Pr.AsInteger := SprPokVyb.Tag;
+                if CheckBox1.Checked then
+                begin
+                     DataMain.CashNaklCode_Gruz.AsInteger := DataMain.CashNaklCode_Pr.AsInteger;
+                     DataMain.CashNaklDostAdd.AsString := 'САМОВЫВОЗ';
+                end;
+
+                DataMain.CashNakl.Post;
+                PRL.Update;
+                end;
+                  end;
+          end;
+end;
+
+procedure TCashT.BitBtn1Click(Sender: TObject);
+begin
+with Datamain do begin
+     if CashnaklDost.AsBoolean then
+        VDost.De.Text := CashnaklDostDat.AsString;
+     PAddress.Open;
+     if not CashNaklGruz.AsBoolean then
+          Predpr.FindKey([CashNaklCode_Pr.AsInteger])
+     else
+          Predpr.FindKey([CashNaklCode_Gruz.AsInteger]);
+     if not PAddress.Locate('address', CashNaklDostAdd.ASString,[loCaseInsensitive]) then
+        PAddress.First;
+     VDost.Tag := CashNaklCode_Pr.AsInteger;
+     case VDost.ShowModal of
+          mrOk : begin
+               Cashnakl.Edit;
+               CashnaklDost.AsBoolean := True;
+               CashnaklDostDat.AsString := Vdost.De.Text;
+               CashNaklDostAdd.ASString := PAddressAddress.AsString;
+               Cashnakl.Post;
+               CashT.BitBtn1.Caption := CashnaklDostDat.AsString;
+                 end;
+          mrAbort : begin
+                  Cashnakl.Edit;
+                  CashnaklDost.AsBoolean := False;
+                  CashNaklDostAdd.AsString := 'САМОВЫВОЗ';
+                  Cashnakl.Post;
+                  CashT.BitBtn1.Caption := 'Организовать доставку';
+                    end;
+     end;
+     PAddress.Close;
+end;
+end;
+
+
+
+procedure TCashT.DEKeyDown(Sender: TObject; var Key: Word;
+  Shift: TShiftState);
+begin
+     if Key = VK_RETURN then CashT.ActiveControl := PrL;
+end;
+
+procedure TCashT.OperCBKeyDown(Sender: TObject; var Key: Word;
+  Shift: TShiftState);
+begin
+     case Key of
+          VK_DOWN,VK_UP : if not(CashT.OperCB.ListVisible) then Key := 0;
+          VK_SPACE : if not(CashT.OperCB.ListVisible) then CashT.OperCB.DropDown;
+          VK_RETURN : begin
+                        CashT.OperCB.CloseUp(True);
+                      end;
+     end;
+end;
+
+procedure TCashT.DE2KeyDown(Sender: TObject; var Key: Word;
+  Shift: TShiftState);
+begin
+     if Key = VK_RETURN then CashT.ActiveControl := DE;
+end;
+
+procedure TCashT.BitBtn2Click(Sender: TObject);
+var Sc : Integer;
+    Sc_Str : String;
+begin
+  Datamain.Config.Open;
+  DataMain.Config.Edit;
+{  case MyFirmBtn.Tag of
+  1 : begin
+    MyFirmBtn.Tag := 6;
+    Sc := DataMain.ConfigSch4.AsInteger;
+    DataMain.ConfigSch4.AsInteger := Sc + 1;
+    Sc_Str := '-Фл';
+    MyFirmBtn.Caption := 'ИП Флейшер';
+      end;
+  6 : begin
+    MyFirmBtn.Tag := 1;
+    Sc := DataMain.ConfigSch1.AsInteger;
+    DataMain.ConfigSch1.AsInteger := Sc + 1;
+    Sc_Str := '-Рс';
+    MyFirmBtn.Caption := 'ЗАО Рестайл';
+      end;
+  end;
+}
+      if DataMain.CashNaklCode_firm.AsInteger = 6 then
+      begin
+// Флейшер
+         Sc := DataMain.ConfigSch4.AsInteger;
+         DataMain.ConfigSch4.AsInteger := Sc + 1;
+         Sc_Str := '-Фл';
+      end
+      else
+      begin
+// Рестайл
+         Sc := DataMain.ConfigSch1.AsInteger;
+         DataMain.ConfigSch1.AsInteger := Sc + 1;
+         Sc_Str := '-Рс';
+      end;
+// -------------
+
+  DataMain.Config.Post;
+  DataMain.Config.Close;
+  with DataMain do
+  begin
+    Cashnakl.Edit;
+    CashNaklSchNom.AsInteger := Sc + 1;
+    CashnaklSchR.AsString := Sc_Str;
+    CashNaklCode_Firm.AsInteger := MyFirmBtn.Tag;
+    Cashnakl.Post;
+  end;
+
+end;
+
+procedure TCashT.Table1FilterRecord(DataSet: TDataSet;
+  var Accept: Boolean);
+var S : String;
+begin
+        S := Table1Nomer.AsString;
+        Delete(S,Pos('-',S),Length(S));
+        if StrToInt(S) = Table1.Tag then Accept := True else Accept := False;
+
+end;
+
+procedure UstSkidka;
+var S : String;
+    I : Integer;
+    R, pr, skid : Real;
+begin
+S := Trim(CashT.ED.Text);
+if not((Datamain.CashNaklRazrL.AsBoolean) or (Datamain.CashNaklOpl.AsBoolean)) then
+  with CashT do
+   begin
+     Try
+     I := (100-StrToInt(Trim(S))-Fact_Sk);
+     except
+     I := 0;
+     end;
+     Table1.Open;
+     Table1.First;
+     while not(Table1.eof) do
+          BEGIN
+          R := Table1Price_B.AsFloat;
+          pr := R*I/100;
+          Table1.Edit;
+          Table1Price.AsFloat := R*I/100;
+          Table1Price_Prih.AsFloat := Table1Price_pr.AsFloat;
+          Skid := Round((100 - pr * 100/r)*100)/100;
+          Table1Sk.AsFloat := skid;
+          Table1.Post;
+          Table1.Next;
+          end;
+     Table1.Close;
+   end;
+   DataMain.CashTN.Edit;
+   DataMain.CashTn.Cancel;
+end;
+
+
+procedure TCashT.SB1Click(Sender: TObject);
+var R : Real;
+    S2 : String;
+begin
+               Table1.Open;
+               S2 := DataMain.CashNaklNOMER.AsString;
+               Delete(S2,Pos('-',S2),Length(S2));
+               Table1.tag := StrToInt(S2);
+               Table1.Filtered := True;
+               Table1.First;
+               while not(Table1.eof) do
+                     BEGIN
+                          R := Table1.FieldByname('Price').AsFloat * (100-Fact_Sk)/100;
+                          Table1.Edit;
+                          Table1.FieldByname('Price').AsFloat := Round(R*10)/10;
+                          Table1.Post;
+                          Table1.Next;
+                     end;
+               Table1.Close;
+     Datamain.CashTN.Refresh;
+     sumtxt1;
+end;
+
+procedure TCashT.EDEnter(Sender: TObject);
+begin
+     Sk := Ed.Text;
+//     UpDown1.Enabled := True;
+end;
+
+procedure TCashT.FormCreate(Sender: TObject);
+begin
+     q1.Prepare;
+     Query1.Prepare;
+end;
+
+procedure TCashT.FormDestroy(Sender: TObject);
+begin
+     Q1.Close;
+     Q1.UnPrepare;
+     Query1.Close;
+     Query1.UnPrepare;
+end;
+
+procedure TCashT.CBFactClick(Sender: TObject);
+var L : boolean;
+begin
+if CashT.Visible then
+begin
+  if (CBFact.Checked) then
+  begin
+     Fact_Sk := -2;
+     ustSkidka;
+  end
+  else
+  begin
+     Fact_Sk := 0;
+     ustSkidka;
+  end;
+  DataMain.CashNakl.Edit;
+  DataMain.CashNaklFact.AsBoolean := CBFact.Checked;
+  DataMain.CashNakl.Post;
+  sumtxt1;
+end;
+end;
+
+procedure TCashT.CheckBox1Click(Sender: TObject);
+var L : Boolean;
+begin
+     L := True;
+     Gruz_CB.enabled := not CheckBox1.Checked;
+     Gruz_CB.visible := not CheckBox1.Checked;
+     Label15.visible := not CheckBox1.Checked;
+end;
+
+procedure TCashT.Gruz_CBKeyDown(Sender: TObject; var Key: Word;
+  Shift: TShiftState);
+var NameI : String;
+    I : Integer;
+begin
+     If CashT.Tag = 0 then
+     case Key of
+          VK_DOWN,VK_UP : if not(CashT.Gruz_CB.ListVisible) then Key := 0;
+          VK_SPACE : if not(CashT.Gruz_CB.ListVisible) then CashT.Gruz_CB.DropDown;
+          VK_RETURN : begin
+                        CashT.Gruz_CB.CloseUp(True);
+                        DataMain.CashNakl.Edit;
+                        DataMain.CashNaklPrim.AsString := DataMain.PredprVydan.AsString;
+                        Datamain.CashNakl.Post;
+                        CashT.ActiveControl := OperCB;
+                      end;
+          VK_F6 : begin
+
+                if SprPokVyb.ShowModal = mrOk then
+                begin
+                  if SprPokVyb.Tag <> 0 then
+                  begin
+                     DataMain.CashNakl.Edit;
+                     DataMain.CashNaklCode_Gruz.AsInteger := SprPokVyb.Tag;
+                     DataMain.CashNaklDostAdd.AsString := 'САМОВЫВОЗ';
+                     DataMain.CashNakl.Post;
+                     Gruz_CB.Update;
+                  end;
+                end;
+                  end;
+          end;
+end;
+
+procedure TCashT.CheckBox2Click(Sender: TObject);
+begin
+  if CheckBox2.Checked then
+     DataMain.CashNaklEnd_RabD.AsString := DateTimeToStr(Now)
+  else
+     DataMain.CashNaklEnd_RabD.AsString := '';
+
+end;
+
+end.

@@ -1,0 +1,137 @@
+unit PrnChKasF;
+
+interface
+
+uses
+  Windows, Messages, SysUtils, Classes, Graphics, Controls, Forms, Dialogs,
+  ExtCtrls, quickrpt, Qrctrls;
+
+type
+  TPrnChKas = class(TForm)
+    PrnChKasC: TQuickRep;
+    SummaryBand1: TQRBand;
+    TitleBand1: TQRBand;
+    PageHeaderBand1: TQRBand;
+    QRSysData1: TQRSysData;
+    QRSysData2: TQRSysData;
+    QRLabel1: TQRLabel;
+    QRLabel2: TQRLabel;
+    QRLabel3: TQRLabel;
+    QRLabel4: TQRLabel;
+    QRLabel5: TQRLabel;
+    QRLabel7: TQRLabel;
+    QRDBText1: TQRDBText;
+    QRDBText2: TQRDBText;
+    QRDBText3: TQRDBText;
+    QRGroup1: TQRGroup;
+    QRSubDetail1: TQRSubDetail;
+    QRShape1: TQRShape;
+    QRShape2: TQRShape;
+    QRShape3: TQRShape;
+    QRShape4: TQRShape;
+    QRLabel9: TQRLabel;
+    QRShape5: TQRShape;
+    QRLabel10: TQRLabel;
+    QRLabel12: TQRLabel;
+    QRLabel13: TQRLabel;
+    QRLabel15: TQRLabel;
+    QRLabel22: TQRLabel;
+    QRLabel11: TQRLabel;
+    QRShape7: TQRShape;
+    QRShape8: TQRShape;
+    QRShape9: TQRShape;
+    QRShape10: TQRShape;
+    QRShape12: TQRShape;
+    QRExpr1: TQRExpr;
+    QRDBText4: TQRDBText;
+    QRDBText6: TQRDBText;
+    QRDBText7: TQRDBText;
+    QRDBText9: TQRDBText;
+    QRExpr4: TQRExpr;
+    QRLabel23: TQRLabel;
+    QRDBText10: TQRDBText;
+    QRLabel25: TQRLabel;
+    QRExpr8: TQRExpr;
+    QRShape13: TQRShape;
+    QRLabel28: TQRLabel;
+    QRDBText12: TQRDBText;
+    QRLabel8: TQRLabel;
+    QRDBText13: TQRDBText;
+    QRLabel29: TQRLabel;
+    QRDBText14: TQRDBText;
+    QRDBText15: TQRDBText;
+    QRLabel30: TQRLabel;
+    QRLabel31: TQRLabel;
+    QRDBRichText2: TQRDBRichText;
+    QRDBText5: TQRDBText;
+    QRLabel27: TQRLabel;
+    QRDBText8: TQRDBText;
+    QRLabel6: TQRLabel;
+    QRDBText11: TQRDBText;
+    procedure QRExpr1Print(sender: TObject; var Value: String);
+    procedure QRExpr8Print(sender: TObject; var Value: String);
+    procedure QRExpr2Print(sender: TObject; var Value: String);
+    procedure QRExpr5Print(sender: TObject; var Value: String);
+    procedure FormDestroy(Sender: TObject);
+    procedure QRExpr3Print(sender: TObject; var Value: String);
+    procedure QRExpr6Print(sender: TObject; var Value: String);
+  private
+    { Private declarations }
+  public
+    { Public declarations }
+  end;
+
+var
+  PrnChKas: TPrnChKas;
+  I, I1, D, D1 : Real;
+implementation
+
+uses Data, Pro, PrintRezPred;
+
+{$R *.DFM}
+
+procedure TPrnChKas.QRExpr1Print(sender: TObject; var Value: String);
+begin
+     PrnChKas.Tag := PrnChKas.Tag+1;
+     Value := IntToStr(PrnChKas.Tag);
+end;
+
+procedure TPrnChKas.QRExpr8Print(sender: TObject; var Value: String);
+begin
+         Value :=AnsiUpperCase(TextSum(Datamain.PredOtpSumma.AsFloat));
+end;
+
+procedure TPrnChKas.QRExpr2Print(sender: TObject; var Value: String);
+begin
+     I := PrintPred.table1Price.AsFloat*100/(PrintPred.table1NDS.AsInteger+100);
+     Value := FloatToStrF(I,ffFixed,12,2);
+
+end;
+
+procedure TPrnChKas.QRExpr5Print(sender: TObject; var Value: String);
+begin
+     Value := FloatToStrF(D1,ffFixed,12,2);
+end;
+
+procedure TPrnChKas.FormDestroy(Sender: TObject);
+begin
+     I := 0;
+     D := 0;
+     D1 := 0;
+end;
+
+procedure TPrnChKas.QRExpr3Print(sender: TObject; var Value: String);
+begin
+     D := PrintPred.table1Kol.AsInteger * PrintPred.table1Price.AsFloat*100/(PrintPred.table1NDS.AsInteger+100);
+     D1 := D1+D;
+     Value := FloatToStrF(D,ffFixed,12,2);
+
+end;
+
+procedure TPrnChKas.QRExpr6Print(sender: TObject; var Value: String);
+begin
+     I1 := Datamain.PredOtpSumma.AsFloat;
+     Value := FloatToStrF(I1-D1,ffFixed,12,2);
+end;
+
+end.

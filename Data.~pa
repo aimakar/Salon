@@ -1,0 +1,1385 @@
+unit Data;
+
+interface
+
+uses
+  Windows, Messages, SysUtils, Classes, Graphics, Controls, Forms, Dialogs,
+  Db, DBTables, ExtCtrls;
+const rozn_tov_filter = '[roznpriz] <> true';
+type
+  TDataMain = class(TDataModule)
+    Cons: TTable;
+    GRoper: TTable;
+    GrTovar: TTable;
+    GrVal: TTable;
+    NaklPrih: TTable;
+    Oper: TTable;
+    Ost: TTable;
+    OtvLica: TTable;
+    Post: TTable;
+    Predpr: TTable;
+    Proiz: TTable;
+    Sklad: TTable;
+    TnPrih: TTable;
+    Tovar: TTable;
+    Valyta: TTable;
+    Who: TTable;
+    Why: TTable;
+    ConsDS: TDataSource;
+    GrOperDS: TDataSource;
+    GrTovarDS: TDataSource;
+    GrValDS: TDataSource;
+    NaklPrihDS: TDataSource;
+    OperDS: TDataSource;
+    OstDS: TDataSource;
+    OtvLicaDS: TDataSource;
+    PostDS: TDataSource;
+    PredprDS: TDataSource;
+    ProizDS: TDataSource;
+    SkladDS: TDataSource;
+    TnPrihDS: TDataSource;
+    TovarDS: TDataSource;
+    ValytaDS: TDataSource;
+    WhoDS: TDataSource;
+    WhyDS: TDataSource;
+    NaklPrihNOMER: TStringField;
+    NaklPrihCODE_PR: TFloatField;
+    NaklPrihSUMMA: TFloatField;
+    NaklPrihPRIM: TMemoField;
+    NaklPrihCODE_S: TSmallintField;
+    NaklPrihCOD_VAL: TSmallintField;
+    NaklPrihVALPRICE: TFloatField;
+    NaklPrihOT: TDateField;
+    NaklPrihPROV1: TStringField;
+    NaklPrihPROV2: TStringField;
+    NaklPrihPROV1D: TDateField;
+    NaklPrihPROV2D: TDateField;
+    TnPrihNOMER: TStringField;
+    TnPrihCODE: TFloatField;
+    TnPrihKOL: TFloatField;
+    TnPrihUP: TSmallintField;
+    TnPrihPRICE: TFloatField;
+    TovarCODE: TFloatField;
+    TovarNAIM: TStringField;
+    TovarCODE_PR: TFloatField;
+    TovarCODE_POST: TFloatField;
+    TovarCODE_VAL: TSmallintField;
+    TovarPRIHOD: TFloatField;
+    TovarCOMM1: TStringField;
+    TovarCOMM2: TStringField;
+    TovarSERT: TMemoField;
+    TovarNACEN: TFloatField;
+    TovarPRICE_B: TFloatField;
+    TovarNDS: TSmallintField;
+    TovarCODEGR: TFloatField;
+    TovarUP: TSmallintField;
+    TovarSPEC: TBooleanField;
+    TnPrihSumma: TFloatField;
+    TnPrihNaim: TStringField;
+    TnPrihKolUp: TIntegerField;
+    ConsCONS: TSmallintField;
+    ConsNAIM: TStringField;
+    GRoperCODEOPER: TSmallintField;
+    GRoperNAIM: TStringField;
+    OperNAIM: TStringField;
+    OperCODEOPER: TSmallintField;
+    GrTovarCODEGR: TFloatField;
+    GrTovarNAIM: TStringField;
+    GrValCODE_VAL: TSmallintField;
+    GrValNAIM: TStringField;
+    ValytaOT: TDateField;
+    ValytaPRICE: TFloatField;
+    TovarOst1: TIntegerField;
+    TovarOst2: TIntegerField;
+    SkladCODE: TSmallintField;
+    SkladNAIM: TStringField;
+    SkladADDRESS: TStringField;
+    ProizCODE_PROIZ: TFloatField;
+    ProizNAIM: TStringField;
+    ProizPRIM: TStringField;
+    TovarPriceInValyta: TFloatField;
+    NaklVozv: TTable;
+    NaklVozvDS: TDataSource;
+    NaklVozvNOMER: TStringField;
+    NaklVozvCODE_PR: TFloatField;
+    NaklVozvPREDPR: TStringField;
+    NaklVozvSUMMA: TFloatField;
+    NaklVozvPRIM: TMemoField;
+    NaklVozvOT: TDateField;
+    NaklVozvOSN: TStringField;
+    NaklVozvCODE_S: TSmallintField;
+    NaklVozvPROV1: TStringField;
+    NaklVozvPROV2: TStringField;
+    NaklVozvPROV3: TStringField;
+    TnVozv: TTable;
+    TnVozvDS: TDataSource;
+    NaklPrihPrNaim: TStringField;
+    OstCODE: TFloatField;
+    OstKOL1: TFloatField;
+    OstKOL2: TFloatField;
+    NaklVozvPROV1D: TDateField;
+    NaklVozvPROV2D: TDateField;
+    NaklVozvPROV3D: TDateField;
+    VitPrih: TTable;
+    VitPrihDS: TDataSource;
+    VitTPrih: TTable;
+    VitTPrihDS: TDataSource;
+    VitTPrihNOMER: TStringField;
+    VitTPrihKOL: TSmallintField;
+    VitTPrihCODE: TFloatField;
+    VitTPrihPRICE: TFloatField;
+    VitTPrihNaim: TStringField;
+    OstVit: TTable;
+    OstVitDS: TDataSource;
+    Predstav: TTable;
+    PredstavDS: TDataSource;
+    PredstavPREDSTAV: TFloatField;
+    PredstavNAIM: TStringField;
+    PredprCODE_PR: TFloatField;
+    PredprNAIM: TStringField;
+    PredprPRIZ: TSmallintField;
+    PredprADDRESS: TStringField;
+    PredprGOROD: TStringField;
+    PredprRS: TStringField;
+    PredprKS: TStringField;
+    PredprBANK: TStringField;
+    PredprBIK: TFloatField;
+    PredprTEL: TStringField;
+    PredprSVID: TStringField;
+    PredprVYDAN: TStringField;
+    PredprPRIZ_SK: TBooleanField;
+    CashNakl: TTable;
+    CashTN: TTable;
+    CashNaklDS: TDataSource;
+    CashTNDS: TDataSource;
+    CashNaklNOMER: TStringField;
+    CashNaklOT: TDateField;
+    CashNaklCODE_PR: TFloatField;
+    CashNaklSKIDKA: TSmallintField;
+    CashNaklPRIM: TMemoField;
+    CashNaklOPERAC: TStringField;
+    CashNaklDATA: TDateField;
+    CashNaklPROV1: TStringField;
+    CashNaklPROV2: TStringField;
+    CashNaklPROV3: TStringField;
+    CashNaklPROV1D: TStringField;
+    CashNaklPROV2D: TStringField;
+    CashNaklPROV3D: TStringField;
+    CashNaklOPLATA: TBooleanField;
+    CashNaklDOST: TBooleanField;
+    CashNaklCHERES: TStringField;
+    CashNaklSUMMA: TFloatField;
+    CashNaklPredpr: TStringField;
+    CashTNNOMER: TStringField;
+    CashTNCODE: TFloatField;
+    CashTNPRICE: TFloatField;
+    CashTNKOL: TFloatField;
+    CashTNUP: TFloatField;
+    CashTNNaim: TStringField;
+    CashTNV_UP: TStringField;
+    CashTNOst: TIntegerField;
+    CashTNSumma: TFloatField;
+    CashNaklDATAOPL: TDateField;
+    CashNaklOTP: TBooleanField;
+    CashNaklDATAOTP: TDateField;
+    OperOPER: TSmallintField;
+    CashNaklOPER: TSmallintField;
+    PredOtp: TTable;
+    PredTN: TTable;
+    PredOtpDS: TDataSource;
+    PredTNDS: TDataSource;
+    PredOtpNOMER: TStringField;
+    PredOtpCODE_PR: TFloatField;
+    PredOtpSUMMA: TFloatField;
+    PredOtpPRIM: TMemoField;
+    PredOtpOT: TDateField;
+    PredOtpOPER: TFloatField;
+    PredOtpPREDSTAV: TFloatField;
+    PredOtpNAL: TBooleanField;
+    PredOtpSKIDKA: TSmallintField;
+    PredOtpOPERAC: TStringField;
+    PredOtpOPERACDAT: TDateField;
+    PredOtpOPL: TBooleanField;
+    PredOtpDATAOPL: TDateField;
+    PredOtpOTP: TBooleanField;
+    PredOtpDATAOTP: TDateField;
+    PredOtpPredpr: TStringField;
+    PredOtppreds: TStringField;
+    PredOtpSCHNOM: TFloatField;
+    PredOtpSCHR: TStringField;
+    PredOtpSchet: TStringField;
+    PredOtpOSN: TStringField;
+    TovarCODE_S: TFloatField;
+    TovarTYPE_T: TFloatField;
+    TovarDATASERT: TDateField;
+    TovarSTRANA: TStringField;
+    TovarNTD: TStringField;
+    TovarSklad: TStringField;
+    TT: TTable;
+    TTDS: TDataSource;
+    TTTYPE_T: TFloatField;
+    TTNAIM: TStringField;
+    TovarTypeT: TStringField;
+    VanOtp: TTable;
+    VanOtpTN: TTable;
+    VanOtpDS: TDataSource;
+    VanOtpTNDS: TDataSource;
+    VanOtpNOMER: TStringField;
+    VanOtpCODE_PR: TFloatField;
+    VanOtpSUMMA: TFloatField;
+    VanOtpPRIM: TMemoField;
+    VanOtpOT: TDateField;
+    VanOtpOPER: TFloatField;
+    VanOtpCHERES: TStringField;
+    VanOtpNAL: TBooleanField;
+    VanOtpSKIDKA: TSmallintField;
+    VanOtpOPERAC: TStringField;
+    VanOtpOPERACDAT: TDateField;
+    VanOtpPROV1: TStringField;
+    VanOtpPROV2: TStringField;
+    VanOtpPROV3: TStringField;
+    VanOtpPROV1D: TDateField;
+    VanOtpPROV2D: TDateField;
+    VanOtpPROV3D: TDateField;
+    VanOtpOPL: TBooleanField;
+    VanOtpDATAOPL: TDateField;
+    VanOtpOTP: TBooleanField;
+    VanOtpDATAOTP: TDateField;
+    VanOtpSCHR: TStringField;
+    VanOtpSCHNOM: TFloatField;
+    VanOtpOSN: TStringField;
+    VanOtpPredpr: TStringField;
+    VanOtpTNNOMER: TStringField;
+    VanOtpTNCODE: TFloatField;
+    VanOtpTNPRICE: TFloatField;
+    VanOtpTNKOL: TFloatField;
+    VanOtpTNUP: TFloatField;
+    VanOtpTNNaim: TStringField;
+    VanOtpTNV_Up: TIntegerField;
+    VanOtpTNPrice_B: TFloatField;
+    VanOtpTNSumma: TFloatField;
+    PredTNNOMER: TStringField;
+    PredTNCODE: TFloatField;
+    PredTNPRICE: TFloatField;
+    PredTNKOL: TFloatField;
+    PredTNUP: TFloatField;
+    PredTNNaim: TStringField;
+    PredTNV_Up: TIntegerField;
+    PredTNPrice_B: TFloatField;
+    PredTNOst: TIntegerField;
+    PredTNSumma: TFloatField;
+    VNakl: TTable;
+    VTN: TTable;
+    VNaklDS: TDataSource;
+    VTNDS: TDataSource;
+    TovarVSKLAD: TFloatField;
+    ValytaCODE_VAL: TFloatField;
+    RoznOtp: TTable;
+    RoznTN: TTable;
+    RoznNaklDS: TDataSource;
+    RoznTNDS: TDataSource;
+    RoznOtpNOMER: TStringField;
+    RoznOtpCODE_PR: TFloatField;
+    RoznOtpSUMMA: TFloatField;
+    RoznOtpPRIM: TMemoField;
+    RoznOtpSKIDKA: TSmallintField;
+    RoznOtpOTP: TBooleanField;
+    RoznOtpOPERAC: TStringField;
+    RoznOtpOPERACDAT: TDateField;
+    RoznOtpOPER: TFloatField;
+    RoznOtpOT: TDateField;
+    RoznTNNOMER: TStringField;
+    RoznTNCODE: TFloatField;
+    RoznTNUP: TFloatField;
+    RoznTNKOL: TFloatField;
+    RoznTNPRICE: TFloatField;
+    VTNNOMER: TStringField;
+    VTNCODE: TFloatField;
+    VTNUP: TFloatField;
+    VTNKOL: TFloatField;
+    VTNPRICE: TFloatField;
+    VTNNaim: TStringField;
+    VTNV_UP: TIntegerField;
+    VTNPrice_B: TFloatField;
+    VTNOst: TIntegerField;
+    VTNSumma: TFloatField;
+    VNaklNOMER: TStringField;
+    VNaklOT: TDateField;
+    VNaklCODE_PR: TFloatField;
+    VNaklSKIDKA: TSmallintField;
+    VNaklPRIM: TMemoField;
+    VNaklOPER: TFloatField;
+    VNaklOPERAC: TStringField;
+    VNaklOPERACDAT: TDateField;
+    VNaklNAL: TBooleanField;
+    VNaklOPL: TBooleanField;
+    VNaklDATAOPL: TDateField;
+    VNaklOTP: TBooleanField;
+    VNaklDATAOTP: TDateField;
+    VNaklOSN: TStringField;
+    NedNakl: TTable;
+    NedTN: TTable;
+    IzlNakl: TTable;
+    IzlTN: TTable;
+    BRNakl: TTable;
+    BRTN: TTable;
+    NedNaklDS: TDataSource;
+    NedTNDS: TDataSource;
+    IzlNaklDS: TDataSource;
+    IzlTNDS: TDataSource;
+    BRNaklDS: TDataSource;
+    BRTNDS: TDataSource;
+    NedNaklNOMER: TStringField;
+    NedNaklOT: TDateField;
+    NedNaklSUMMA: TFloatField;
+    NedNaklPRIZ: TBooleanField;
+    NedNaklPRIZDAT: TDateField;
+    NedNaklOPERAC: TStringField;
+    NedNaklOPERACDAT: TDateField;
+    NedNaklPRIM: TMemoField;
+    NedTNNOMER: TStringField;
+    NedTNCODE: TFloatField;
+    NedTNPRICE: TFloatField;
+    NedTNUP: TFloatField;
+    NedTNKOL: TFloatField;
+    NedTNNaim: TStringField;
+    NedTNV_UP: TIntegerField;
+    NedTNSumma: TFloatField;
+    TovarPrihodInValyta: TFloatField;
+    IzlNaklNOMER: TStringField;
+    IzlNaklOT: TDateField;
+    IzlNaklSUMMA: TFloatField;
+    IzlNaklPRIZ: TBooleanField;
+    IzlNaklPRIZDAT: TDateField;
+    IzlNaklOPERAC: TStringField;
+    IzlNaklOPERACDAT: TDateField;
+    IzlNaklPRIM: TMemoField;
+    IzlTNNOMER: TStringField;
+    IzlTNCODE: TFloatField;
+    IzlTNPRICE: TFloatField;
+    IzlTNUP: TFloatField;
+    IzlTNKOL: TFloatField;
+    IzlTNPRIM: TStringField;
+    IzlTNNaim: TStringField;
+    IzlTNV_UP: TIntegerField;
+    IzlTNPrihodinValyta: TFloatField;
+    IzlTNSumma: TFloatField;
+    BRNaklNOMER: TStringField;
+    BRNaklOT: TDateField;
+    BRNaklSUMMA: TFloatField;
+    BRNaklPRIZ: TBooleanField;
+    BRNaklPRIZDAT: TDateField;
+    BRNaklOPERAC: TStringField;
+    BRNaklOPERACDAT: TDateField;
+    BRNaklPRIM: TMemoField;
+    BRTNNOMER: TStringField;
+    BRTNCODE: TFloatField;
+    BRTNPRICE: TFloatField;
+    BRTNUP: TFloatField;
+    BRTNKOL: TFloatField;
+    BRTNPRIM: TStringField;
+    BRTNNaim: TStringField;
+    BRTNV_UP: TIntegerField;
+    BRTNSumma: TFloatField;
+    NaklPrihOPERAC: TStringField;
+    NaklPrihOPERACDAT: TDateField;
+    NaklPrihPRIZ: TBooleanField;
+    NaklVozvPRIZ: TBooleanField;
+    NaklVozvPRIZDAT: TDateField;
+    NaklVozvOPERAC: TStringField;
+    NaklVozvOPERACDAT: TDateField;
+    TnVozvNOMER: TStringField;
+    TnVozvKOL: TFloatField;
+    TnVozvCODE: TFloatField;
+    TnVozvUP: TSmallintField;
+    TnVozvPRICE: TFloatField;
+    NaklVozvNaim: TStringField;
+    TnVozvNaim: TStringField;
+    TnVozvV_UP: TIntegerField;
+    TnVozvSumma: TFloatField;
+    AktNakl: TTable;
+    AktTN: TTable;
+    AktNaklDS: TDataSource;
+    AktTNDS: TDataSource;
+    AktNaklNOMER: TStringField;
+    AktNaklCODE_PR: TFloatField;
+    AktNaklSUMMA: TFloatField;
+    AktNaklOT: TDateField;
+    AktNaklOPER: TFloatField;
+    AktNaklOPERAC: TStringField;
+    AktNaklOPERACDAT: TDateField;
+    AktNaklPRIZ: TBooleanField;
+    AktNaklNOMER2: TStringField;
+    AktNaklPRIZDAT: TDateField;
+    AktNaklNaim: TStringField;
+    AktTNNOMER: TStringField;
+    AktTNCODE: TFloatField;
+    AktTNPRICE: TFloatField;
+    AktTNKOL: TFloatField;
+    AktTNUP: TFloatField;
+    AktTNNaim: TStringField;
+    AktTNV_UP: TIntegerField;
+    AktTNSumma: TFloatField;
+    PredOtpDOSTDAT: TDateField;
+    PredOtpDOST: TBooleanField;
+    TovarMESTO: TStringField;
+    PostCODE_POST: TFloatField;
+    PostNAIM: TStringField;
+    PostCONS: TSmallintField;
+    PostPRIM: TStringField;
+    PredprDOSTADD: TStringField;
+    AktTNPRIM: TStringField;
+    AktTNOPERAC: TStringField;
+    AktTNOPERACDAT: TDateField;
+    NedTNPRIM: TStringField;
+    PredOtpOTK: TBooleanField;
+    Config: TTable;
+    ConfigDS: TDataSource;
+    ConfigNOMER1: TStringField;
+    ConfigNOMER2: TStringField;
+    ConfigNOMER3: TStringField;
+    ConfigNOMER4: TStringField;
+    ConfigNOMER5: TStringField;
+    ConfigNOMER6: TStringField;
+    PredOtpPOSTUP: TStringField;
+    PredOtpPOSTUPDAT: TDateField;
+    PredOtpPOLUCH: TStringField;
+    PredOtpPOLUCHDAT: TDateField;
+    PredOtpRAZR: TStringField;
+    PredOtpRAZRDAT: TDateField;
+    PredOtpPOSTUPL: TBooleanField;
+    PredOtpPOLUCHL: TBooleanField;
+    PredOtpRAZRL: TBooleanField;
+    PredOtpOPLS: TStringField;
+    PredOtpOTPS: TStringField;
+    VNaklOPLS: TStringField;
+    VNaklOTPS: TStringField;
+    VNaklPOSTUP: TStringField;
+    VNaklPOSTUPDAT: TDateField;
+    VNaklPOSTUPL: TBooleanField;
+    VNaklPOLUCH: TStringField;
+    VNaklPOLUCHL: TBooleanField;
+    VNaklPOLUCHDAT: TDateField;
+    VNaklRAZR: TStringField;
+    VNaklRAZRL: TBooleanField;
+    VNaklRAZRDAT: TDateField;
+    RoznOtpPOSTUP: TStringField;
+    RoznOtpPOSTUPL: TBooleanField;
+    RoznOtpPOSTUPDAT: TDateField;
+    RoznOtpPOLUCH: TStringField;
+    RoznOtpPOLUCHL: TBooleanField;
+    RoznOtpPOLUCHDAT: TDateField;
+    RoznOtpRAZR: TStringField;
+    RoznOtpRAZRL: TBooleanField;
+    RoznOtpRAZRDAT: TDateField;
+    VanOtpPOSTUP: TStringField;
+    VanOtpPOLUCH: TStringField;
+    VanOtpRAZR: TStringField;
+    VanOtpPOSTUPL: TBooleanField;
+    VanOtpPOLUCHL: TBooleanField;
+    VanOtpRAZRL: TBooleanField;
+    VanOtpPOSTUPDAT: TDateField;
+    VanOtpPOLUCHDAT: TDateField;
+    VanOtpRAZRDAT: TDateField;
+    CashNaklOPL: TBooleanField;
+    CashNaklOPLS: TStringField;
+    CashNaklOTPS: TStringField;
+    CashNaklPOSTUP: TStringField;
+    CashNaklPOSTUPL: TBooleanField;
+    CashNaklPOSTUPDAT: TDateField;
+    CashNaklPOLUCH: TStringField;
+    CashNaklPOLUCHL: TBooleanField;
+    CashNaklPOLUCHDAT: TDateField;
+    CashNaklRAZR: TStringField;
+    CashNaklRAZRL: TBooleanField;
+    CashNaklRAZRDAT: TDateField;
+    CashNaklSCHNOM: TFloatField;
+    CashNaklSCHR: TStringField;
+    CashNaklOSN: TStringField;
+    CashNaklOTK: TBooleanField;
+    CashNaklSchet: TStringField;
+    CashNaklDOSTDAT: TDateField;
+    CashNaklNAL: TBooleanField;
+    VanOtpOTK: TBooleanField;
+    VanOtpDOSTDAT: TDateField;
+    VanOtpDOST: TBooleanField;
+    VanOtpSchet: TStringField;
+    RoznOtpDOST: TBooleanField;
+    RoznOtpDOSTDAT: TDateField;
+    RoznOtpOTK: TBooleanField;
+    RoznOtpDATAOTP: TDateField;
+    RoznOtpOSN: TStringField;
+    RoznOtpNaim: TStringField;
+    RoznTNOst: TIntegerField;
+    RoznTNV_Up: TIntegerField;
+    RoznTNNaim: TStringField;
+    RoznTNSumma: TFloatField;
+    RoznTNPriceInValyta: TFloatField;
+    VNaklDOST: TBooleanField;
+    VNaklDOSTDAT: TDateField;
+    VNaklOTK: TBooleanField;
+    VNaklSUMMA: TFloatField;
+    VNaklNaim: TStringField;
+    NaklPrihOTK: TBooleanField;
+    NaklVozvOTK: TBooleanField;
+    NedNaklOTK: TBooleanField;
+    AktNaklOTK: TBooleanField;
+    IzlNaklOTK: TBooleanField;
+    BRNaklOTK: TBooleanField;
+    TnPrihPriceR: TFloatField;
+    ConfigNALOG: TSmallintField;
+    ConfigNOMER7: TStringField;
+    ConfigNOMER8: TStringField;
+    GrValPRICEVAL: TFloatField;
+    TovarPriceval: TFloatField;
+    NaklPrihCOMMENT: TStringField;
+    VTNNDS: TIntegerField;
+    TPUr: TTable;
+    TPUrDS: TDataSource;
+    TPUrNAIM: TStringField;
+    TPUrCODE_UR: TFloatField;
+    TPSkUrov: TTable;
+    TPSkUrovDS: TDataSource;
+    TPSkUrovCODE_POST: TFloatField;
+    TPSkUrovCODE_UR: TFloatField;
+    TPSkUrovPost: TStringField;
+    PredOtpCODE_UR: TFloatField;
+    CashTNPRICEB: TFloatField;
+    CashTNPrice_B: TFloatField;
+    BRTNOst: TIntegerField;
+    ConfigNOMER9: TFloatField;
+    OstVitCODE: TFloatField;
+    Dostup: TTable;
+    DostupDS: TDataSource;
+    DostupNAIM: TStringField;
+    DostupFULLNAIM: TStringField;
+    DostupPASS: TStringField;
+    DostupDOST1: TStringField;
+    DostupDOST2: TStringField;
+    VTNComm1: TStringField;
+    VTNcomm2: TStringField;
+    TPSkUrovNACEN: TFloatField;
+    PredTNPost: TIntegerField;
+    OstVitKOL1: TFloatField;
+    OstVitKOL2: TFloatField;
+    VitPrihNOMER: TStringField;
+    VitPrihOT: TDateField;
+    VitPrihSUMMA: TFloatField;
+    VitPrihPRIZDAT: TDateField;
+    VitPrihOPERAC: TStringField;
+    VitPrihOPERACDAT: TDateField;
+    VitPrihOTK: TBooleanField;
+    VitPrihOTKS: TStringField;
+    ConfigVit: TTable;
+    ConfigVitDS: TDataSource;
+    ConfigVitNOMER1: TStringField;
+    ConfigVitNOMER2: TStringField;
+    ConfigVitNOMER3: TStringField;
+    ConfigVitNOMER4: TStringField;
+    ConfigVitNOMER5: TStringField;
+    Rekv: TTable;
+    RekvDS: TDataSource;
+    RekvNAIM: TStringField;
+    RekvADDRESS: TStringField;
+    RekvTEL: TStringField;
+    RekvINN: TStringField;
+    RekvRS: TStringField;
+    RekvKS: TStringField;
+    RekvBIK: TStringField;
+    RekvBANK: TStringField;
+    RekvOKONH: TStringField;
+    RekvOKPO: TStringField;
+    RekvCODE: TSmallintField;
+    VitRash: TTable;
+    VitTRash: TTable;
+    VitRashDS: TDataSource;
+    VitTRashDS: TDataSource;
+    VitRashNOMER: TStringField;
+    VitRashOT: TDateField;
+    VitRashSUMMA: TFloatField;
+    VitRashOPERAC: TStringField;
+    VitRashOPERACDAT: TDateField;
+    VitRashOTP: TBooleanField;
+    VitRashOTPDAT: TDateField;
+    VitRashOTPS: TStringField;
+    VitRashOPER: TFloatField;
+    VitRashPROV1: TStringField;
+    VitRashPROV1D: TDateField;
+    VitTRashNOMER: TStringField;
+    VitTRashCODE: TFloatField;
+    VitTRashKOL: TFloatField;
+    VitTRashPRICE: TFloatField;
+    VitTRashNaim: TStringField;
+    VitRashOTK: TBooleanField;
+    VitRashOTKS: TStringField;
+    VitPrihPRIZ: TBooleanField;
+    TovarOstVit: TIntegerField;
+    ConfigVitNOMER7: TStringField;
+    ConfigVitNOMER8: TStringField;
+    ConfigVitNOMER9: TStringField;
+    ConfigVitNOMER10: TBooleanField;
+    VitPrihPRIZS: TStringField;
+    Session1: TSession;
+    Timer1: TTimer;
+    NaklPrihVITNOMER: TStringField;
+    ConfigVitNOMER11: TStringField;
+    CashTNMesto: TStringField;
+    RoznTNMesto: TStringField;
+    PredTNMesto: TStringField;
+    VTNmesto: TStringField;
+    VanOtpTNMesto: TStringField;
+    VitTPrihMesto: TStringField;
+    PredstavCODE_VID: TFloatField;
+    PredstavTYPE: TBooleanField;
+    PredstavVid: TTable;
+    PredstavVidDS: TDataSource;
+    PredstavVidCODE_VID: TFloatField;
+    PredstavVidNAIM: TStringField;
+    TnPrihMesto: TStringField;
+    TnVozvMesto: TStringField;
+    IzlTNMesto: TStringField;
+    BRTNMesto: TStringField;
+    NedTNMesto: TStringField;
+    ConfigVitNOMER12: TStringField;
+    ConfigVitNOMER13: TStringField;
+    ConfigVitNOMER14: TFloatField;
+    ConfigVitNOMER15: TFloatField;
+    ConfigVitNOMER16: TFloatField;
+    ConfigVitNOMER17: TFloatField;
+    PAddress: TTable;
+    PAddressDS: TDataSource;
+    PAddressCODE_PR: TFloatField;
+    PAddressADDRESS: TStringField;
+    CashNaklDOSTADD: TStringField;
+    PredOtpDOSTADD: TStringField;
+    RoznOtpDOSTADD: TStringField;
+    VanOtpDOSTADD: TStringField;
+    VNaklDOSTADD: TStringField;
+    PredOtpEXP: TBooleanField;
+    CashNaklEXP: TBooleanField;
+    RoznOtpEXP: TBooleanField;
+    VanOtpEXP: TBooleanField;
+    VNaklEXP: TBooleanField;
+    NaklPrihEXP: TBooleanField;
+    NaklVozvEXP: TBooleanField;
+    VitPrihEXPL: TBooleanField;
+    NedNaklEXP: TBooleanField;
+    IzlNaklEXP: TBooleanField;
+    BRNaklEXP: TBooleanField;
+    ConfigVitZPRED: TFloatField;
+    SklMesto: TTable;
+    SklMestoDS: TDataSource;
+    SklMestoCODE_SKL: TFloatField;
+    SklMestoMESTO: TStringField;
+    ConfigVitCODE_SKL: TFloatField;
+    UrPredpr: TTable;
+    UrPredprDS: TDataSource;
+    UrPredprCODE_PR: TFloatField;
+    UrPredprCODE_UR: TFloatField;
+    UrPredprCODE_OPER: TFloatField;
+    UrPredprOperNaim: TStringField;
+    UrPredprNAIMUR: TStringField;
+    ConfigSCH1: TFloatField;
+    ConfigSCH2: TFloatField;
+    ConfigSCH3: TFloatField;
+    ConfigSCH4: TFloatField;
+    Default: TTable;
+    DefaultTPUROVEN: TFloatField;
+    DefaultCASHUROVEN: TFloatField;
+    DefaultVANUROVEN: TFloatField;
+    DefaultROZNUROVEN: TFloatField;
+    DefaultVUROVEN: TFloatField;
+    TPUrUM: TBooleanField;
+    ZPredNakl: TTable;
+    ZPredTn: TTable;
+    ZNomer: TTable;
+    ConfigVitNOMER18: TFloatField;
+    ConfigVitNOMER19: TFloatField;
+    ConfigVitZROZN: TFloatField;
+    PostINN: TStringField;
+    ZRoznNakl: TTable;
+    ZRoznNaklNOMER: TFloatField;
+    ZRoznNaklOT: TDateField;
+    ZRoznNaklPredpr: TStringField;
+    ZRoznNaklSUMMA: TFloatField;
+    ZRoznNaklDOSTDATA: TDateField;
+    ZRoznNaklCODE_PR: TFloatField;
+    ZRoznNaklOPERAC: TStringField;
+    ZRoznNaklOPERACDAT: TDateField;
+    ZRoznNaklDOST: TBooleanField;
+    ZRoznNaklDOSTADD: TStringField;
+    ZRoznNaklPROVL: TBooleanField;
+    ZRoznNaklPROVD: TDateField;
+    ZRoznNaklPROVS: TStringField;
+    ZRoznNaklOPER: TFloatField;
+    ZRoznNaklPRIM: TStringField;
+    ZRoznNaklSKIDKA: TFloatField;
+    ZRoznTN: TTable;
+    ZRoznTNCODE: TFloatField;
+    ZRoznTNnaim: TStringField;
+    ZRoznTNUP: TFloatField;
+    ZRoznTNKOL: TFloatField;
+    ZRoznTNNOMER: TFloatField;
+    ZRoznTNPRICE: TFloatField;
+    ZRoznNomer: TTable;
+    ZNomerNOMER: TFloatField;
+    ZNomerSVNOMER: TStringField;
+    ZNomerSKL: TFloatField;
+    ZNomerNDS: TSmallintField;
+    ZNomerSPEC: TBooleanField;
+    ZNomerSUMMA: TFloatField;
+    PredTNSK: TFloatField;
+    PredprDAY: TBooleanField;
+    VanOtpFACT: TBooleanField;
+    PredOtpFACT: TBooleanField;
+    CashNaklFACT: TBooleanField;
+    VanOtpFILI: TSmallintField;
+    VanOtpCODE_UR: TFloatField;
+    PredOtpCODE_FIRM: TFloatField;
+    CashNaklCODE_FIRM: TFloatField;
+    VanOtpCODE_FIRM: TFloatField;
+    VNaklCODE_FIRM: TFloatField;
+    RekvPROGR: TStringField;
+    RekvNDS: TBooleanField;
+    ConfigSCH5: TFloatField;
+    PredprEXP_ROZN: TBooleanField;
+    RoznOtpEXP_ROZN: TBooleanField;
+    VNaklOSH: TBooleanField;
+    VanOtpOSH: TBooleanField;
+    PredOtpOSH: TBooleanField;
+    RoznOtpOSH: TBooleanField;
+    CashNaklOSH: TBooleanField;
+    RekvKPP: TStringField;
+    PredprINN: TStringField;
+    PredprKPP: TStringField;
+    TovarRZT: TFloatField;
+    RoznOtpEXPROZN: TBooleanField;
+    CashNaklinn: TStringField;
+    CashNaklkpp: TStringField;
+    PredOtpinn: TStringField;
+    PredOtpkpp: TStringField;
+    VanOtpinn: TStringField;
+    VanOtpkpp: TStringField;
+    PredprTYPE_PRED: TBooleanField;
+    VNaklSchet: TStringField;
+    VNaklSCHNOM: TFloatField;
+    VNaklSCHR: TStringField;
+    ConfigVitZVAN: TFloatField;
+    TovarARTIKUL: TStringField;
+    RekvRUK: TStringField;
+    RekvGLBUCH: TStringField;
+    PredprTYPE_SK: TBooleanField;
+    TovarSTELLA: TStringField;
+    IzlTNStella: TStringField;
+    NedTNStella: TStringField;
+    VanOtpTNStella: TStringField;
+    CashTNStella: TStringField;
+    PredTNStella: TStringField;
+    RoznTNStella: TStringField;
+    VTNStella: TStringField;
+    VitTPrihStella: TStringField;
+    BRTNStella: TStringField;
+    TnPrihStella: TStringField;
+    TnVozvStella: TStringField;
+    PostSOKR: TStringField;
+    Post_T: TTable;
+    Post_TDS: TDataSource;
+    Post_TCODE_POST: TFloatField;
+    Post_TNAIM: TStringField;
+    Post_TCONS: TSmallintField;
+    Post_TPRIM: TStringField;
+    Post_TINN: TStringField;
+    Post_TSOKR: TStringField;
+    Tovar_T: TTable;
+    DataSource1: TDataSource;
+    Tovar_TCODE: TFloatField;
+    Tovar_TNAIM: TStringField;
+    Tovar_TCODE_PR: TFloatField;
+    Tovar_TCODE_POST: TFloatField;
+    Tovar_TCODE_VAL: TSmallintField;
+    Tovar_TPRIHOD: TFloatField;
+    Tovar_TCOMM1: TStringField;
+    Tovar_TCOMM2: TStringField;
+    Tovar_TSERT: TMemoField;
+    Tovar_TNACEN: TFloatField;
+    Tovar_TPRICE_B: TFloatField;
+    Tovar_TNDS: TSmallintField;
+    Tovar_TCODEGR: TFloatField;
+    Tovar_TUP: TSmallintField;
+    Tovar_TSPEC: TBooleanField;
+    Tovar_TCODE_S: TFloatField;
+    Tovar_TTYPE_T: TFloatField;
+    Tovar_TDATASERT: TDateField;
+    Tovar_TSTRANA: TStringField;
+    Tovar_TNTD: TStringField;
+    Tovar_TVSKLAD: TFloatField;
+    Tovar_TMESTO: TStringField;
+    Tovar_TKOL1: TFloatField;
+    Tovar_TKOL2: TFloatField;
+    Tovar_TRZT: TFloatField;
+    Tovar_TARTIKUL: TStringField;
+    Tovar_TSTELLA: TStringField;
+    Tovar_TPost_Sokr: TStringField;
+    Pr_Sk_Col: TQuery;
+    PredprSk_Col: TIntegerField;
+    PredprSkid_log: TStringField;
+    NedNaklCODE_POST: TFloatField;
+    NedNaklTYPE_: TSmallintField;
+    NedNaklPName: TStringField;
+    CashNaklCODE_GRUZ: TFloatField;
+    CashNaklGRUZ: TBooleanField;
+    Predpr_T: TTable;
+    Predpr_TCODE_PR: TFloatField;
+    Predpr_TNAIM: TStringField;
+    Predpr_TPRIZ: TSmallintField;
+    Predpr_TADDRESS: TStringField;
+    Predpr_TGOROD: TStringField;
+    Predpr_TRS: TStringField;
+    Predpr_TKS: TStringField;
+    Predpr_TBANK: TStringField;
+    Predpr_TBIK: TFloatField;
+    Predpr_TINN: TStringField;
+    Predpr_TTEL: TStringField;
+    Predpr_TSVID: TStringField;
+    Predpr_TVYDAN: TStringField;
+    Predpr_TPRIZ_SK: TBooleanField;
+    Predpr_TDOSTADD: TStringField;
+    Predpr_TDAY: TBooleanField;
+    Predpr_TEXP_ROZN: TBooleanField;
+    Predpr_TKPP: TStringField;
+    Predpr_TTYPE_PRED: TBooleanField;
+    Predpr_TTYPE_SK: TBooleanField;
+    PredOtpGRUZ: TBooleanField;
+    PredOtpCODE_GRUZ: TFloatField;
+    VanOtpTNOst: TIntegerField;
+    VanOtpGRUZ: TBooleanField;
+    VanOtpCODE_GRUZ: TFloatField;
+    CashTNSK: TFloatField;
+    VanOtpTNSK: TFloatField;
+    TovarNEW: TBooleanField;
+    Find_Predpr: TTable;
+    Find_PredprCODE_PR: TFloatField;
+    Find_PredprNAIM: TStringField;
+    Find_PredprPRIZ: TSmallintField;
+    Find_PredprADDRESS: TStringField;
+    Find_PredprGOROD: TStringField;
+    Find_PredprRS: TStringField;
+    Find_PredprKS: TStringField;
+    Find_PredprBANK: TStringField;
+    Find_PredprBIK: TFloatField;
+    Find_PredprINN: TStringField;
+    Find_PredprTEL: TStringField;
+    Find_PredprSVID: TStringField;
+    Find_PredprVYDAN: TStringField;
+    Find_PredprPRIZ_SK: TBooleanField;
+    Find_PredprDOSTADD: TStringField;
+    Find_PredprDAY: TBooleanField;
+    Find_PredprEXP_ROZN: TBooleanField;
+    Find_PredprKPP: TStringField;
+    Find_PredprTYPE_PRED: TBooleanField;
+    Find_PredprTYPE_SK: TBooleanField;
+    TovarROZNPRIZ: TBooleanField;
+    TovarALKO: TSmallintField;
+    TovarALKO_STR: TStringField;
+    RoznOtpALKO: TBooleanField;
+    VanOtpALKO: TBooleanField;
+    CashNaklALKO: TBooleanField;
+    PredOtpALKO: TBooleanField;
+    VNaklALKO: TBooleanField;
+    NaklVozvALKO: TBooleanField;
+    VNaklinn: TStringField;
+    VNaklkpp: TStringField;
+    TovarALKO_DAL: TFloatField;
+    RekvLIC: TStringField;
+    PredprLIC: TStringField;
+    VTNSK: TFloatField;
+    VTNPRICE_PRIH: TFloatField;
+    PredTNPRICE_PRIH: TFloatField;
+    RoznTNSK: TFloatField;
+    RoznTNPRICE_PRIH: TFloatField;
+    VanOtpTNPRICE_PRIH: TFloatField;
+    Find_PredprLIC: TStringField;
+    CashTNPRICE_PRIH: TFloatField;
+    TnVozvPRICE_PRIH: TFloatField;
+    VitTRashPrice_Pr: TFloatField;
+    NaklVozvAddress: TStringField;
+    RoznTNAlko_Dal: TFloatField;
+    VTNalko_dal: TFloatField;
+    VanOtpTNalko_dal: TFloatField;
+    PredTNalko_dal: TFloatField;
+    CashTNalko_dal: TFloatField;
+    CashNaklEND_RAB: TBooleanField;
+    CashNaklEND_RABD: TStringField;
+    PredOtpEND_RAB: TBooleanField;
+    PredOtpEND_RABD: TStringField;
+    PAddressOTHER_CODE: TStringField;
+    Tovar_GR: TTable;
+    Tovar_GRID: TFloatField;
+    Tovar_GRNAME: TStringField;
+    Tovar_GRDS: TDataSource;
+    ConfigVitTGR_ID: TFloatField;
+    TovarTGR_ID: TFloatField;
+    Predpr_GR: TTable;
+    Predpr_GRID: TFloatField;
+    Predpr_GRNAME: TStringField;
+    Predpr_GRPLAT_DOST: TBooleanField;
+    Predpr_GRDS: TDataSource;
+    ConfigVitPGR_ID: TFloatField;
+    PredprPGR_ID: TFloatField;
+    ExportBase: TTable;
+    procedure TnPrihCalcFields(DataSet: TDataSet);
+    procedure TovarCalcFields(DataSet: TDataSet);
+    procedure Timer1Timer(Sender: TObject);
+    procedure CashTNCalcFields(DataSet: TDataSet);
+    procedure PredOtpCalcFields(DataSet: TDataSet);
+    procedure VanOtpCalcFields(DataSet: TDataSet);
+    procedure PredTNCalcFields(DataSet: TDataSet);
+    procedure VTNCalcFields(DataSet: TDataSet);
+    procedure VanOtpTNCalcFields(DataSet: TDataSet);
+    procedure RoznTNCalcFields(DataSet: TDataSet);
+    procedure NedTNCalcFields(DataSet: TDataSet);
+    procedure IzlTNCalcFields(DataSet: TDataSet);
+    procedure TnVozvCalcFields(DataSet: TDataSet);
+    procedure BRTNCalcFields(DataSet: TDataSet);
+    procedure AktTNCalcFields(DataSet: TDataSet);
+    procedure CashNaklCalcFields(DataSet: TDataSet);
+    procedure NaklPrihFilterRecord(DataSet: TDataSet; var Accept: Boolean);
+    procedure PredprFilterRecord(DataSet: TDataSet; var Accept: Boolean);
+    procedure IzlNaklFilterRecord(DataSet: TDataSet; var Accept: Boolean);
+    procedure AktNaklFilterRecord(DataSet: TDataSet; var Accept: Boolean);
+    procedure NedNaklFilterRecord(DataSet: TDataSet; var Accept: Boolean);
+    procedure BRNaklFilterRecord(DataSet: TDataSet; var Accept: Boolean);
+    procedure PredOtpFilterRecord(DataSet: TDataSet; var Accept: Boolean);
+    procedure CashNaklFilterRecord(DataSet: TDataSet; var Accept: Boolean);
+    procedure VanOtpFilterRecord(DataSet: TDataSet; var Accept: Boolean);
+    procedure RoznOtpFilterRecord(DataSet: TDataSet; var Accept: Boolean);
+    procedure VNaklFilterRecord(DataSet: TDataSet; var Accept: Boolean);
+    procedure VitPrihFilterRecord(DataSet: TDataSet; var Accept: Boolean);
+    procedure PostFilterRecord(DataSet: TDataSet; var Accept: Boolean);
+    procedure PredprNAIMSetText(Sender: TField; const Text: String);
+    procedure PAddressFilterRecord(DataSet: TDataSet; var Accept: Boolean);
+    procedure VNaklCalcFields(DataSet: TDataSet);
+    procedure PredprBeforeOpen(DataSet: TDataSet);
+    procedure PredprAfterClose(DataSet: TDataSet);
+    procedure PredprCalcFields(DataSet: TDataSet);
+    procedure FindPredpr_(Code : Integer);
+    procedure NaklVozvFilterRecord(DataSet: TDataSet; var Accept: Boolean);
+  private
+    { Private declarations }
+  public
+        Find_Predpr_Array : array [1..6] of string;
+        function get_sokr_post(code : integer):string;
+        function find_tovar_group(id : integer) : string;
+        function find_predpr_group(id : integer) : string;
+        procedure Export_(A : string; B, C : integer; DataS : TTable);
+    { Public declarations }
+  end;
+
+var
+  DataMain: TDataMain;
+
+implementation
+
+uses SpravPokup, SprPokVybF, Sklad, SprPostVybF;
+
+
+{$R *.DFM}
+
+procedure TDataMain.Export_(A : string; B, C : integer; DataS : TTable);
+begin
+     // Экспорт накладных
+  if not ExportBase.Active then ExportBase.Open;
+  ExportBase.Append;
+  ExportBase.FieldByName('nomer').AsString := A;
+  ExportBase.FieldByName('type').AsInteger := B;
+  ExportBase.FieldByName('work_').AsInteger := C;
+  ExportBase.FieldByName('ot').AsString := DateTimeToStr(Now);
+  ExportBase.Post;
+  if C = 1 then
+  try
+    DataS.Edit;
+    DataS.FieldByName('Exp').AsBoolean := True;
+    DataS.Post;
+  except
+  end;
+end;
+
+function TDataMain.get_sokr_post(code : integer):string;
+begin
+//
+  Post_T.Open;
+  Tovar_T.Open;
+  if Tovar_T.Locate('code',code,[]) then result := AnsiUpperCase(Trim(Tovar_TPost_Sokr.AsString))
+  else
+      result := '';
+  Tovar_T.Close;
+  Post_T.Close;
+end;
+
+procedure TDataMain.TnPrihCalcFields(DataSet: TDataSet);
+begin
+     TnPrihSumma.AsFloat := TnPrihKol.AsFloat*TnPrihPrice.AsFloat;
+    
+end;
+
+procedure TDataMain.TovarCalcFields(DataSet: TDataSet);
+begin
+     if Tovar.State = dsBrowse then Tovar.Edit;
+     TovarPriceInValyta.AsFloat := TovarPrice_B.AsFloat*TovarPriceVal.AsFloat;
+     TovarPrihodInValyta.AsFloat := TovarPrihod.AsFloat*TovarPriceVal.AsFloat;
+end;
+
+procedure TDataMain.Timer1Timer(Sender: TObject);
+begin
+     if Session1.Active then
+     With Session1.Databases[0] do
+     begin
+          Main.StatusBar1.Panels[0].Text := IntToStr(DataSetCount);
+     end
+     else
+           Main.StatusBar1.Panels[0].Text := '-';
+end;
+
+
+procedure TDataMain.CashTNCalcFields(DataSet: TDataSet);
+begin
+With CashTN do
+     begin
+          FieldByName('Summa').AsFloat := FieldByName('Price').AsFloat*FieldByName('Kol').AsInteger;
+     end;
+end;
+
+procedure TDataMain.PredOtpCalcFields(DataSet: TDataSet);
+begin
+     if PredOtpSchNom.AsInteger <> 0 then
+     PredOtpSchet.AsString := PredOtpSchNom.AsString + PredOtpSchR.AsString
+     else PredOtpSchet.AsString := '';
+end;
+
+
+procedure TDataMain.VanOtpCalcFields(DataSet: TDataSet);
+begin
+     if VanOtpSchNom.AsInteger <> 0 then
+     VanOtpSchet.AsString := VanOtpSchNom.AsString + VanOtpSchR.AsString
+     else VanOtpSchet.AsString := '';
+
+end;
+
+procedure TDataMain.PredTNCalcFields(DataSet: TDataSet);
+begin
+     PredTNSumma.AsFloat := PredTNKol.AsInteger*PredTNPrice.AsFloat;
+end;
+
+
+procedure TDataMain.VTNCalcFields(DataSet: TDataSet);
+begin
+     With VTN do
+          begin
+               FieldByName('SUMMA').AsFloat := FieldByName('Kol').AsInteger*FieldByName('Price').ASFloat;
+          end;
+
+end;
+
+procedure TDataMain.VanOtpTNCalcFields(DataSet: TDataSet);
+begin
+     With VanOtpTN do
+          begin
+               FieldByName('SUMMA').AsFloat := FieldByName('Kol').AsInteger*FieldByName('Price').ASFloat;
+          end;
+
+end;
+
+
+procedure TDataMain.RoznTNCalcFields(DataSet: TDataSet);
+begin
+     RoznTNSUMMA.AsFloat := RoznTNKol.AsInteger*RoznTNPrice.ASFloat;
+end;
+
+procedure TDataMain.NedTNCalcFields(DataSet: TDataSet);
+begin
+     NedTNSumma.AsFloat := NedTNKol.AsInteger * NedTNPrice.AsFloat;
+end;
+
+procedure TDataMain.IzlTNCalcFields(DataSet: TDataSet);
+begin
+     IzlTNSumma.AsFloat := IzlTNKol.AsInteger * IzlTNPrice.AsFloat;
+end;
+
+procedure TDataMain.TnVozvCalcFields(DataSet: TDataSet);
+begin
+     TNVozvSumma.AsFloat := TNVozvKol.AsInteger * TNVozvPrice.AsFloat;
+end;
+
+procedure TDataMain.BRTNCalcFields(DataSet: TDataSet);
+begin
+     BRTNSumma.AsFloat := BRTNPrice.AsFloat*BRTNKol.AsInteger;
+end;
+
+procedure TDataMain.AktTNCalcFields(DataSet: TDataSet);
+begin
+     AktTNSumma.AsFloat := AktTNPrice.AsFloat*AktTNKol.AsInteger;
+
+end;
+
+procedure TDataMain.CashNaklCalcFields(DataSet: TDataSet);
+begin
+     if CashNaklSchNom.AsInteger <> 0 then
+     CashNaklSchet.AsString := CashNaklSchNom.AsString + CashNaklSchR.AsString
+     else CashnaklSchet.AsString := '';
+
+end;
+
+procedure TDataMain.NaklPrihFilterRecord(DataSet: TDataSet;
+  var Accept: Boolean);
+var S : String;
+begin
+     if NaklPrih.Tag <> 0 then begin
+        S := NaklPrihNomer.AsString;
+        Delete(S,Pos('-',S),Length(S));
+        if StrToInt(S) = NaklPrih.Tag then Accept := True else Accept := False;
+     end;
+end;
+
+procedure TDataMain.PredprFilterRecord(DataSet: TDataSet;
+  var Accept: Boolean);
+var S : String;
+begin
+     if Predpr.Tag = 1 then
+        S := Trim(SprPokup.Edit1.Text)
+     else
+        S := Trim(SprPokVyb.Edit1.Text);
+     if S = '' then Accept := True else
+     Accept := Pos(AnsiUpperCase(S),AnsiUpperCase(PredprNaim.AsString))<>0;
+end;
+
+procedure TDataMain.IzlNaklFilterRecord(DataSet: TDataSet;
+  var Accept: Boolean);
+var S : String;
+begin
+     if IzlNakl.Tag <> 0 then begin
+        S := IzlNaklNomer.AsString;
+        Delete(S,Pos('-',S),Length(S));
+        if StrToInt(S) = IzlNakl.Tag then Accept := True else Accept := False;
+     end;
+
+end;
+
+procedure TDataMain.AktNaklFilterRecord(DataSet: TDataSet;
+  var Accept: Boolean);
+var S, S1 : String;
+begin
+     if AktNakl.Tag <> 0 then begin
+        S := Trim(AktNaklNomer.AsString);
+        case AktNaklNomer.Tag of
+             1 : S1 := '-Cash';
+             2 : S1 := '-Торг';
+             3 : S1 := '-Ван';
+             4 : S1 := '-Розн';
+             5 : S1 := '-Внут';
+        end;
+
+        if S = (IntToStr(AktNakl.Tag)+S1) then Accept := True else Accept := False;
+     end;
+
+end;
+
+procedure TDataMain.NedNaklFilterRecord(DataSet: TDataSet;
+  var Accept: Boolean);
+var S : String;
+begin
+     if NedNakl.Tag <> 0 then begin
+        S := NedNaklNomer.AsString;
+        if NedNaklPrim.DisplayLabel = S then Accept := True else Accept := False;
+     end;
+
+end;
+
+procedure TDataMain.BRNaklFilterRecord(DataSet: TDataSet;
+  var Accept: Boolean);
+var S : String;
+begin
+     if BrNakl.Tag <> 0 then begin
+        S := BrNaklNomer.AsString;
+        Delete(S,Pos('-',S),Length(S));
+        if StrToInt(S) = BrNakl.Tag then Accept := True else Accept := False;
+     end;
+
+end;
+
+procedure TDataMain.PredOtpFilterRecord(DataSet: TDataSet;
+  var Accept: Boolean);
+var S : String;
+begin
+     if PredOtp.Tag <> 0 then begin
+        S := PredOtpNomer.AsString;
+        Delete(S,Pos('-',S),Length(S));
+        if StrToInt(S) = PredOtp.Tag then Accept := True else Accept := False;
+     end;
+
+end;
+
+procedure TDataMain.CashNaklFilterRecord(DataSet: TDataSet;
+  var Accept: Boolean);
+var S : String;
+begin
+     if CashNakl.Tag <> 0 then begin
+        S := CashNaklNomer.AsString;
+        Delete(S,Pos('-',S),Length(S));
+        if StrToInt(S) = cashnakl.Tag then Accept := True else Accept := False;
+     end;
+
+end;
+
+procedure TDataMain.VanOtpFilterRecord(DataSet: TDataSet;
+  var Accept: Boolean);
+var S : String;
+begin
+     if VanOtp.Tag <> 0 then begin
+        S := vanOtpNomer.AsString;
+        Delete(S,Pos('-',S),Length(S));
+        if StrToInt(S) = VanOtp.Tag then Accept := True else Accept := False;
+     end;
+
+
+end;
+
+procedure TDataMain.RoznOtpFilterRecord(DataSet: TDataSet;
+  var Accept: Boolean);
+var S : String;
+begin
+     if RoznOtp.Tag <> 0 then begin
+        S := RoznOtpNomer.AsString;
+        Delete(S,Pos('-',S),Length(S));
+        if StrToInt(S) = RoznOtp.Tag then Accept := True else Accept := False;
+     end;
+
+end;
+
+procedure TDataMain.VNaklFilterRecord(DataSet: TDataSet;
+  var Accept: Boolean);
+var S : String;
+begin
+     if VNakl.Tag <> 0 then begin
+        S := VNaklNomer.AsString;
+        Delete(S,Pos('-',S),Length(S));
+        if StrToInt(S) = VNakl.Tag then Accept := True else Accept := False;
+     end;
+end;
+
+procedure TDataMain.VitPrihFilterRecord(DataSet: TDataSet;
+  var Accept: Boolean);
+var S : String;
+begin
+     if VitPrih.Tag <> 0 then begin
+        S := VitPrihNomer.AsString;
+        Delete(S,Pos('-',S),Length(S));
+        if StrToInt(S) = VitPrih.Tag then Accept := True else Accept := False;
+     end;
+
+end;
+
+procedure TDataMain.PostFilterRecord(DataSet: TDataSet;
+  var Accept: Boolean);
+var S : String;
+begin
+     S := Trim(SprPostVyb.Edit1.Text);
+     if S = '' then Accept := True else
+     Accept := Pos(AnsiUpperCase(S),AnsiUpperCase(PostNaim.AsString))<>0;
+end;
+
+procedure TDataMain.PredprNAIMSetText(Sender: TField; const Text: String);
+begin
+     Datamain.PredprNaim.AsString := AnsiUpperCase(text);
+end;
+
+procedure TDataMain.PAddressFilterRecord(DataSet: TDataSet;
+  var Accept: Boolean);
+begin
+     case PAddress.Tag of
+          1 : Accept := (PAddressCode_pr.AsInteger = PAddressCode_Pr.Tag);
+     end;
+end;
+
+procedure TDataMain.VNaklCalcFields(DataSet: TDataSet);
+begin
+     if VnaklSchNom.AsInteger <> 0 then
+     VnaklSchet.AsString := VnaklSchNom.AsString + VnaklSchR.AsString
+     else VnaklSchet.AsString := '';
+end;
+
+procedure TDataMain.PredprBeforeOpen(DataSet: TDataSet);
+begin
+     Pr_Sk_Col.Open;
+end;
+
+procedure TDataMain.PredprAfterClose(DataSet: TDataSet);
+begin
+     Pr_Sk_col.Close;
+end;
+
+procedure TDataMain.PredprCalcFields(DataSet: TDataSet);
+begin
+     if (PredprSk_col.AsInteger > 0) then PredprSkid_log.AsString := 'Есть' else PredprSkid_log.AsString := '';
+end;
+
+
+procedure TDataMain.FindPredpr_(code : Integer);
+begin
+  Find_Predpr_Array[1] := '';
+  Find_Predpr.Open;
+  if Find_Predpr.Locate('code_pr', code, []) then
+  begin
+       Find_Predpr_Array[3] := Find_PredprNaim.AsString;
+       Find_Predpr_Array[2] := Find_PredprINN.AsString + ' / ' + Find_PredprKPP.AsString;
+       Find_Predpr_Array[1] := IntToStr(Find_PredprCode_pr.Asinteger);
+       Find_Predpr_Array[4] := Find_PredprAddress.AsString;
+       Find_Predpr_Array[5] := Find_PredprLic.AsString;
+       Find_Predpr_Array[6] := 'р/с ' + Find_PredprRS.AsString + ' '+Find_PredprBANK.AsString + ', '
+                              + 'Бик ' +
+                              Find_PredprBIK.AsString + ', корр/сч ' +
+                              Find_PredprkS.AsString;
+
+  end;
+  Find_Predpr.Close;
+end;
+
+procedure TDataMain.NaklVozvFilterRecord(DataSet: TDataSet;
+  var Accept: Boolean);
+var S : String;
+begin
+     if NaklVozv.Tag <> 0 then begin
+        S := NaklVozvNomer.AsString;
+        Delete(S,Pos('-',S),Length(S));
+        if StrToInt(S) = NaklVozv.Tag then Accept := True else Accept := False;
+     end;
+end;
+
+function TDataMain.find_tovar_group(id : integer) : string;
+var L : Boolean;
+begin
+  L := false;
+  if not(Tovar_GR.Active) then
+  begin
+    Tovar_GR.Active := True;
+    L := True;
+  end;
+  if Tovar_GR.Locate('id', id, []) then result := trim(Tovar_GRName.AsString) else result := '';
+  if L then Tovar_GR.Close;
+end;
+
+function TDataMain.find_predpr_group(id : integer) : string;
+var L : Boolean;
+begin
+  L := false;
+  if not(Predpr_GR.Active) then
+  begin
+    Predpr_GR.Active := True;
+    L := True;
+  end;
+  if Predpr_GR.Locate('id', id, []) then result := trim(Predpr_GRName.AsString) else result := '';
+  if L then Predpr_GR.Close;
+end;
+
+
+
+end.

@@ -1,0 +1,229 @@
+object SprMaster: TSprMaster
+  Left = 463
+  Top = 113
+  HelpContext = 13
+  BorderIcons = [biSystemMenu, biMinimize]
+  BorderStyle = bsDialog
+  Caption = #1057#1087#1088#1072#1074#1086#1095#1085#1080#1082' '#1084#1072#1089#1090#1077#1088#1086#1074
+  ClientHeight = 486
+  ClientWidth = 784
+  Color = clBtnFace
+  Font.Charset = DEFAULT_CHARSET
+  Font.Color = clWindowText
+  Font.Height = -11
+  Font.Name = 'Tahoma'
+  Font.Style = []
+  FormStyle = fsMDIChild
+  KeyPreview = True
+  OldCreateOrder = True
+  Position = poScreenCenter
+  Visible = True
+  OnActivate = FormActivate
+  OnClose = FormClose
+  OnCreate = FormCreate
+  OnDeactivate = FormDeactivate
+  PixelsPerInch = 96
+  TextHeight = 13
+  object ActionToolBar1: TActionToolBar
+    Left = 0
+    Top = 0
+    Width = 784
+    Height = 26
+    Margins.Left = 0
+    Margins.Top = 0
+    Margins.Right = 0
+    Margins.Bottom = 0
+    ActionManager = ActionManager1
+    Caption = 'ActionToolBar1'
+    ColorMap.HighlightColor = clWhite
+    ColorMap.BtnSelectedColor = clBtnFace
+    ColorMap.UnusedColor = clWhite
+    Font.Charset = DEFAULT_CHARSET
+    Font.Color = clWindowText
+    Font.Height = -11
+    Font.Name = 'Tahoma'
+    Font.Style = []
+    ParentFont = False
+    Spacing = 0
+  end
+  object JvDBGrid1: TJvDBGrid
+    Left = 0
+    Top = 26
+    Width = 784
+    Height = 390
+    Align = alClient
+    DataSource = DataMain.MasterDS
+    TabOrder = 1
+    TitleFont.Charset = DEFAULT_CHARSET
+    TitleFont.Color = clWindowText
+    TitleFont.Height = -11
+    TitleFont.Name = 'Tahoma'
+    TitleFont.Style = []
+    AutoSizeColumns = True
+    SelectColumnsDialogStrings.Caption = 'Select columns'
+    SelectColumnsDialogStrings.OK = '&OK'
+    SelectColumnsDialogStrings.NoSelectionWarning = 'At least one column must be visible!'
+    EditControls = <>
+    RowsHeight = 17
+    TitleRowHeight = 17
+    Columns = <
+      item
+        Expanded = False
+        FieldName = 'NAIM'
+        Title.Caption = #1060'.'#1048'.'#1054'.'
+        Width = 187
+        Visible = True
+      end
+      item
+        Expanded = False
+        FieldName = 'TEL'
+        Title.Caption = #1058#1077#1083#1077#1092#1086#1085
+        Width = 187
+        Visible = True
+      end
+      item
+        Expanded = False
+        FieldName = 'GOROD'
+        Title.Caption = #1043#1086#1088#1086#1076
+        Width = 187
+        Visible = True
+      end
+      item
+        Expanded = False
+        FieldName = 'ADDRESS'
+        Title.Caption = #1040#1076#1088#1077#1089
+        Width = 203
+        Visible = True
+      end>
+  end
+  object Panel1: TPanel
+    Left = 0
+    Top = 416
+    Width = 784
+    Height = 70
+    Align = alBottom
+    TabOrder = 2
+    object CB: TCheckBox
+      Left = 129
+      Top = 25
+      Width = 97
+      Height = 17
+      Caption = #1041#1099#1089#1090#1088#1099#1081' '#1087#1086#1080#1089#1082
+      TabOrder = 0
+      OnClick = CBClick
+      OnKeyDown = CBKeyDown
+    end
+    object Edit1: TEdit
+      Left = 264
+      Top = 21
+      Width = 345
+      Height = 21
+      TabOrder = 1
+      OnKeyDown = Edit1KeyDown
+    end
+  end
+  object ActionManager1: TActionManager
+    ActionBars = <
+      item
+        Items = <
+          item
+            Action = A_Ins
+            ImageIndex = 0
+            ShortCut = 45
+          end
+          item
+            Action = A_Edit
+            ImageIndex = 1
+            ShortCut = 115
+          end
+          item
+            Action = A_Del
+            ImageIndex = 2
+            ShortCut = 46
+          end
+          item
+            Caption = '-'
+          end
+          item
+            Action = A_Find
+            Caption = #1055#1086#1080#1089#1082
+            ImageIndex = 4
+            ShortCut = 117
+          end>
+        ActionBar = ActionToolBar1
+      end>
+    Images = DataMain.ImageList2
+    Left = 624
+    Top = 264
+    StyleName = 'XP Style'
+    object A_Exit: TAction
+      Category = #1057#1083#1091#1078#1077#1073#1085#1099#1077
+      Caption = #1042#1099#1093#1086#1076
+      OnExecute = A_ExitExecute
+    end
+    object A_WinCr: TAction
+      Category = #1057#1083#1091#1078#1077#1073#1085#1099#1077
+      Caption = #1057#1086#1079#1076#1072#1085#1080#1077' '#1086#1082#1085#1072
+      OnExecute = A_WinCrExecute
+    end
+    object A_Ins: TAction
+      Category = #1056#1077#1076#1072#1082#1090#1080#1088#1086#1074#1072#1085#1080#1077
+      Caption = #1044#1086#1073#1072#1074#1080#1090#1100
+      ImageIndex = 0
+      ShortCut = 45
+      OnExecute = A_InsExecute
+    end
+    object A_Edit: TAction
+      Category = #1056#1077#1076#1072#1082#1090#1080#1088#1086#1074#1072#1085#1080#1077
+      Caption = #1056#1077#1076#1072#1082#1090#1080#1088#1086#1074#1072#1090#1100
+      ImageIndex = 1
+      ShortCut = 115
+      OnExecute = A_EditExecute
+    end
+    object A_Del: TAction
+      Category = #1056#1077#1076#1072#1082#1090#1080#1088#1086#1074#1072#1085#1080#1077
+      Caption = #1059#1076#1072#1083#1080#1090#1100
+      ImageIndex = 2
+      ShortCut = 46
+      OnExecute = A_DelExecute
+    end
+    object A_Find: TAction
+      Category = #1056#1077#1076#1072#1082#1090#1080#1088#1086#1074#1072#1085#1080#1077
+      Caption = 'A_Find'
+      ImageIndex = 4
+      ShortCut = 117
+      OnExecute = A_FindExecute
+    end
+    object A_Vybor: TAction
+      Category = #1057#1083#1091#1078#1077#1073#1085#1099#1077
+      Caption = #1042#1099#1073#1086#1088
+      Enabled = False
+      SecondaryShortCuts.Strings = (
+        'RETURN'
+        'ENTER')
+      OnExecute = A_VyborExecute
+    end
+  end
+  object JclVersionCtrlAddCommand: TJvVersionControlAddAction
+    Caption = '&Add'
+  end
+  object Query1: TIBQuery
+    Database = DataMain.IBDB
+    Transaction = DataMain.IBT
+    SQL.Strings = (
+      'select CODE_MAST from CASHNAKL'
+      'where code_mast= :code_mast')
+    Left = 544
+    Top = 264
+    ParamData = <
+      item
+        DataType = ftUnknown
+        Name = 'code_mast'
+        ParamType = ptUnknown
+      end>
+    object Query1CODE_MAST: TIntegerField
+      FieldName = 'CODE_MAST'
+      Origin = '"CASHNAKL"."CODE_MAST"'
+    end
+  end
+end

@@ -1,0 +1,66 @@
+unit SprNewGrTov;
+
+interface
+
+uses
+  Windows, Messages, SysUtils, Classes, Graphics, Controls, Forms, Dialogs,
+  StdCtrls, Mask, DBCtrls;
+
+type
+  TNewGroup = class(TForm)
+    DBEdit1: TDBEdit;
+    procedure FormActivate(Sender: TObject);
+    procedure DBEdit1KeyDown(Sender: TObject; var Key: Word;
+      Shift: TShiftState);
+  private
+    { Private declarations }
+  public
+    { Public declarations }
+  end;
+
+var
+  NewGroup: TNewGroup;
+
+implementation
+
+uses Data, SpravTov;
+
+{$R *.DFM}
+
+procedure TNewGroup.FormActivate(Sender: TObject);
+var i : Integer;
+begin
+     i := 0;
+     With DataMain do
+          begin
+                  ConfigVit.Open;
+                  I := ConfigVit.FieldByName('Nomer3').AsInteger;
+                  ConfigVit.Edit;
+                  ConfigVit.FieldByName('Nomer3').AsInteger := I + 1;
+                  ConfigVit.Post;
+                  ConfigVit.Close;
+                  GrTovar.AppendRecord([nil,i+1]);
+                  GrTovar.ApplyUpdates;
+          end;
+
+end;
+
+procedure TNewGroup.DBEdit1KeyDown(Sender: TObject; var Key: Word;
+  Shift: TShiftState);
+begin
+     case Key of
+          VK_RETURN : begin
+                        DataMain.GrTovar.Post;
+                        NewGroup.ModalResult := 1;
+                        DataMain.GrTovar.ApplyUpdates;
+                      end;
+          VK_ESCAPE : begin
+                        DataMain.GrTovar.Cancel;
+                        DataMain.GrTovar.Delete;
+                        NewGroup.ModalResult := 1;
+                        DataMain.GrTovar.ApplyUpdates;
+                      end;
+     end;
+end;
+
+end.

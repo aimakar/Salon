@@ -1,0 +1,110 @@
+unit PrintPrihRep;
+
+interface
+
+uses
+  Windows, Messages, SysUtils, Classes, Graphics, Controls, Forms, Dialogs,
+  ExtCtrls, quickrpt, StdCtrls, Buttons, Db, DBTables, Grids, DBGrids, Mask,
+  PRINTERS, ComCtrls;
+
+type
+  TPrintPrih = class(TForm)
+    BitBtn1: TBitBtn;
+    CHB: TCheckBox;
+    BitBtn2: TBitBtn;
+    Table1: TTable;
+    Table1NOMER: TStringField;
+    Table1CODE: TFloatField;
+    Table1KOL: TFloatField;
+    Table1UP: TSmallintField;
+    Table1PRICE: TFloatField;
+    Table1Naim: TStringField;
+    Table1NDS: TIntegerField;
+    Table1NTD: TStringField;
+    Table1Strana: TStringField;
+    Table1Comm1: TStringField;
+    Table1Comm2: TStringField;
+    procedure FormKeyDown(Sender: TObject; var Key: Word;
+      Shift: TShiftState);
+    procedure BitBtn1Click(Sender: TObject);
+    procedure FormDestroy(Sender: TObject);
+    procedure FormCreate(Sender: TObject);
+    procedure BitBtn2Click(Sender: TObject);
+  private
+    { Private declarations }
+  public
+    { Public declarations }
+  end;
+
+var
+  PrintPrih: TPrintPrih;
+
+implementation
+
+uses Data, PrnPrihF, PrnPrihSCHF;
+
+{$R *.DFM}
+
+procedure TPrintPrih.FormKeyDown(Sender: TObject; var Key: Word;
+  Shift: TShiftState);
+begin
+     if Key=VK_ESCAPE then PrintPrih.ModalResult := mrOk;
+end;
+
+procedure TPrintPrih.BitBtn1Click(Sender: TObject);
+
+begin
+  Application.CreateForm(TPrnPrih, PrnPrih);
+  PrnPrih.Tag := 0;
+     if CHB.Checked then
+        PrnPrih.PrnPrihod.Preview
+     else
+        begin
+               PrnPrih.PrnPrihod.PrinterSettings.Orientation := poLandscape;
+//               PrnPrih.PrnPrihod.PrinterSetup;
+               PrnPrih.PrnPrihod.Print;
+        end;
+     PrnPrih.Release;
+     PrintPrih.ModalResult := mrOk;
+end;
+
+procedure TPrintPrih.FormDestroy(Sender: TObject);
+begin
+     With DataMain do
+          begin
+               TNPrih.Close;
+          end;
+
+end;
+
+procedure TPrintPrih.FormCreate(Sender: TObject);
+begin
+     With DataMain do
+          begin
+               TNPrih.Open;
+          end;
+
+end;
+
+procedure TPrintPrih.BitBtn2Click(Sender: TObject);
+begin
+  Application.CreateForm(TPrnPrihSCH, PrnPrihSCH);
+  PrnPrihSCH.Tag := 0;
+  DataMain.Rekv.Open;
+  Table1.Open;
+      DataMain.Rekv.FindKey([6]);
+  PrnPrihSCH.NDS := DataMain.RekvNDS.AsBoolean;
+  
+    if CHB.Checked then
+       PrnPrihSCH.CashTovC.Preview
+     else
+         begin
+         PrnPrihSCH.CashTovC.PrinterSetup;
+         PrnPrihSCH.CashTovC.Print;
+         end;
+  PrnPrihSCH.Release;
+  Table1.Close;
+  dataMain.Rekv.Close;
+end;
+
+end.

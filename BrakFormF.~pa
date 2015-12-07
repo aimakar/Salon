@@ -1,0 +1,406 @@
+unit BrakFormF;
+
+interface
+
+uses
+  Windows, Messages, SysUtils, Classes, Graphics, Controls, Forms, Dialogs,
+  Grids, DBGrids, DB, StdCtrls, Buttons, DBTables, ExtCtrls, RXClock, FileCtrl;
+    procedure Check;
+    procedure Prin;
+type
+  TBrakForm = class(TForm)
+    DBGrid1: TDBGrid;
+    ToB: TBitBtn;
+    CB: TCheckBox;
+    BitBtn1: TBitBtn;
+    Timer1: TTimer;
+    Query1: TQuery;
+    ExBtn: TBitBtn;
+    Q1: TQuery;
+    Q1Summa: TFloatField;
+    procedure DBGrid1KeyDown(Sender: TObject; var Key: Word;
+      Shift: TShiftState);
+    procedure FormKeyDown(Sender: TObject; var Key: Word;
+      Shift: TShiftState);
+    procedure FormActivate(Sender: TObject);
+    procedure FormDeactivate(Sender: TObject);
+    procedure ToBClick(Sender: TObject);
+    procedure DBGrid1DrawColumnCell(Sender: TObject; const Rect: TRect;
+      DataCol: Integer; Column: TColumn; State: TGridDrawState);
+
+    procedure CBKeyDown(Sender: TObject; var Key: Word;
+      Shift: TShiftState);
+    procedure CBClick(Sender: TObject);
+    procedure BitBtn1Click(Sender: TObject);
+    procedure Timer1Timer(Sender: TObject);
+    procedure FormDestroy(Sender: TObject);
+    procedure FormCreate(Sender: TObject);
+    procedure FormClose(Sender: TObject; var Action: TCloseAction);
+    procedure ExBtnClick(Sender: TObject);
+  private
+    { Private declarations }
+  public
+    { Public declarations }
+  end;
+
+var
+  BrakForm: TBrakForm;
+  Dost : String;
+
+implementation
+
+uses Data, Pro, BrakTF, Sklad, PrintBrakF;
+
+{$R *.DFM}
+
+procedure TBrakForm.DBGrid1KeyDown(Sender: TObject; var Key: Word;
+  Shift: TShiftState);
+var S,S1 : String;
+    I : Integer;
+    L : Boolean;
+begin
+     L := False;
+     case Key of
+     VK_Space: if NasDost(Dost[26]) then
+               if Datamain.BRNakl.IsEmpty
+                      then
+                          ShowMessage('Че смотреть то будем, нет ничего еще!')
+                      else
+                          With DataMain do
+                              begin
+                                   if (BRNaklPriz.AsBoolean) then BrakT.tag := 1 else BrakT.tag := 0;
+                                   BrakT.Label2.Caption := BRNaklNomer.AsString;
+                                   BrakT.DE.Text := BRNaklOt.AsString;
+                                   BrakT.ShowModal;
+                                   if BRNakl.State = dsBrowse then BRNakl.Edit;
+                                   BRNakl.FieldByName('Ot').AsString := BrakT.DE.Text;
+                                   BRNakl.FieldByName('Summa').AsFloat := StrToFloat(Trim(BrakT.Label11.Caption));
+                                   BRNakl.Post;
+                              end;
+     VK_DELETE : if (NasDost(Dost[26]) and NasDost(Dost[27])) then
+                 if not(DataMain.BRNakl.FieldByName('Priz').AsBoolean)  then
+                  if MessageDlg('Удалить накладную?',
+                     mtConfirmation, [mbNo, mbYes], 0) = mrYes then
+                        With DataMain do begin
+                           Valyta.Open;
+                           Tovar.Open;
+                           Ost.Open;
+                           BRTN.Open;
+                           BRTN.First;
+                           While not(DataMain.BRTN.Eof) do
+                             begin
+                             I := BRTNKol.AsInteger;
+                             if not(Ost.FindKey([BRTN.FieldByName('Code').AsInteger])) and not(I=0) then
+                                begin
+                                ShowMessage('А как это??? Как Вы его смогли отписать то????');
+                                BRTN.Next;
+                                L := True;
+                                end
+                             else
+                                 begin
+                                Ost.Edit;
+                                OstKol1.AsInteger := OstKol1.AsInteger + I;
+                                Ost.Post;
+                                BRTN.Delete;
+                                end;
+                             end;
+                           if not(L) then BRNakl.Delete;
+                           BRTN.Close;
+                           Ost.Close;
+                           Tovar.Close;
+                           Valyta.Close;
+                        end;
+     VK_INSERT : if (NasDost(Dost[26]) and NasDost(Dost[27])) then begin
+                        Datamain.ConfigVit.open;
+                        I := Datamain.ConfigVitNomer19.AsInteger + 1;
+                        Datamain.ConfigVit.Edit;
+                        Datamain.ConfigVitNomer19.AsInteger := I;
+                        Datamain.ConfigVit.Post;
+                        Datamain.ConfigVit.Close;
+                        S1 := '-Брак';
+                        S := IntToStr(I) + S1;
+                        With DataMain.BRNakl do
+                            begin
+                                 Append;
+                                 FieldByName('Operac').AsString := DataMain.DostupNaim.AsString;
+                                 FieldByname('OperacDat').AsDateTime := Now;
+                                 FieldByName('Nomer').AsString := S;
+                                 FieldByName('Ot').AsDateTime := Now;
+                                 FieldByName('Priz').AsBoolean := False;
+                                 Post;
+                                 BrakT.Label2.Caption := FieldByName('Nomer').AsString;
+                                 BrakT.DE.Text := FieldByName('Ot').AsString;
+                                 BrakT.ShowModal;
+                                 Edit;
+                                 FieldByName('Ot').AsString := BrakT.DE.Text;
+                                 FieldByName('Summa').AsFloat := StrToFloat(Trim(BrakT.Label11.Caption));
+                                 Post;
+                            end;
+                     end;
+     VK_F6 : if InputQuery('Поиск по номеру','Введите номер',S) then
+                  With Datamain.BrNakl do
+                       begin
+                            DisableControls;
+                            Locate('Nomer',S,[loPartialKey]);
+                            enableControls;
+                       end;
+     VK_F5 : Prin;
+   end;
+
+end;
+
+procedure TBrakForm.FormKeyDown(Sender: TObject; var Key: Word;
+  Shift: TShiftState);
+begin
+     if Key = VK_ESCAPE then
+        begin
+             BrakForm.Release;
+        end;
+
+end;
+
+procedure TBrakForm.FormActivate(Sender: TObject);
+begin
+     With DataMain do
+          begin
+               BRNakl.Open;
+               Dost := DostupDost1.AsString;
+          end;
+  ToB.visible := NasDost(Dost[28]);
+  ExBtn.Visible := NasDost(Dost[8]);
+  BitBtn1.Visible := NasDost(Dost[29]);
+  Timer1.Enabled := True;
+  Application.CreateForm(TBrakT, BrakT);
+  Main.N9.Enabled := False;
+end;
+
+procedure TBrakForm.FormDeactivate(Sender: TObject);
+begin
+Timer1.Enabled := False;
+     With DataMain do
+          begin
+               BRNakl.Close;
+          end;
+BrakT.Release;
+
+end;
+
+procedure TBrakForm.ToBClick(Sender: TObject);
+var S,S1: String;
+begin
+      With DataMain do
+            begin
+             Valyta.Open;
+             Tovar.Open;
+             Ost.Open;
+             Ost.First;
+             BRTN.Open;
+             BRTN.First;
+             while not(BRTN.EOF) do
+              begin
+               Ost.FindKey([BRTNCode.AsInteger]);
+               Ost.Edit;
+               OstKol2.AsInteger := OstKol2.AsInteger - BRTNKol.AsInteger;
+               Ost.post;
+               BRTN.Next;
+              end;
+             BRTN.Close;
+             Tovar.Close;
+             Valyta.Close;
+{Вставить обработку операциониста}
+
+             BRNakl.Edit;
+             BRNakl.FieldByName('Priz').AsBoolean := True;
+             BRNakl.FieldByName('PrizDat').AsDateTime := date();
+             BrNaklOperac.AsString := DostupNaim.AsString;
+             BRNakl.Post;
+             BrakForm.ToB.Enabled := False;
+            end;
+
+end;
+
+procedure TBrakForm.DBGrid1DrawColumnCell(Sender: TObject;
+  const Rect: TRect; DataCol: Integer; Column: TColumn;
+  State: TGridDrawState);
+var a, ex : Boolean;
+begin
+a := DataMain.BRNaklPriz.AsBoolean;
+ex := DataMain.BrNaklExp.AsBoolean;
+with DBGrid1.Canvas do begin
+     if a and (not (gdFocused in State)) then
+      begin
+       Font.Color := clGreen;
+       FillRect (Rect);
+       TextOut(Rect.Left,Rect.Top,Column.Field.Text);
+      end
+     else DBGrid1.DefaultDrawColumnCell(Rect,DataCol,Column,State);
+     if gdFocused in State then
+      begin
+       if Ex then
+          ExBtn.Font.Color := clRed
+       else
+           ExBtn.Font.Color := clBlack;
+       if a then
+          ToB.Enabled := False
+       else
+          ToB.Enabled := True;
+      end;
+end;
+
+end;
+
+procedure Check;
+begin
+     if BrakForm.CB.Checked then
+      begin
+       DataMain.BRNakl.Filter := 'not([Priz])';
+       DataMain.BRNakl.Filtered := True;
+      end
+     else
+      begin
+       DataMain.BRNakl.Filtered := False;
+      end;
+end;
+
+
+
+procedure TBrakForm.CBKeyDown(Sender: TObject; var Key: Word;
+  Shift: TShiftState);
+begin
+  Check;
+end;
+
+procedure TBrakForm.CBClick(Sender: TObject);
+begin
+ Check;
+end;
+
+procedure Prin;
+var S, S1 : String;
+begin
+   with BrakForm do
+   begin
+    DataMain.BRNakl.DisableControls;
+    Query1.Close;
+    Application.CreateForm(TPrintBrak, PrintBrak);
+    S := DataMain.BrNaklNOMER.AsString;
+    Query1.ParamByName('Nomer').AsString := S;
+    Query1.Open;
+    with DataMain.Brnakl do begin
+       Edit;
+       FieldByname('Summa').AsFloat := Query1.FieldByname('summa').AsFloat;
+       Post;
+    end;
+    S1 := S;
+    Delete(S,Pos('-',S),Length(S));
+    DataMain.BRNakl.Tag := StrToInt(S);
+    DataMain.BRNakl.Filtered := False;
+    DataMain.BRNakl.Filter := '';
+    DataMain.BRNakl.Filtered := True;
+    DataMain.BRNakl.Refresh;
+    PrintBRak.SHowModal;
+    DataMain.BRNakl.Filtered := False;
+    DataMain.BRNakl.Tag := 0;
+    PrintBRak.Release;
+    DataMain.BRNakl.Locate('Nomer',S1,[]);
+    DataMain.BRNakl.EnableControls;
+   end;
+end;
+
+
+procedure TBrakForm.BitBtn1Click(Sender: TObject);
+begin
+     Prin;
+end;
+
+procedure TBrakForm.Timer1Timer(Sender: TObject);
+begin
+     DataMain.BRNakl.Refresh;
+end;
+
+procedure TBrakForm.FormDestroy(Sender: TObject);
+begin
+  Main.N9.Enabled := True;
+
+end;
+
+procedure TBrakForm.FormCreate(Sender: TObject);
+begin
+     Main.N9.Enabled := False;
+end;
+
+procedure TBrakForm.FormClose(Sender: TObject; var Action: TCloseAction);
+begin
+    Action := caFree;
+end;
+
+procedure TBrakForm.ExBtnClick(Sender: TObject);
+var F : TextFile;
+    S : String;
+begin
+     With DataMain do
+      begin
+        if not(BrNaklOtk.AsBoolean) then
+         begin
+              BrakForm.Timer1.Enabled := False;
+              S := BrNaklNOMER.AsString;
+              BrakForm.Q1.Close;
+              BrakForm.Q1.ParamByname('Nakl').AsString := S;
+              BrakForm.Q1.Open;
+              BrakForm.Q1.First;
+              BrNakl.Edit;
+              BrNaklOtk.ASBoolean := True;
+              if not(BrakForm.Q1.Eof) then
+                begin
+                 try
+                    BrNaklSumma.AsFloat := BrakForm.Q1Summa.AsFloat;
+                 except
+                    BrNaklSumma.AsFloat := 0;
+                 end;
+                end;
+              BrNakl.Post;
+              BrakForm.Q1.Close;
+              if not(DirectoryExists('Q:\New\Export')) then ForceDirectories('Q:\New\Export');
+              AssignFile(F, 'Q:\New\Export\'+BrNaklNomer.AsString+'.nkl');
+              Rewrite(F);
+              WriteLN(F,'Накладная;',
+                        BrNaklNomer.AsString + ';',
+                        BrNaklOt.AsString + ';',
+                        'БРАК;',
+                        BrNaklSumma.AsString + ';',
+                        ';');
+              BrTn.Open;
+              BrTn.First;
+              while not(BrTn.Eof) do
+               begin
+                 WriteLN(F,'Товар;',
+                        BrTnNomer.AsString + ';',
+                        BrTnNaim.AsString + ';',
+                        BrTnKol.AsString + ';',
+                        BrTnPrice.AsString + ';',
+                        BrTnMesto.asString + ';',
+                        BrTnUp.AsString + ';',
+                        BrTnV_UP.AsString+';'
+                        +';'
+                        +';'
+                        +';'
+                        +';'
+                        +';'
+                        +   BrTnStella.AsString + '-' +  DataMain.get_sokr_post(BrTNcode.asInteger) + ';'
+                        );
+                 BrTn.Next;
+               end;
+              BrTn.Close;
+              CloseFile(F);
+              BrNakl.Edit;
+              BrNaklOtk.ASBoolean := False;
+              BrNaklExp.AsBoolean := True;
+              BrNakl.Post;
+              BrakForm.Timer1.Enabled := True;
+
+         end;
+      end;
+
+end;
+
+end.

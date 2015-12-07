@@ -1,0 +1,1162 @@
+unit Sklad;
+
+interface
+
+uses
+  Windows, Messages, SysUtils, Classes, Graphics, Controls, Forms, Dialogs,
+  Menus, ExtCtrls, RXClock, ComCtrls, Db, DBTables, Buttons, ToolWin,
+  StdCtrls, DBCtrls;
+
+procedure Ustanovka;
+
+type
+  TMain = class(TForm)
+    MainMenu1: TMainMenu;
+    N1: TMenuItem;
+    N2: TMenuItem;
+    N3: TMenuItem;
+    N4: TMenuItem;
+    N5: TMenuItem;
+    N6: TMenuItem;
+    N7: TMenuItem;
+    N8: TMenuItem;
+    N9: TMenuItem;
+    N10: TMenuItem;
+    N11: TMenuItem;
+    N12: TMenuItem;
+    N13: TMenuItem;
+    N14: TMenuItem;
+    N15: TMenuItem;
+    N18: TMenuItem;
+    N19: TMenuItem;
+    N20: TMenuItem;
+    N21: TMenuItem;
+    N22: TMenuItem;
+    N23: TMenuItem;
+    N24: TMenuItem;
+    N17: TMenuItem;
+    N26: TMenuItem;
+    N27: TMenuItem;
+    N28: TMenuItem;
+    N29: TMenuItem;
+    N30: TMenuItem;
+    N31: TMenuItem;
+    N32: TMenuItem;
+    N33: TMenuItem;
+    N34: TMenuItem;
+    N35: TMenuItem;
+    N38: TMenuItem;
+    N39: TMenuItem;
+    Cash1: TMenuItem;
+    N41: TMenuItem;
+    N42: TMenuItem;
+    N50: TMenuItem;
+    N40: TMenuItem;
+    N47: TMenuItem;
+    N43: TMenuItem;
+    N44: TMenuItem;
+    N45: TMenuItem;
+    N52: TMenuItem;
+    N53: TMenuItem;
+    N54: TMenuItem;
+    N55: TMenuItem;
+    N60: TMenuItem;
+    N56: TMenuItem;
+    N61: TMenuItem;
+    N62: TMenuItem;
+    N63: TMenuItem;
+    N64: TMenuItem;
+    N65: TMenuItem;
+    N57: TMenuItem;
+    CashandCarry1: TMenuItem;
+    N59: TMenuItem;
+    N66: TMenuItem;
+    N67: TMenuItem;
+    N68: TMenuItem;
+    N75: TMenuItem;
+    N76: TMenuItem;
+    N77: TMenuItem;
+    N78: TMenuItem;
+    N79: TMenuItem;
+    N80: TMenuItem;
+    N81: TMenuItem;
+    N82: TMenuItem;
+    N83: TMenuItem;
+    N84: TMenuItem;
+    N85: TMenuItem;
+    N86: TMenuItem;
+    N87: TMenuItem;
+    N88: TMenuItem;
+    N89: TMenuItem;
+    N90: TMenuItem;
+    N91: TMenuItem;
+    N92: TMenuItem;
+    N93: TMenuItem;
+    N94: TMenuItem;
+    N95: TMenuItem;
+    N96: TMenuItem;
+    N97: TMenuItem;
+    N98: TMenuItem;
+    N69: TMenuItem;
+    N70: TMenuItem;
+    N71: TMenuItem;
+    N72: TMenuItem;
+    N73: TMenuItem;
+    N74: TMenuItem;
+    N99: TMenuItem;
+    N100: TMenuItem;
+    N101: TMenuItem;
+    N102: TMenuItem;
+    N103: TMenuItem;
+    N104: TMenuItem;
+    N105: TMenuItem;
+    N106: TMenuItem;
+    N107: TMenuItem;
+    N108: TMenuItem;
+    N109: TMenuItem;
+    N110: TMenuItem;
+    N111: TMenuItem;
+    N112: TMenuItem;
+    N113: TMenuItem;
+    N114: TMenuItem;
+    N115: TMenuItem;
+    N116: TMenuItem;
+    N117: TMenuItem;
+    N118: TMenuItem;
+    N119: TMenuItem;
+    N120: TMenuItem;
+    N121: TMenuItem;
+    N122: TMenuItem;
+    N123: TMenuItem;
+    N124: TMenuItem;
+    N125: TMenuItem;
+    N126: TMenuItem;
+    N127: TMenuItem;
+    N128: TMenuItem;
+    N129: TMenuItem;
+    N130: TMenuItem;
+    N131: TMenuItem;
+    N132: TMenuItem;
+    N133: TMenuItem;
+    N134: TMenuItem;
+    N135: TMenuItem;
+    N136: TMenuItem;
+    N137: TMenuItem;
+    N138: TMenuItem;
+    N25: TMenuItem;
+    N36: TMenuItem;
+    N37: TMenuItem;
+    StatusBar1: TStatusBar;
+    N139: TMenuItem;
+    N140: TMenuItem;
+    N141: TMenuItem;
+    N142: TMenuItem;
+    N143: TMenuItem;
+    N144: TMenuItem;
+    N145: TMenuItem;
+    N58: TMenuItem;
+    N146: TMenuItem;
+    Timer1: TTimer;
+    N147: TMenuItem;
+    N148: TMenuItem;
+    N149: TMenuItem;
+    N46: TMenuItem;
+    N48: TMenuItem;
+    N49: TMenuItem;
+    N51: TMenuItem;
+    N150: TMenuItem;
+    N151: TMenuItem;
+    N152: TMenuItem;
+    N153: TMenuItem;
+    N154: TMenuItem;
+    N155: TMenuItem;
+    N156: TMenuItem;
+    N157: TMenuItem;
+    N158: TMenuItem;
+    N159: TMenuItem;
+    N160: TMenuItem;
+    N161: TMenuItem;
+    N162: TMenuItem;
+    N163: TMenuItem;
+    procedure N22Click(Sender: TObject);
+    procedure N2Click(Sender: TObject);
+    procedure N13Click(Sender: TObject);
+    procedure N19Click(Sender: TObject);
+    procedure N14Click(Sender: TObject);
+    procedure N15Click(Sender: TObject);
+    procedure N24Click(Sender: TObject);
+    procedure N18Click(Sender: TObject);
+    procedure N27Click(Sender: TObject);
+    procedure N32Click(Sender: TObject);
+    procedure N3Click(Sender: TObject);
+    procedure N34Click(Sender: TObject);
+    procedure N38Click(Sender: TObject);
+    procedure N26Click(Sender: TObject);
+    procedure N8Click(Sender: TObject);
+    procedure N39Click(Sender: TObject);
+    procedure Cash1Click(Sender: TObject);
+    procedure N31Click(Sender: TObject);
+    procedure N41Click(Sender: TObject);
+    procedure N28Click(Sender: TObject);
+    procedure N9Click(Sender: TObject);
+    procedure N40Click(Sender: TObject);
+    procedure N50Click(Sender: TObject);
+    procedure N45Click(Sender: TObject);
+    procedure N54Click(Sender: TObject);
+    procedure N56Click(Sender: TObject);
+    procedure N61Click(Sender: TObject);
+    procedure N63Click(Sender: TObject);
+    procedure N65Click(Sender: TObject);
+    procedure N60Click(Sender: TObject);
+    procedure N33Click(Sender: TObject);
+    procedure N75Click(Sender: TObject);
+    procedure N76Click(Sender: TObject);
+    procedure N77Click(Sender: TObject);
+    procedure N78Click(Sender: TObject);
+    procedure N79Click(Sender: TObject);
+    procedure N105Click(Sender: TObject);
+    procedure N80Click(Sender: TObject);
+    procedure N81Click(Sender: TObject);
+    procedure N82Click(Sender: TObject);
+    procedure N83Click(Sender: TObject);
+    procedure N84Click(Sender: TObject);
+    procedure N107Click(Sender: TObject);
+    procedure N85Click(Sender: TObject);
+    procedure N86Click(Sender: TObject);
+    procedure N87Click(Sender: TObject);
+    procedure N88Click(Sender: TObject);
+    procedure N89Click(Sender: TObject);
+    procedure N109Click(Sender: TObject);
+    procedure N90Click(Sender: TObject);
+    procedure N91Click(Sender: TObject);
+    procedure N92Click(Sender: TObject);
+    procedure N93Click(Sender: TObject);
+    procedure N111Click(Sender: TObject);
+    procedure N94Click(Sender: TObject);
+    procedure N95Click(Sender: TObject);
+    procedure N96Click(Sender: TObject);
+    procedure N97Click(Sender: TObject);
+    procedure N98Click(Sender: TObject);
+    procedure N113Click(Sender: TObject);
+    procedure N114Click(Sender: TObject);
+    procedure N115Click(Sender: TObject);
+    procedure N127Click(Sender: TObject);
+    procedure N135Click(Sender: TObject);
+    procedure N118Click(Sender: TObject);
+    procedure N124Click(Sender: TObject);
+    procedure N129Click(Sender: TObject);
+    procedure N72Click(Sender: TObject);
+    procedure N70Click(Sender: TObject);
+    procedure N74Click(Sender: TObject);
+    procedure N73Click(Sender: TObject);
+    procedure N71Click(Sender: TObject);
+    procedure N137Click(Sender: TObject);
+    procedure N138Click(Sender: TObject);
+    procedure FormShow(Sender: TObject);
+    procedure N125Click(Sender: TObject);
+    procedure N36Click(Sender: TObject);
+    procedure N35Click(Sender: TObject);
+    procedure N119Click(Sender: TObject);
+    procedure N120Click(Sender: TObject);
+    procedure N123Click(Sender: TObject);
+    procedure N139Click(Sender: TObject);
+    procedure N142Click(Sender: TObject);
+    procedure N37Click(Sender: TObject);
+    procedure N57Click(Sender: TObject);
+    procedure N47Click(Sender: TObject);
+    procedure N143Click(Sender: TObject);
+    procedure N145Click(Sender: TObject);
+    procedure N58Click(Sender: TObject);
+    procedure N102Click(Sender: TObject);
+    procedure N141Click(Sender: TObject);
+    procedure N146Click(Sender: TObject);
+    procedure Timer1Timer(Sender: TObject);
+    procedure StatusBar1DblClick(Sender: TObject);
+    procedure N149Click(Sender: TObject);
+    procedure N46Click(Sender: TObject);
+    procedure N48Click(Sender: TObject);
+    procedure N49Click(Sender: TObject);
+    procedure N150Click(Sender: TObject);
+    procedure N152Click(Sender: TObject);
+    procedure N153Click(Sender: TObject);
+    procedure N155Click(Sender: TObject);
+    procedure N156Click(Sender: TObject);
+    procedure N157Click(Sender: TObject);
+    procedure N158Click(Sender: TObject);
+    procedure N159Click(Sender: TObject);
+    procedure N160Click(Sender: TObject);
+    procedure N163Click(Sender: TObject);
+  private
+    { Private declarations }
+  public
+    { Public declarations }
+  end;
+
+var
+  Main: TMain;
+
+implementation
+
+uses SpravVal,  Data, SpravTov, SpravPokup, SprPostF, SpravProiz,
+  SprOperF, SpravOtvF, SpravUsers, VitF, PredRezF,
+  SprPredstavF,  SprSkladF, VanFormF, OstMF, SvodObF,
+  NedFormF, IzlFormF, BrakFormF, PrihodFormF, VozvFormF, AktFormF,
+  CashFormF, RoznFormF, VnutFormF, TipTovF, TPSkUrF, PriceTorgF, OtpTovF,
+  OtpKlF, InvF, UrovenF, SvodCashF, SvodCash1F, SvodCash2F, SvodCash3F,
+  SvodCash4F, SvodCash5F, SvodPredF, SvodPred1F, Svodpred2F, SvodPred3F,
+  SvodPred4F, SvodPred5F, SvodVanF, SvodVan1F, SvodVan2F, SvodVan3F,
+  SvodVan4F, SvodVan5F, SvodRoznF, SvodRozn1F, SvodRozn2F, SvodRozn3F,
+  SvodRozn4F, SvodVF, SvodV1F, SvodV2F, SvodV3F, SvodV4F, SvodV5F,
+  SvodAkt1F, SvodAktF, RevF, SvodSCHF, RevvitF, RevPodgF, RevSvedF,
+  SvodBrakF, SvodNedF, SvodPrihF, SvodVozvF, SvodIzlF, SvodOplF, SvodDatF,
+  SprUserF, Pro, EnterPassF, RevBlF, BaseChangeF, VitRashF, RevVitPodgF,
+  RevVitBLF, RevVitSvedF, NastF, SprVidPrF, InvVitF, OstGrF, OstAllF,
+  PriceAllF, AboutBoxF, OtpusTovF, SvodVitF, OstVitF, SvodAktSodF, CheckDBF, ZPredF,
+  CheckSertF, SvodCashSkF, ZRoznF, Klad_SprF, Klad_RepF, AvSk_RepF,
+  Svod_Dviz_PredF, Svod_Dviz_PokF, SprVanSkUrovF, SprNewF, Tovar_GroupF ;
+
+{$R *.DFM}
+
+procedure TMain.N22Click(Sender: TObject);
+begin
+  if MessageDlg('Вы хотите выйти?',
+    mtConfirmation, [mbYes, mbNo], 0) = mrYes then
+    Main.Close;
+end;
+
+procedure TMain.N2Click(Sender: TObject);
+begin
+  Application.CreateForm(TPrihodForm, PrihodForm);
+  N2.Enabled := False;
+
+end;
+
+procedure TMain.N13Click(Sender: TObject);
+begin
+  Application.CreateForm(TSprTov, SprTov);
+  N13.Enabled := False;
+end;
+
+procedure TMain.N19Click(Sender: TObject);
+begin
+  Application.CreateForm(TSprVal, SprVal);
+  N19.Enabled := False;
+end;
+
+procedure TMain.N14Click(Sender: TObject);
+begin
+  Application.CreateForm(TSprPokup, SprPokup);
+  N14.Enabled := False;
+end;
+
+procedure TMain.N15Click(Sender: TObject);
+begin
+  Application.CreateForm(TSprProiz, SprProiz);
+  N15.Enabled := False;
+end;
+
+procedure TMain.N24Click(Sender: TObject);
+begin
+  Application.CreateForm(TSprPost, SprPost);
+  N24.Enabled := False;
+end;
+
+procedure TMain.N18Click(Sender: TObject);
+begin
+  Application.CreateForm(TSprOper, SprOper);
+  N18.Enabled := False;
+end;
+
+procedure TMain.N27Click(Sender: TObject);
+begin
+     N27.Enabled := False;
+     Application.CreateForm(TSprVidPr, SprVidPr);
+end;
+
+procedure TMain.N32Click(Sender: TObject);
+begin
+     N32.Enabled := False;
+     Application.CreateForm(TSprUser, SprUser);
+end;
+
+procedure TMain.N3Click(Sender: TObject);
+begin
+  Application.CreateForm(TVozvForm, VozvForm);
+  N3.Enabled := True;
+end;
+
+procedure TMain.N34Click(Sender: TObject);
+begin
+     Application.CreateForm(TVitPrih, VitPrih);
+     N34.Enabled := False;
+end;
+
+procedure TMain.N38Click(Sender: TObject);
+begin
+  Application.CreateForm(TPredRez, PredRez);
+  DataMain.PredOtp.Filtered := False;
+  N38.Enabled := False;
+end;
+
+procedure TMain.N26Click(Sender: TObject);
+begin
+  Application.CreateForm(TSprPredstav, SprPredstav);
+  N26.Enabled := True;
+end;
+
+procedure TMain.N8Click(Sender: TObject);
+begin
+  Application.CreateForm(TCashForm, CashForm);
+  DataMain.CashNakl.Filtered := False;
+  N8.Enabled := False;
+end;
+
+
+procedure TMain.N39Click(Sender: TObject);
+begin
+  Application.CreateForm(TVanForm, VanForm);
+  DataMain.VanOtp.Filtered := False;
+  N39.Enabled := False;
+end;
+
+procedure TMain.Cash1Click(Sender: TObject);
+begin
+  Application.CreateForm(TRoznForm, RoznForm);
+  Cash1.Enabled := False;
+end;
+
+procedure TMain.N31Click(Sender: TObject);
+begin
+  Application.CreateForm(TSprSklad, SprSklad);
+  N31.Enabled := False;
+end;
+
+procedure TMain.N41Click(Sender: TObject);
+begin
+  Application.CreateForm(TVnutForm, VnutForm);
+  N41.Enabled := True;
+end;
+
+procedure TMain.N28Click(Sender: TObject);
+begin
+  Application.CreateForm(TIzlForm, IzlForm);
+  N28.Enabled := False;
+end;
+
+procedure TMain.N9Click(Sender: TObject);
+begin
+  Application.CreateForm(TBrakForm, BrakForm);
+  N9.Enabled := False;
+end;
+
+procedure TMain.N40Click(Sender: TObject);
+begin
+  Application.CreateForm(TAktForm, AktForm);
+  N40.Enabled := False;
+end;
+
+procedure TMain.N50Click(Sender: TObject);
+begin
+  Application.CreateForm(TTipTov, TipTov);
+  N50.Enabled := False;
+end;
+
+procedure TMain.N45Click(Sender: TObject);
+begin
+  Application.CreateForm(TTPSkUr, TPSkUr);
+  N45.Enabled := False;
+
+end;
+
+procedure TMain.N54Click(Sender: TObject);
+begin
+     Application.CreateForm(TPriceTorg, PriceTorg);
+     N54.Enabled := False;
+end;
+
+procedure TMain.N56Click(Sender: TObject);
+begin
+  Application.CreateForm(TOtpusTov, OtpusTov);
+     N56.Enabled := False;
+end;
+
+procedure TMain.N61Click(Sender: TObject);
+begin
+  Application.CreateForm(TOtpKl, OtpKl);
+     N61.Enabled := False;
+end;
+
+procedure TMain.N63Click(Sender: TObject);
+begin
+     Application.CreateForm(TInv, Inv);
+     N63.Enabled := False;
+end;
+
+procedure TMain.N65Click(Sender: TObject);
+begin
+     Application.CreateForm(TOstM, OstM);
+     N65.Enabled := False;
+end;
+
+procedure TMain.N60Click(Sender: TObject);
+begin
+     Application.CreateForm(TSvodOb, SvodOb);
+     N60.Enabled := False;
+end;
+
+procedure TMain.N33Click(Sender: TObject);
+begin
+     N33.Enabled := False;
+     Application.CreateForm(TUroven, Uroven);
+end;
+
+procedure TMain.N75Click(Sender: TObject);
+begin
+  N75.Enabled := False;
+  Application.CreateForm(TSvodcash, Svodcash);
+end;
+
+procedure TMain.N76Click(Sender: TObject);
+begin
+  N76.Enabled := False;
+  Application.CreateForm(TSvodcash1, Svodcash1);
+
+end;
+
+procedure TMain.N77Click(Sender: TObject);
+begin
+  N77.Enabled := False;
+  Application.CreateForm(TSvodcash2, Svodcash2);
+
+end;
+
+procedure TMain.N78Click(Sender: TObject);
+begin
+  N78.Enabled := False;
+  Application.CreateForm(TSvodcash3, Svodcash3);
+
+end;
+
+procedure TMain.N79Click(Sender: TObject);
+begin
+  N79.Enabled := False;
+  Application.CreateForm(TSvodcash4, Svodcash4);
+
+end;
+
+procedure TMain.N105Click(Sender: TObject);
+begin
+  N105.Enabled := False;
+  Application.CreateForm(TSvodcash5, Svodcash5);
+
+end;
+
+procedure TMain.N80Click(Sender: TObject);
+begin
+  N80.Enabled := False;
+  Application.CreateForm(TSvodPred, SvodPred);
+end;
+
+procedure TMain.N81Click(Sender: TObject);
+begin
+  N81.Enabled := False;
+  Application.CreateForm(TSvodPred1, SvodPred1);
+end;
+
+procedure TMain.N82Click(Sender: TObject);
+begin
+  N82.Enabled := False;
+  Application.CreateForm(TSvodPred2, SvodPred2);
+end;
+
+procedure TMain.N83Click(Sender: TObject);
+begin
+  N83.Enabled := False;
+  Application.CreateForm(TSvodPred3, SvodPred3);
+end;
+
+procedure TMain.N84Click(Sender: TObject);
+begin
+  N84.Enabled := False;
+  Application.CreateForm(TSvodPred4, SvodPred4);
+end;
+
+procedure TMain.N107Click(Sender: TObject);
+begin
+  N107.Enabled := False;
+  Application.CreateForm(TSvodPred5, SvodPred5);
+end;
+
+procedure TMain.N85Click(Sender: TObject);
+begin
+  N85.Enabled := False;
+  Application.CreateForm(TSvodVan, SvodVan);
+end;
+
+procedure TMain.N86Click(Sender: TObject);
+begin
+  N86.Enabled := False;
+  Application.CreateForm(TSvodVan1, SvodVan1);
+
+end;
+
+procedure TMain.N87Click(Sender: TObject);
+begin
+  N87.Enabled := False;
+  Application.CreateForm(TSvodVan2, SvodVan2);
+
+end;
+
+procedure TMain.N88Click(Sender: TObject);
+begin
+  N88.Enabled := False;
+  Application.CreateForm(TSvodVan3, SvodVan3);
+
+end;
+
+procedure TMain.N89Click(Sender: TObject);
+begin
+  N88.Enabled := False;
+  Application.CreateForm(TSvodVan4, SvodVan4);
+
+end;
+
+procedure TMain.N109Click(Sender: TObject);
+begin
+  N109.Enabled := False;
+  Application.CreateForm(TSvodVan5, SvodVan5);
+
+end;
+
+procedure TMain.N90Click(Sender: TObject);
+begin
+  N90.Enabled := False;
+  Application.CreateForm(TSvodRozn, SvodRozn);
+
+end;
+
+procedure TMain.N91Click(Sender: TObject);
+begin
+  N91.Enabled := False;
+  Application.CreateForm(TSvodRozn1, SvodRozn1);
+end;
+
+procedure TMain.N92Click(Sender: TObject);
+begin
+  N92.Enabled := False;
+  Application.CreateForm(TSvodRozn2, SvodRozn2);
+end;
+
+procedure TMain.N93Click(Sender: TObject);
+begin
+  N93.Enabled := False;
+  Application.CreateForm(TSvodRozn3, SvodRozn3);
+
+end;
+
+procedure TMain.N111Click(Sender: TObject);
+begin
+  N111.Enabled := False;
+  Application.CreateForm(TSvodRozn4, SvodRozn4);
+
+end;
+
+procedure TMain.N94Click(Sender: TObject);
+begin
+  N94.Enabled := False;
+  Application.CreateForm(TSvodV, SvodV);
+
+end;
+
+procedure TMain.N95Click(Sender: TObject);
+begin
+  N95.Enabled := False;
+  Application.CreateForm(TSvodV1, SvodV1);
+
+end;
+
+procedure TMain.N96Click(Sender: TObject);
+begin
+  N96.Enabled := False;
+  Application.CreateForm(TSvodV2, SvodV2);
+
+end;
+
+procedure TMain.N97Click(Sender: TObject);
+begin
+  N97.Enabled := False;
+  Application.CreateForm(TSvodV3, SvodV3);
+
+end;
+
+procedure TMain.N98Click(Sender: TObject);
+begin
+  N98.Enabled := False;
+  Application.CreateForm(TSvodV4, SvodV4);
+
+end;
+
+procedure TMain.N113Click(Sender: TObject);
+begin
+  N113.Enabled := False;
+  Application.CreateForm(TSvodV5, SvodV5);
+
+end;
+
+procedure TMain.N114Click(Sender: TObject);
+begin
+  N114.Enabled := False;
+  Application.CreateForm(TSvodAkt, SvodAkt);
+
+end;
+
+procedure TMain.N115Click(Sender: TObject);
+begin
+  N115.Enabled := False;
+  Application.CreateForm(TSvodAkt1, SvodAkt1);
+
+end;
+
+procedure TMain.N127Click(Sender: TObject);
+begin
+     N127.Enabled := False;
+     Application.CreateForm(TRev, Rev);
+end;
+
+procedure TMain.N135Click(Sender: TObject);
+begin
+     N135.Enabled := False;
+     Application.CreateForm(TSvodSCH, SvodSCH);
+end;
+
+procedure TMain.N118Click(Sender: TObject);
+begin
+  N118.Enabled := False;
+  Application.CreateForm(TRevvit, Revvit);
+
+end;
+
+procedure TMain.N124Click(Sender: TObject);
+begin
+     N124.Enabled := False;
+     Application.CreateForm(TRevPodg, RevPodg);
+end;
+
+procedure TMain.N129Click(Sender: TObject);
+begin
+     N129.Enabled := False;
+     Application.CreateForm(TRevSved, RevSved);
+end;
+
+procedure TMain.N72Click(Sender: TObject);
+begin
+     N72.Enabled := False;
+     Application.CreateForm(TSvodBrak, SvodBrak);
+end;
+
+procedure TMain.N70Click(Sender: TObject);
+begin
+     N70.Enabled := False;
+     Application.CreateForm(TSvodNed, SvodNed);
+end;
+
+procedure TMain.N74Click(Sender: TObject);
+begin
+     N74.Enabled := False;
+  Application.CreateForm(TSvodPrih, SvodPrih);
+    
+end;
+
+procedure TMain.N73Click(Sender: TObject);
+begin
+     N73.Enabled := False;
+     Application.CreateForm(TSvodVozv, SvodVozv);
+end;
+
+procedure TMain.N71Click(Sender: TObject);
+begin
+     N71.EnaBLED :=False;
+     Application.CreateForm(TSvodIzl, SvodIzl);
+end;
+
+procedure TMain.N137Click(Sender: TObject);
+begin
+     N137.Enabled := False;
+     Application.CreateForm(TSvodOpl, SvodOpl);
+end;
+
+procedure TMain.N138Click(Sender: TObject);
+begin
+     N138.Enabled := False;
+     Application.CreateForm(TSvodDat, SvodDat);
+end;
+
+procedure Ustanovka;
+var S1, S2 : String;
+begin
+     S1 := dataMain.DostupDost1.AsString;
+     S2 := dataMain.DostupDost2.AsString;
+     with Main do
+        begin
+           StatusBar1.Panels[1].Text := DataMain.DostupFullNaim.AsString;
+           N2.Enabled := NasDost(S1[20]); //Приход
+           N3.Enabled := NasDost(S1[1]); //Возврат
+           N28.Enabled := NasDost(S1[30]); //Излишки
+           N8.Enabled := NasDost(S1[40]); //Cash and Carry
+           N38.Enabled := NasDost(S1[10]); //Представители
+           N39.Enabled := NasDost(S1[60]); //Ванселинг
+           Cash1.Enabled := NasDost(S1[70]); //Розница
+           N41.Enabled := NasDost(S1[80]); //Внутренние
+           N9.Enabled := NasDost(S1[25]); //Списание брака
+           N40.Enabled := NasDost(S1[6]); //Акты
+           N47.Enabled := NasDost(S1[35]); //Спиcки по недостаче
+           N32.Enabled := NasDost(S1[95]); //Пользователи
+           N33.Enabled := NasDost(S1[96]); //Уровни доступа
+           N142.Enabled := NasDost(S1[97]); //Настройки
+           N34.Enabled := NasDost(S1[50]); //Приход витрины
+           N35.Enabled := NasDost(S1[55]); //Расход витрины
+           N44.Enabled := NasDost(S1[110]); // Доступ к настройкам уровней
+           N157.Enabled := NasDost(S1[157]); // Доступ к уровням ванселинга
+           DataMain.ConfigVit.Open;
+           N11.Enabled := DataMain.ConfigVitNomer10.AsBoolean; // Возможна ли ревизия
+           DataMain.ConfigVit.Close;
+        end;
+end;
+
+procedure TMain.FormShow(Sender: TObject);
+var S, S1 : String;
+    F : TextFile;
+begin
+  Application.CreateForm(TEnterPass, EnterPass);
+  try
+     If EnterPass.ShowModal = mrOk then
+      begin
+        with DataMain do
+         begin
+              ConfigVit.Open;
+              S := ConfigVitNomer9.AsString;
+              S1 := ConfigVitNomer11.AsString;
+              ConfigVit.Close;
+              if S[1] = '1' then
+                begin
+                   AssignFile(F,S1);
+                   Append(F);
+                   WriteLN(F,DateTimeToStr(Now),';',DostupNaim.AsString,';Успешно');
+                   CloseFile(F);
+                end;
+         end;
+        EnterPass.Release;
+        Ustanovka;
+      end
+     else
+      begin
+        with DataMain do
+         begin
+              ConfigVit.Open;
+              S := ConfigVitNomer9.AsString;
+              S1 := ConfigVitNomer11.AsString;
+              ConfigVit.Close;
+              if S[1] = '1' then
+                begin
+                   AssignFile(F,S1);
+                   Append(F);
+                   WriteLN(F,DateTimeToStr(Now),';',DostupNaim.AsString,';Отказ');
+                   CloseFile(F);
+                end;
+         end;
+         EnterPass.Release;
+         Main.Close;
+      end;
+  except
+         Main.Close;
+  end;
+end;
+
+procedure TMain.N125Click(Sender: TObject);
+begin
+     N125.Enabled := False;
+     Application.CreateForm(TRevBl, RevBl);
+
+end;
+
+procedure TMain.N36Click(Sender: TObject);
+begin
+     N36.Enabled := False;
+     Application.CreateForm(TBaseChange,BaseChange);
+end;
+
+procedure TMain.N35Click(Sender: TObject);
+begin
+     Application.CreateForm(TVitRash, VitRash);
+     N35.Enabled := False;
+end;
+
+procedure TMain.N119Click(Sender: TObject);
+begin
+       Application.CreateForm(TRevVitPodg, RevVitPodg);
+       N119.Enabled := False;
+end;
+
+procedure TMain.N120Click(Sender: TObject);
+begin
+  Application.CreateForm(TRevVitBL, RevVitBL);
+  N120.Enabled := False;
+end;
+
+procedure TMain.N123Click(Sender: TObject);
+begin
+     Application.CreateForm(TRevVitSved, RevVitSved);
+     N123.Enabled := False;
+end;
+
+procedure TMain.N139Click(Sender: TObject);
+var S, S1 : String;
+    F : TextFile;
+begin
+  Application.CreateForm(TEnterPass, EnterPass);
+     If EnterPass.ShowModal = mrOk then
+      begin
+        with DataMain do
+         begin
+              ConfigVit.Open;
+              S := ConfigVitNomer9.AsString;
+              S1 := ConfigVitNomer11.AsString;
+              ConfigVit.Close;
+              if S[1] = '1' then
+                begin
+                   AssignFile(F,S1);
+                   Append(F);
+                   WriteLN(F,DateTimeToStr(Now),';',DostupNaim.AsString,';Успешно');
+                   CloseFile(F);
+                end;
+         end;
+        EnterPass.Release;
+        Ustanovka;
+      end
+     else
+      begin
+        with DataMain do
+         begin
+              ConfigVit.Open;
+              S := ConfigVitNomer9.AsString;
+              S1 := ConfigVitNomer11.AsString;
+              ConfigVit.Close;
+              if S[1] = '1' then
+                begin
+                   AssignFile(F,S1);
+                   Append(F);
+                   WriteLN(F,DateTimeToStr(Now),';',DostupNaim.AsString,';Отказ');
+                   CloseFile(F);
+                end;
+         end;
+         EnterPass.Release;
+         Main.Close;
+      end;
+end;
+
+procedure TMain.N142Click(Sender: TObject);
+begin
+     N142.Enabled := False;
+     Application.CreateForm(TNast,Nast);
+
+end;
+
+procedure TMain.N37Click(Sender: TObject);
+begin
+     N37.Enabled := False;
+     Application.CreateForm(TInvVit,InvVit);
+end;
+
+procedure TMain.N57Click(Sender: TObject);
+begin
+     N57.Enabled := False;
+     Application.CreateForm(TOstAll,OstAll);
+end;
+
+procedure TMain.N47Click(Sender: TObject);
+begin
+     N47.Enabled := False;
+     Application.CreateForm(TNedForm, NedForm);
+end;
+
+procedure TMain.N143Click(Sender: TObject);
+begin
+     N143.Enabled := False;
+     Application.CreateForm(TPriceAll, PriceAll);
+end;
+
+procedure TMain.N145Click(Sender: TObject);
+begin
+     N145.Enabled := False;
+     Application.CreateForm(TAboutBox, AboutBox);
+     AboutBox.ShowModal;
+     N145.Enabled := True;
+     AboutBox.release;
+end;
+
+procedure TMain.N58Click(Sender: TObject);
+begin
+  Application.CreateForm(TOtpTov, OtpTov);
+     N58.Enabled := False;
+
+end;
+
+procedure TMain.N102Click(Sender: TObject);
+begin
+     N102.Enabled := False;
+     Application.CreateForm(TSvodVit, SvodVit);
+end;
+
+procedure TMain.N141Click(Sender: TObject);
+begin
+     N141.Enabled := False;
+     Application.CreateForm(TOstVit,OstVit);
+
+end;
+
+procedure TMain.N146Click(Sender: TObject);
+begin
+     N146.Enabled := False;
+     Application.CreateForm(TSvodAktSod, SvodAktSod);
+
+end;
+
+procedure TMain.Timer1Timer(Sender: TObject);
+var I : Integer;
+begin
+   try
+      I := Main.MDIChildCount;
+      Main.StatusBar1.Panels[2].Text := IntToStr(I);
+   except
+      Main.StatusBar1.Panels[2].Text := '-';
+   end;
+end;
+
+procedure TMain.StatusBar1DblClick(Sender: TObject);
+begin
+     Application.CreateForm(TCheckDB,CheckDB);
+end;
+
+procedure TMain.N149Click(Sender: TObject);
+begin
+     Application.CreateForm(TZPred, ZPred);
+     N149.Enabled := False;
+end;
+
+procedure TMain.N46Click(Sender: TObject);
+begin
+     Application.CreateForm(TCheckSert, CheckSert);
+     N46.Enabled := False;
+end;
+
+procedure TMain.N48Click(Sender: TObject);
+begin
+     Application.CreateForm(TSvodCashSk, SvodCashSk);
+     N48.Enabled := False;
+
+end;
+
+procedure TMain.N49Click(Sender: TObject);
+begin
+     Application.CreateForm(TZRozn, ZRozn);
+     N49.Enabled := False;
+
+end;
+
+procedure TMain.N150Click(Sender: TObject);
+begin
+if not Assigned(Klad_Spr) then
+  Application.CreateForm(TKlad_Spr, Klad_Spr);
+Klad_Spr.Show;
+
+end;
+
+procedure TMain.N152Click(Sender: TObject);
+begin
+try
+  Application.CreateForm(TKlad_Rep, Klad_Rep);
+  Klad_Rep.ShowModal;
+finally
+  Klad_Rep.Release;
+end;
+
+end;
+
+procedure TMain.N153Click(Sender: TObject);
+begin
+try
+  Application.CreateForm(TAvSk_Rep, AvSk_Rep);
+  AvSk_Rep.ShowModal;
+finally
+  AvSk_Rep.Release;
+end;
+end;
+
+procedure TMain.N155Click(Sender: TObject);
+begin
+  if not Assigned(Svod_Dviz_Pred) then
+    Application.CreateForm(TSvod_Dviz_Pred, Svod_Dviz_Pred);
+  Svod_Dviz_Pred.ShowModal;
+
+end;
+
+procedure TMain.N156Click(Sender: TObject);
+begin
+  if not Assigned(Svod_Dviz_Pok) then
+    Application.CreateForm(TSvod_Dviz_Pok, Svod_Dviz_Pok);
+  Svod_Dviz_Pok.ShowModal;
+end;
+
+procedure TMain.N157Click(Sender: TObject);
+begin
+  Main.Timer1.Enabled := False;
+  if not Assigned(SprVanSkUrov) then
+    Application.CreateForm(TSprVanSkUrov, SprVanSkUrov);
+  SprVanSkUrov.ShowModal;
+  SprVanSkUrov.Release;
+  Main.Timer1.Enabled := True;
+
+end;
+
+procedure TMain.N158Click(Sender: TObject);
+begin
+//     Application.CreateForm(TZVan, ZVan);
+//     N158.Enabled := False;
+end;
+
+procedure TMain.N159Click(Sender: TObject);
+begin
+  Main.Timer1.Enabled := False;
+  if not Assigned(SprNew) then
+    Application.CreateForm(TSprNew, SprNew);
+  SprNew.ShowModal;
+  SprNew.Release;
+  SprNew := nil;
+  Main.Timer1.Enabled := True;
+end;
+
+procedure TMain.N160Click(Sender: TObject);
+begin
+  Main.Timer1.Enabled := False;
+  if not Assigned(Tovar_Group) then
+    Application.CreateForm(TTovar_Group, Tovar_Group);
+  Tovar_Group.ShowModal;
+  Tovar_Group.Release;
+  Tovar_Group := nil;
+  Main.Timer1.Enabled := True;
+
+end;
+
+procedure TMain.N163Click(Sender: TObject);
+begin
+  Main.Timer1.Enabled := False;
+  if not Assigned(Predpr_Group) then
+    Application.CreateForm(TPredpr_Group, Predpr_Group);
+  Predpr_Group.ShowModal;
+  Predpr_Group.Release;
+  Predpr_Group := nil;
+  Main.Timer1.Enabled := True;
+
+end;
+
+end.

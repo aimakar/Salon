@@ -1,0 +1,59 @@
+unit TovMoveF;
+
+interface
+
+uses
+  Windows, Messages, SysUtils, Classes, Graphics, Controls, Forms, Dialogs,
+  StdCtrls, Buttons, Db, ExtCtrls, Grids, DBGrids, DBTables, JvDataSource,
+  IBCustomDataSet, IBQuery, Data;
+
+type
+  TTovMove = class(TForm)
+    DBGrid1: TDBGrid;
+    Panel1: TPanel;
+    BitBtn1: TBitBtn;
+    BitBtn2: TBitBtn;
+    Edit1: TEdit;
+    Query1: TIBQuery;
+    DataSource1: TJvDataSource;
+    Query1NAIM: TIBStringField;
+    Query1CODEGR: TIntegerField;
+    procedure DBGrid1KeyPress(Sender: TObject; var Key: Char);
+    procedure Query1_FilterRecord(DataSet: TDataSet; var Accept: Boolean);
+  private
+    { Private declarations }
+  public
+    { Public declarations }
+  end;
+
+var
+  TovMove: TTovMove;
+
+implementation
+
+{$R *.DFM}
+
+procedure TTovMove.DBGrid1KeyPress(Sender: TObject; var Key: Char);
+begin
+     Case Key of
+          'a'..'z', 'A'..'Z', 'à'..'ÿ', 'À'..'ß' : Edit1.text := Edit1.Text + Key;
+          else
+              Edit1.Text := '';
+     end;
+     Query1.Close;
+     Query1.Open;
+end;
+
+procedure TTovMove.Query1_FilterRecord(DataSet: TDataSet;
+  var Accept: Boolean);
+begin
+     if Trim(Edit1.text) = '' then
+     begin
+          Accept := True;
+     end
+     else
+         Accept := Pos(AnsiUpperCase(Trim(Edit1.Text)), AnsiUpperCase(Query1naim.AsString)) > 0;
+
+end;
+
+end.

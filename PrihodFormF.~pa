@@ -1,0 +1,537 @@
+unit PrihodFormF;
+
+interface
+
+uses
+  Windows, Messages, SysUtils, Classes, Graphics, Controls, Forms, Dialogs,
+  Grids, DBGrids, DB, StdCtrls, Buttons, DBTables, ExtCtrls, RXClock, FileCtrl;
+    procedure Check;
+    procedure Prin;
+type
+  TPrihodForm = class(TForm)
+    DBGrid1: TDBGrid;
+    ToB: TBitBtn;
+    CB: TCheckBox;
+    BitBtn1: TBitBtn;
+    BitBtn2: TBitBtn;
+    ExBtn: TBitBtn;
+    procedure DBGrid1KeyDown(Sender: TObject; var Key: Word;
+      Shift: TShiftState);
+    procedure FormKeyDown(Sender: TObject; var Key: Word;
+      Shift: TShiftState);
+    procedure ToBClick(Sender: TObject);
+    procedure DBGrid1DrawColumnCell(Sender: TObject; const Rect: TRect;
+      DataCol: Integer; Column: TColumn; State: TGridDrawState);
+    procedure BitBtn1Click(Sender: TObject);
+    procedure CBKeyDown(Sender: TObject; var Key: Word;
+      Shift: TShiftState);
+    procedure CBClick(Sender: TObject);
+    procedure Timer1Timer(Sender: TObject);
+    procedure FormDestroy(Sender: TObject);
+    procedure FormCreate(Sender: TObject);
+    procedure BitBtn2Click(Sender: TObject);
+    procedure ExBtnClick(Sender: TObject);
+    procedure FormActivate(Sender: TObject);
+    procedure FormClose(Sender: TObject; var Action: TCloseAction);
+    procedure DBGrid1TitleClick(Column: TColumn);
+  private
+    { Private declarations }
+  public
+    { Public declarations }
+  end;
+
+var
+  PrihodForm: TPrihodForm;
+  Dost : String;
+implementation
+
+uses Data,  Pro, PrihodNaklF, Sklad, PrintPrihRep, PrnPrihF;
+
+{$R *.DFM}
+
+procedure TPrihodForm.DBGrid1KeyDown(Sender: TObject; var Key: Word;
+  Shift: TShiftState);
+var S,S1 : String;
+    I : Integer;
+    L : Boolean;
+begin
+     L := False;
+     case Key of
+     VK_Space: if NasDost(Dost[21]) then
+                if Datamain.NaklPrih.IsEmpty
+                      then
+                          ShowMessage('Че смотреть то будем, нет ничего еще!')
+                      else
+                          With DataMain do
+                           begin
+                            Application.CreateForm(TPrihodNakl, PrihodNakl);
+                            if NaklPrihOtk.AsBoolean then begin
+                              if MessageDlg('Там кто-то есть! Там точно кто-то есть!!!?'+#13+'Может всетаки зайдем?',
+                              mtConfirmation, [mbYes, mbNo], 0) = mrYes then
+                              begin
+                                   NaklPrih.Edit;
+                                   NaklPrihOperac.AsString := DostupNaim.AsString;
+                                   NaklPrihOperacDat.AsDateTime := Now;
+                                   NaklPrihOtk.AsBoolean := True;
+                                   NaklPrih.Post;
+                                   if (NaklPrih.FieldByName('Priz').AsBoolean) then PrihodNakl.tag := 1 else PrihodNakl.tag := 0;
+                                   PrihodNakl.Label2.Caption := NaklPrih.FieldByName('Nomer').AsString;
+                                   PrihodNakl.DE.Text := NaklPrih.FieldByName('Ot').AsString;
+                                   Timer1.Enabled :=False;
+                                   PrihodNakl.ShowModal;
+                                   Timer1.Enabled := True;
+                                   if NaklPrih.State = dsBrowse then NaklPrih.Edit;
+                                   NaklPrih.FieldByName('Ot').AsString := PrihodNakl.DE.Text;
+                                   NaklPrih.FieldByName('Summa').AsFloat := StrToFloat(Trim(PrihodNakl.Label11.Caption));
+                                   NaklPrihOtk.AsBoolean := False;
+                                   NaklPrih.Post;
+                              end;
+                              end
+                            else
+                              begin
+                                   NaklPrih.Edit;
+                                   NaklPrihOperac.AsString := DostupNaim.AsString;
+                                   NaklPrihOperacDat.AsDateTime := Now;
+                                   NaklPrihOtk.AsBoolean := True;
+                                   NaklPrih.Post;
+                                   if (NaklPrih.FieldByName('Priz').AsBoolean) then PrihodNakl.tag := 1 else PrihodNakl.tag := 0;
+                                   PrihodNakl.Label2.Caption := NaklPrih.FieldByName('Nomer').AsString;
+                                   PrihodNakl.DE.Text := NaklPrih.FieldByName('Ot').AsString;
+                                   Timer1.Enabled :=False;
+                                   PrihodNakl.ShowModal;
+                                   Timer1.Enabled := True;
+                                   if NaklPrih.State = dsBrowse then NaklPrih.Edit;
+                                   NaklPrih.FieldByName('Ot').AsString := PrihodNakl.DE.Text;
+                                   NaklPrih.FieldByName('Summa').AsFloat := StrToFloat(Trim(PrihodNakl.Label11.Caption));
+                                   NaklPrihOtk.AsBoolean := False;
+                                   NaklPrih.Post;
+                              end;
+                            PrihodNakl.Release;
+                           end;
+     VK_DELETE : if (NasDost(Dost[21]) and NasDost(Dost[22])) then
+                 if DataMain.NaklPrihOtk.AsBoolean then
+                    ShowMessage('Ну не могу я! Немогу я удалить занятую накладную!')
+                 else
+                 if not(DataMain.NaklPrih.FieldByName('Priz').AsBoolean )  then
+                  if MessageDlg('Удалить накладную?',
+                     mtConfirmation, [mbNo, mbYes], 0) = mrYes then
+                        With DataMain do begin
+                           Valyta.Open;
+                           Tovar.Open;
+                           Ost.Open;
+                           TNPrih.Open;
+                           TNPrih.First;
+                           While not(DataMain.TNPrih.Eof) do
+                                TNPrih.Delete;
+                           NaklPrih.Delete;
+                           TNPrih.Close;
+                           Ost.Close;
+                           Tovar.Close;
+                           Valyta.Close;
+                        end;
+     VK_INSERT : if (NasDost(Dost[21]) and NasDost(Dost[22])) then
+                 begin
+                        Application.CreateForm(TPrihodNakl, PrihodNakl);
+                        S1 := '-Прих';
+                        Datamain.NaklPrih.DisableControls;
+                        DataMain.NaklPrih.Filtered := False;
+                        DataMain.NaklPrih.Last;
+                        PrihodNakl.Tag := 0;
+                        DataMain.NaklPrih.Refresh;
+                        With DataMain.NaklPrih do
+                            begin
+                                 Datamain.Config.Open;
+                                 DataMain.Config.Edit;
+                                 S := Trim(Datamain.ConfigNomer6.AsString);
+                                 IncNom(S,S1);
+                                 DataMain.ConfigNomer6.AsString := S;
+                                 DataMain.Config.Post;
+                                 DataMain.Config.Close;
+                                 Append;
+                                 FieldByName('Prov1').AsString := DataMain.DostupNaim.AsString;
+                                 FieldByName('Prov1D').AsDateTime := Now;
+                                 FieldByName('Nomer').AsString := S;
+                                 FieldByName('Ot').AsDateTime := Date();
+                                 FieldByName('Priz').AsBoolean := False;
+                                 FieldByName('Otk').AsBoolean := True;
+                                 Post;
+                                 PrihodNakl.Label2.Caption := FieldByName('Nomer').AsString;
+                                 PrihodNakl.DE.Text := FieldByName('Ot').AsString;
+                                 DataMain.NaklPrih.EnableControls;
+                                 PrihodNakl.ShowModal;
+                                 Edit;
+                                 FieldByName('Ot').AsString := PrihodNakl.DE.Text;
+                                 FieldByName('Summa').AsFloat := StrToFloat(Trim(PrihodNakl.Label11.Caption));
+                                 FieldByName('Otk').AsBoolean := False;
+                                 Post;
+                            end;
+                        Prihodnakl.Release;
+                     end;
+     VK_F6 : if InputQuery('Поиск по номеру','Введите номер',S) then
+                  With Datamain.NaklPrih do
+                       begin
+                            DisableControls;
+                            Locate('Nomer',S,[loPartialKey]);
+                            enableControls;
+                       end;
+     VK_F5 : Prin;
+
+   end;
+
+end;
+
+procedure TPrihodForm.FormKeyDown(Sender: TObject; var Key: Word;
+  Shift: TShiftState);
+begin
+     if Key = VK_ESCAPE then
+        begin
+             PrihodForm.Release;
+        end;
+
+end;
+
+procedure TPrihodForm.ToBClick(Sender: TObject);
+var S,S1: String;
+begin
+           With DataMain do
+            begin
+             Valyta.Open;
+             Tovar.Open;
+             Ost.Open;
+             Ost.First;
+             TNPrih.Open;
+             TNPrih.First;
+             while not(TNPrih.EOF) do
+              begin
+               Ost.FindKey([TNPrihCode.AsInteger]);
+               Ost.Edit;
+               OstKol2.AsInteger := OstKol2.AsInteger + TNPrihKol.AsInteger;
+               OstKol1.AsInteger := OstKol1.AsInteger + TNPrihKol.AsInteger;
+               Ost.post;
+               TNPrih.Next;
+              end;
+             TNPrih.Close;
+             Tovar.Close;
+             Valyta.Close;
+             NaklPrih.Edit;
+             NaklPrihProv2.AsString := DostupNaim.AsString;
+             NaklPrihProv2D.AsDateTime := Now;
+             NaklPrihPriz.AsBoolean := True;
+             NaklPrih.Post;
+             PrihodForm.ToB.Enabled := False;
+            end;
+
+
+end;
+
+procedure TPrihodForm.DBGrid1DrawColumnCell(Sender: TObject;
+  const Rect: TRect; DataCol: Integer; Column: TColumn;
+  State: TGridDrawState);
+var a, b, c, ex : Boolean;
+begin
+a := DataMain.NaklPrihPriz.AsBoolean;
+ex := DataMain.NaklPrihExp.AsBoolean;
+with DBGrid1.Canvas do begin
+     if a and (not (gdFocused in State)) then
+      begin
+       Font.Color := clGreen;
+       FillRect (Rect);
+       TextOut(Rect.Left,Rect.Top,Column.Field.Text);
+       c := false;
+      end
+     else DBGrid1.DefaultDrawColumnCell(Rect,DataCol,Column,State);
+     if gdFocused in State then
+      begin
+       if Ex then
+          ExBtn.Font.Color := clRed
+       else
+           ExBtn.Font.Color := clBlack;
+       if a then
+        begin
+          ToB.Enabled := False;
+          BitBtn2.Enabled := True;
+        end
+       else
+         begin
+          ToB.Enabled := True;
+          BitBtn2.Enabled := False;
+         end;
+      end;
+
+end;
+
+end;
+
+procedure Check;
+begin
+     if PrihodForm.CB.Checked then
+      begin
+       DataMain.NaklPrih.Filter := 'not([Priz])';
+       DataMain.NaklPrih.Filtered := True;
+      end
+     else
+      begin
+       DataMain.NaklPrih.Filtered := False;
+      end;
+end;
+
+
+
+procedure TPrihodForm.CBKeyDown(Sender: TObject; var Key: Word;
+  Shift: TShiftState);
+begin
+  Check;
+end;
+
+procedure TPrihodForm.CBClick(Sender: TObject);
+begin
+ Check;
+end;
+
+
+procedure TPrihodForm.BitBtn1Click(Sender: TObject);
+begin
+Prin;
+end;
+
+procedure TPrihodForm.Timer1Timer(Sender: TObject);
+begin
+     DataMain.NaklPrih.Refresh;
+end;
+
+procedure TPrihodForm.FormDestroy(Sender: TObject);
+begin
+CloseData;
+Main.N2.Enabled := True;
+end;
+
+procedure TPrihodForm.FormCreate(Sender: TObject);
+begin
+     Main.N2.Enabled := False;
+     Dost := DataMain.DostupDost1.AsString;
+     BitBtn1.Visible := NasDost(Dost[24]);
+     ToB.Visible := NasDost(Dost[23]);
+     BitBtn2.Visible := NasDost(Dost[50]);
+     With DataMain do
+          begin
+               Post.Open;
+               NaklPrih.Open;
+          end;
+end;
+
+procedure Prin;
+var S,S1 : String;
+begin
+   if PrihodForm.BitBtn1.Visible then
+     if DataMain.NaklPrihOtk.AsBoolean then
+        ShowMessage('Накладная открыта другим пользователем.')
+     else
+      with DataMain do
+      begin
+         NaklPrih.Edit;
+         NaklPrihOtk.ASBoolean := True;
+         NaklPrih.Post;
+         NaklPrih.DisableControls;
+         Application.CreateForm(TPrintPrih, PrintPrih);
+         S := NaklPrihNOMER.AsString;
+         PrintPrih.DT1.Date := NaklPrihOt.AsDateTime;
+         S1 := S;
+         Delete(S,Pos('-',S),Length(S));
+         NaklPrih.Tag := StrToInt(S);
+         NaklPrih.Filtered := False;
+         NaklPrih.Filter := '';
+         NaklPrih.Filtered := True;
+         NaklPrih.Refresh;
+         PrintPrih.SHowModal;
+         NaklPrih.Filtered := False;
+         NaklPrih.Tag := 0;
+         PrintPrih.Release;
+         NaklPrih.Locate('Nomer',S1,[]);
+         NaklPrih.EnableControls;
+         NaklPrih.Edit;
+         NaklPrihOtk.ASBoolean := False;
+         NaklPrih.Post;
+      end;
+end;
+
+
+procedure TPrihodForm.BitBtn2Click(Sender: TObject);
+var S, S1 : String;
+begin
+ with DataMain do
+   begin
+     if Trim(NaklPrihVitNomer.AsString)+' ' <> ' ' then
+        begin
+             ShowMessage('По данной накладной выписана накладная на витрину за номером'+NaklPrihVitNomer.AsString);
+        end
+     else
+         begin
+              if (NasDost(Dost[51]) and NasDost(Dost[52])) then
+                  begin
+                       S1 := '-ПВит';
+                       VitPrih.Filtered := False;
+                       VitPrih.Open;
+                       With VitPrih do
+                            begin
+                                 Datamain.ConfigVit.Open;
+                                 DataMain.ConfigVit.Edit;
+                                 S := Trim(Datamain.ConfigVitNomer1.AsString);
+                                 IncNom(S,S1);
+                                 DataMain.ConfigVitNomer1.AsString := S;
+                                 DataMain.ConfigVit.Post;
+                                 DataMain.ConfigVit.Close;
+                                 Append;
+                                 FieldByname('Operac').AsString := Datamain.DostupNaim.AsString;
+                                 FieldByname('OperacDat').AsDateTime := Now;
+                                 FieldByname('OtkS').AsString := Datamain.DostupNaim.AsString;
+                                 FieldByName('Priz').AsBoolean := False;
+                                 FieldByName('OTK').AsBoolean := True;
+                                 FieldByName('Nomer').AsString := S;
+                                 FieldByName('Ot').AsDateTime := Date();
+                                 Post;
+                            end;
+                            Naklprih.Edit;
+                            NaklPrihVitNomer.AsString := S;
+                            NaklPrih.Post;
+                            TnPrih.Open;
+                            TnPrih.First;
+                            OstVit.Open;
+                            OstVit.First;
+                            Ost.Open;
+                            Ost.First;
+                            GrVal.Open;
+                            Tovar.Open;
+                            while not(TnPrih.Eof) do
+                                  begin
+                                       Ost.FindKey([TnPrihCode.AsInteger]);
+                                       Tovar.First;
+                                       Tovar.Locate('Code',TnPrihCode.AsInteger,[]);
+                                       if OstKol1.AsInteger > 0 then
+                                          begin
+                                               if OstVit.FindKey([TnPrihCode.AsInteger]) then
+                                                  begin
+                                                       if OstVitKol1.AsInteger <= 0 then
+                                                          begin
+                                                               Ost.Edit;
+                                                               OstKol1.AsInteger := OstKol1.AsInteger - 1;
+                                                               Ost.Post;
+                                                               VitTPrih.Open;
+                                                               VitTPrih.Append;
+                                                               VitTPrihNomer.AsString := S;
+                                                               VitTPrihKol.AsInteger := 1;
+                                                               VitTPrihCode.AsInteger := TnPrihCode.AsInteger;
+                                                               VitTPrihPrice.AsFloat := TovarPriceInValyta.AsFloat;
+                                                               VitTPrih.Post;
+                                                               VitTPrih.Close;
+                                                          end;
+                                                  end
+                                               else
+                                                   begin
+                                                       Ost.Edit;
+                                                       OstKol1.AsInteger := OstKol1.AsInteger - 1;
+                                                       Ost.Post;
+                                                       OstVit.Append;
+                                                       OstVitCode.AsInteger := TnPrihCode.AsInteger;
+                                                       OstVitKol1.AsInteger := 0;
+                                                       OstVitKol2.Asinteger := 0;
+                                                       OstVit.Post;
+                                                       VitTPrih.Open;
+                                                       VitTPrih.Append;
+                                                       VitTPrihNomer.AsString := S;
+                                                       VitTPrihKol.AsInteger := 1;
+                                                       VitTPrihPrice.AsFloat := TovarPriceInValyta.AsFloat;
+                                                       VitTPrihCode.AsInteger := TnPrihCode.AsInteger;
+                                                       VitTPrih.Post;
+                                                       VitTPrih.Close;
+                                                   end;
+                                          end;
+                                          TnPrih.Next;
+                                  end;
+
+                            VitPrih.Edit;
+                            VitPrihOTK.AsBoolean := False;
+                            VitPrih.Post;
+                            TnPrih.Close;
+                            OstVit.Close;
+                            Ost.Close;
+                            GrVal.Close;
+                            Tovar.Close;
+
+                            end
+                  else
+                      ShowMessage('Прав тот у кого больше прав!'+#13+'К сожалению, Вы к ним не относитесь!');
+                    end;
+
+         end;
+end;
+
+procedure TPrihodForm.ExBtnClick(Sender: TObject);
+var F : TextFile;
+    S : String;
+begin
+     With DataMain do
+      begin
+        if not(NaklPrihOtk.AsBoolean) then
+         begin
+              S := NaklPrihNOMER.AsString;
+              NaklPrih.Edit;
+              NaklPrihOtk.ASBoolean := True;
+              NaklPrih.Post;
+              if not(DirectoryExists('Q:\New\Export')) then ForceDirectories('Q:\New\Export');
+              AssignFile(F, 'Q:\New\Export\'+NaklPrihNomer.AsString+'.nkl');
+              Rewrite(F);
+              WriteLN(F,'Накладная;',
+                        NaklPrihNomer.AsString + ';',
+                        NaklPrihOt.AsString + ';',
+                        NaklPrihPrNaim.AsString + ';',
+                        NaklPrihSumma.AsString + ';',
+                        ';');
+              TNPrih.Open;
+              TNPrih.First;
+              while not(TNPrih.Eof) do
+               begin
+                 WriteLN(F,'Товар;',
+                        TNPrihNomer.AsString + ';',
+                        TNPrihNaim.AsString + ';',
+                        TNPrihKol.AsString + ';',
+                        FloatToStrF((TNPrihPrice.AsFloat*NaklPrihValPrice.AsFloat),ffFixed,14,2) + ';',
+                        TNPrihMesto.asString + ';',
+                        TNPrihUp.AsString + ';',
+                        TNPrihKolUp.AsString+';',
+                        ';',
+                        ';',
+                        ';',
+                        ';',
+                        ';',
+                          TNPrihStella.AsString + '-'+ DataMain.get_sokr_post(TNPrihcode.asInteger) + ';');
+                 TNPrih.Next;
+               end;
+              TNPrih.Close;
+              CloseFile(F);
+              NaklPrih.Edit;
+              NaklPrihOtk.ASBoolean := False;
+              NaklPrihExp.AsBoolean := True;
+              NaklPrih.Post;
+
+         end;
+      end;
+
+end;
+
+procedure TPrihodForm.FormActivate(Sender: TObject);
+begin
+     ExBtn.Visible := NasDost(Dost[8]);
+end;
+
+procedure TPrihodForm.FormClose(Sender: TObject; var Action: TCloseAction);
+begin
+     Action := caFree;
+end;
+
+procedure TPrihodForm.DBGrid1TitleClick(Column: TColumn);
+begin
+     if not((Column.FieldName = 'PrNaim') or (Column.FieldName = 'COMMENT')) then
+     DataMain.NaklPrih.IndexName := Column.FieldName;
+end;
+
+end.

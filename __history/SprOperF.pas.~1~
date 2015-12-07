@@ -1,0 +1,114 @@
+unit SprOperF;
+
+interface
+
+uses
+  Windows, Messages, SysUtils, Classes, Graphics, Controls, Forms, Dialogs,
+  Grids, DBGrids, StdCtrls, Buttons;
+
+type
+  TSprOper = class(TForm)
+    DBGrid1: TDBGrid;
+    DBGrid2: TDBGrid;
+    GroupBox1: TGroupBox;
+    BitBtn1: TBitBtn;
+    BitBtn2: TBitBtn;
+    BitBtn3: TBitBtn;
+    procedure DBGrid2KeyDown(Sender: TObject; var Key: Word;
+      Shift: TShiftState);
+    procedure FormActivate(Sender: TObject);
+    procedure FormDeactivate(Sender: TObject);
+    procedure DBGrid1KeyDown(Sender: TObject; var Key: Word;
+      Shift: TShiftState);
+    procedure FormDestroy(Sender: TObject);
+    procedure FormKeyDown(Sender: TObject; var Key: Word;
+      Shift: TShiftState);
+  private
+    { Private declarations }
+  public
+    { Public declarations }
+  end;
+
+var
+  SprOper: TSprOper;
+
+implementation
+
+uses Data, NewOperF, Sklad;
+
+{$R *.DFM}
+
+procedure TSprOper.DBGrid2KeyDown(Sender: TObject; var Key: Word;
+  Shift: TShiftState);
+var I : Integer;
+begin
+     case Key of
+          VK_INSERT : With DataMain do
+                    Begin
+                         NewOper.Caption := 'Добавление новой операции';
+                         I := GrOper.FieldByName('CodeOper').AsInteger;
+                         Oper.Append;
+                         Oper.FieldByName('CodeOper').AsInteger := I;
+                         Oper.Post;
+                         Oper.Edit;
+                         If NewOper.ShowModal = mrCancel then
+                            begin
+                                 Oper.Cancel;
+                                 Oper.Delete;
+                            end
+                         else
+                             Oper.Post;
+                    End;
+
+          VK_ESCAPE : SprOper.Release;
+          VK_DELETE : if MessageDlg('Удалить запись?',
+                        mtConfirmation, [mbYes, mbNo], 0) = mrYes then
+                        DataMain.Oper.Delete;
+          VK_RETURN : Begin
+                      NewOper.Caption := 'Редактирование операции';
+                      If NewOper.ShowModal = mrCancel then
+                         DataMain.Oper.Cancel
+                      else
+                          DataMain.Oper.Post;
+                    End;
+     end;
+end;
+
+procedure TSprOper.FormActivate(Sender: TObject);
+begin
+     Datamain.GROper.Open;
+     DataMain.Oper.Filtered := False;
+     DataMain.Oper.Open;
+  Application.CreateForm(TNewOper, NewOper);
+
+end;
+
+procedure TSprOper.FormDeactivate(Sender: TObject);
+begin
+     Datamain.GROper.Close;
+     DataMain.Oper.Close;
+     NewOper.Release;
+end;
+
+procedure TSprOper.DBGrid1KeyDown(Sender: TObject; var Key: Word;
+  Shift: TShiftState);
+begin
+     case Key of
+          VK_RETURN : SprOper.ActiveControl := DBGrid2;
+          VK_ESCAPE : SprOper.Release;
+     end;
+end;
+
+procedure TSprOper.FormDestroy(Sender: TObject);
+begin
+     Main.n18.Enabled := True;
+end;
+
+procedure TSprOper.FormKeyDown(Sender: TObject; var Key: Word;
+  Shift: TShiftState);
+begin
+     if Key = VK_ESCAPE then SprOper.Release;
+
+end;
+
+end.

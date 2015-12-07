@@ -1,0 +1,193 @@
+unit SprPokVybF;
+
+interface
+
+uses
+  Windows, Messages, SysUtils, Classes, Graphics, Controls, Forms, Dialogs,
+  Grids, DBGrids, StdCtrls, ActnList, XPStyleActnCtrls, ActnMan, JvExDBGrids,
+  JvDBGrid, ExtCtrls;
+
+type
+  TSprPokVyb = class(TForm)
+    ActionManager1: TActionManager;
+    A_WinCr: TAction;
+    Panel1: TPanel;
+    Edit1: TEdit;
+    CB: TCheckBox;
+    JvDBGrid1: TJvDBGrid;
+    procedure DBGrid1KeyDown(Sender: TObject; var Key: Word;
+      Shift: TShiftState);
+    procedure FormDeactivate(Sender: TObject);
+    procedure CBClick(Sender: TObject);
+    procedure CBKeyDown(Sender: TObject; var Key: Word;
+      Shift: TShiftState);
+    procedure FormKeyDown(Sender: TObject; var Key: Word;
+      Shift: TShiftState);
+    procedure FormActivate(Sender: TObject);
+    procedure Edit1KeyDown(Sender: TObject; var Key: Word;
+      Shift: TShiftState);
+    procedure A_WinCrExecute(Sender: TObject);
+  private
+    { Private declarations }
+  public
+    { Public declarations }
+    n_ : string;
+    i_ : integer;
+  end;
+
+var
+  SprPokVyb: TSprPokVyb;
+  Dost : String;
+
+implementation
+
+uses Data, SprNewPredpr, Sklad, Pro;
+
+{$R *.DFM}
+
+procedure TSprPokVyb.DBGrid1KeyDown(Sender: TObject; var Key: Word;
+  Shift: TShiftState);
+var I : Integer;
+    NameI : String;
+begin
+     case Key of
+          VK_Return : Begin
+                   SprPokVyb.Tag := Datamain.PredprCode_PR.AsInteger;
+                   n_ := Datamain.Predprnaim.AsString;
+                   i_ := Datamain.PredprCode_PR.AsInteger;
+                   SprPokVyb.ModalResult := mrOk;
+                      end;
+          VK_F3 : Begin
+                    NewPredpr.Caption := 'Просмотр данных о клиенте';
+                    NewPredpr.CheckBox1.Enabled := False;
+                    NewPredpr.CheckBox2.Enabled := False;
+                    DataMain.Predpr.Edit;
+                    if NewPredpr.ShowModal = mrCancel then
+                          DataMain.Predpr.Cancel
+                      else
+                          DataMain.Predpr.Post;
+                      End;
+
+          VK_INSERT : if NasDost(Dost[105]) then
+                    if not(DataMain.Predpr.Filtered) then
+                    begin
+
+                    NewPredpr.CheckBox1.Enabled := True;
+                    NewPredpr.CheckBox2.Enabled := True;
+                    With DataMain do begin
+                         Predpr.Refresh;
+                         NewPredpr.Caption := 'Добавление клиента';
+                         ConfigVit.Open;
+                         I := ConfigVit.fieldByName('Nomer15').AsInteger + 1;
+                         ConfigVit.Edit;
+                         ConfigVit.fieldByName('Nomer15').AsInteger := I;
+                         ConfigVit.post;
+                         ConFigVit.Close;
+                         Predpr.Append;
+                         PredprCode_pr.AsInteger := I;
+                         Predpr.Post;
+                         PAddress.AppendRecord([I,'САМОВЫВОЗ']);
+                         Predpr.Edit;
+                         if NewPredpr.ShowModal = mrCancel then
+                             begin
+                                  Predpr.Cancel;
+                                  PAddress.First;
+                                  While not(PAddress.Eof) do
+                                        PAddress.Delete;
+                                  Predpr.Delete;
+                             end
+                         else
+                            Predpr.Post;
+                         If NewPredpr.CheckBox1.Checked then
+                            begin
+                                 Post.Open;
+                                 ConfigVit.Open;
+                                 I := ConfigVit.fieldByName('Nomer16').AsInteger + 1;
+                                 ConfigVit.Edit;
+                                 ConfigVit.fieldByName('Nomer16').AsInteger := I;
+                                 ConfigVit.post;
+                                 ConFigVit.Close;
+                                 Post.Append;
+                                 PostCODE_POST.AsInteger := I;
+                                 PostNAIM.AsString := PredprNaim.AsString;
+                                 Post.Post;
+                                 Post.Close;
+                            end;
+                         If NewPredpr.CheckBox2.Checked then
+                            begin
+                                 Proiz.Open;
+                                 ConfigVit.Open;
+                                 I := ConfigVit.fieldByName('Nomer17').AsInteger + 1;
+                                 ConfigVit.Edit;
+                                 ConfigVit.fieldByName('Nomer17').AsInteger := I;
+                                 ConfigVit.post;
+                                 ConFigVit.Close;
+                                 Proiz.Append;
+                                 ProizCODE_Proiz.AsInteger := I;
+                                 ProizNAIM.AsString := PredprNaim.AsString;
+                                 Proiz.Post;
+                                 Proiz.Close;
+                            end;
+                    end;
+                    end;
+     end;
+
+end;
+
+procedure TSprPokVyb.FormDeactivate(Sender: TObject);
+begin
+     Datamain.Predpr.Filtered := False;
+     DataMain.Predpr.Refresh;
+     DataMain.PAddress.Close;
+end;
+
+procedure TSprPokVyb.A_WinCrExecute(Sender: TObject);
+begin
+  with datamain do
+  begin
+    if not Predpr.Active then Predpr.Open;
+
+  end;
+end;
+
+procedure TSprPokVyb.CBClick(Sender: TObject);
+begin
+     Edit1.Enabled := CB.Checked;
+     DataMain.Predpr.Filtered := CB.Checked;
+     if CB.Checked then SprPokVyb.ActiveControl := Edit1;
+end;
+
+procedure TSprPokVyb.CBKeyDown(Sender: TObject; var Key: Word;
+  Shift: TShiftState);
+begin
+     Edit1.Enabled := CB.Checked;
+     DataMain.Predpr.Filtered := CB.Checked;
+     if CB.Checked then SprPokVyb.ActiveControl := Edit1;
+end;
+
+procedure TSprPokVyb.FormKeyDown(Sender: TObject; var Key: Word;
+  Shift: TShiftState);
+begin
+     if Key = VK_Escape then SprPokVyb.ModalResult := mrOK;
+end;
+
+procedure TSprPokVyb.FormActivate(Sender: TObject);
+begin
+     Dost := DataMain.Dost;
+     Datamain.Predpr.Tag := 2;
+     Datamain.Predpr.Filtered := True;
+     DataMain.PAddress.Open;
+     SprPokVyb.Tag := 0;
+end;
+
+procedure TSprPokVyb.Edit1KeyDown(Sender: TObject; var Key: Word;
+  Shift: TShiftState);
+begin
+     if Key=VK_Return then
+      begin
+      ActiveControl := JvDBGrid1;
+      Datamain.Predpr.Refresh;
+      end;
+end;
+
+end.

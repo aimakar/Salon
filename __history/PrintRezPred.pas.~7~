@@ -1,0 +1,195 @@
+unit PrintRezPred;
+
+interface
+
+uses
+  Windows, Messages, SysUtils, Classes, Graphics, Controls, Forms, Dialogs,
+  StdCtrls, Buttons, Db, DBTables, Grids, DBGrids, Mask, ExtCtrls, printers,
+  JvToolEdit, JvEdit;
+
+type
+  TPrintPred = class(TForm)
+    GroupBox2: TGroupBox;
+    GroupBox3: TGroupBox;
+    BitBtn3: TBitBtn;
+    BitBtn4: TBitBtn;
+    BitBtn5: TBitBtn;
+    ChB: TCheckBox;
+    Table1: TTable;
+    Table1Naim: TStringField;
+    Table1UP: TFloatField;
+    Table1KOL: TFloatField;
+    Table1PRICE: TFloatField;
+    Table1CODE: TFloatField;
+    Table1NOMER: TStringField;
+    Table1Price_B: TFloatField;
+    Table1NDS: TIntegerField;
+    Table1SPC: TBooleanField;
+    Table1Comm1: TStringField;
+    Table1Comm2: TStringField;
+    Table1NTD: TStringField;
+    Table1Strana: TStringField;
+    Table1Post: TIntegerField;
+    Bevel1: TBevel;
+    BitBtn1: TBitBtn;
+    Table1SK: TFloatField;
+    BitBtn2: TBitBtn;
+    BitBtn6: TBitBtn;
+    procedure FormKeyDown(Sender: TObject; var Key: Word;
+      Shift: TShiftState);
+    procedure BitBtn8Click(Sender: TObject);
+    procedure BitBtn5Click(Sender: TObject);
+    procedure SpeedButton1Click(Sender: TObject);
+    procedure BitBtn6Click(Sender: TObject);
+  private
+    { Private declarations }
+  public
+        A : String;
+    { Public declarations }
+  end;
+
+var
+  PrintPred: TPrintPred;
+
+implementation
+
+uses Data, Pro, PrnChKasF, PrnChKlF, PrnResBF, PrnResSF, PrnSCHF,
+  PrnPredSclF, PrnSchetPredF, Spirt_spravkaF, TovTransNaklF, PrnRe_PredF;
+
+{$R *.DFM}
+
+
+procedure TPrintPred.FormKeyDown(Sender: TObject; var Key: Word;
+  Shift: TShiftState);
+begin
+     if Key=VK_ESCAPE then PrintPred.ModalResult := mrOk;
+end;
+
+procedure TPrintPred.BitBtn8Click(Sender: TObject);
+begin
+//     TovChe.TovCheck.PrinterSetup;
+end;
+
+procedure TPrintPred.BitBtn5Click(Sender: TObject);
+begin
+  Application.CreateForm(TPrnPredScl, PrnPredScl);
+  Table1.Open;
+  PrnPredScl.Tag := 0;
+     if CHB.Checked then
+       PrnPredScl.Report.Preview
+     else
+         begin
+         PrnPredScl.Report.PrinterSetup;
+         PrnPredScl.Report.Print;
+         end;
+  PrnPredScl.Release;
+  Table1.Close;
+end;
+
+procedure TPrintPred.SpeedButton1Click(Sender: TObject);
+var Orient : TPrinterOrientation;
+    A : Integer;
+    Sum_1, Sum_2 : real;
+begin
+try
+  Application.CreateForm(TTovTransNakl, TovTransNakl);
+  TovTransNakl.Tag := 0;
+  DataMain.Rekv.Open;
+  TovTransNakl.Table1.Close;
+
+
+  TovTransNakl.TotalPosition := 0;
+  TovTransNakl.TotalCount := 0;
+
+  if (DataMain.PredOtpDost.AsBoolean) then
+    TovTransNakl.DeliveryDate := DataMain.PredOtpDostDat.AsString
+  else
+    TovTransNakl.DeliveryDate := '';
+  Sum_1 := 0;
+  Sum_2 := 0;
+  Table1.Open;
+  Table1.First;
+  while (not Table1.Eof) do
+  begin
+    Sum_1 := Sum_1+((Table1Price.AsFloat*100/(100+Table1NDS.AsInteger))*Table1Kol.AsInteger);
+    Sum_2 := Sum_2+((Table1Price.AsFloat*Table1NDS.AsInteger/(100+Table1NDS.AsInteger))*Table1Kol.AsInteger);
+    TovTransNakl.TotalPosition := TovTransNakl.TotalPosition + 1;
+    TovTransNakl.TotalCount := TovTransNakl.TotalCount + Table1Kol.AsInteger;
+    Table1.Next;
+  end;
+  Table1.Close;
+  TovTransNakl.TotalSum := Sum_1+Sum_2;
+
+    if not DataMain.Rekv.FindKey([DataMain.PredOtpCode_Firm.AsInteger]) then
+      DataMain.Rekv.FindKey([1]);
+  TovTransNakl.NDS := DataMain.RekvNDS.AsBoolean;
+  TovTransNakl.NaklRekv[1] := '»ÕÕ ' +DataMain.RekvINN.AsString + ', '
+                              +  DataMain.RekvNAIM.AsString + ', '+
+                              DataMain.RekvADDRESS.AsString + ', '+
+                              DataMain.RekvTEL.AsString + ', '+
+                              '/Ò ' + DataMain.RekvRS.AsString + ' '+DataMain.RekvBANK.AsString + ', '
+                              + '¡ËÍ ' +
+                              DataMain.RekvBIK.AsString + ', ÍÓ/Ò˜ ' +
+                              DataMain.RekvkS.AsString;
+  if DataMain.PredOtpCode_Gruz.AsInteger > 0 then
+    DataMain.FindPredpr_(DataMain.PredOtpCode_Gruz.AsInteger)
+  else
+    DataMain.FindPredpr_(DataMain.PredOtpCode_Pr.AsInteger);
+  TovTransNakl.NaklRekv[2] := '»ÕÕ ' + DataMain.Find_Predpr_Array[2] + ', ' + DataMain.Find_Predpr_Array[3] +
+                              ', '+  DataMain.Find_Predpr_Array[4] + '( '+ DataMain.PredOtpDostAdd.AsString + ')';
+  DataMain.FindPredpr_(DataMain.PredOtpCode_Pr.AsInteger);
+  TovTransNakl.NaklRekv[3] := '»ÕÕ ' + DataMain.Find_Predpr_Array[2] + ', ' + DataMain.Find_Predpr_Array[3] +
+                              ', ' + DataMain.Find_Predpr_Array[4];
+  TovTransNakl.NaklRekv[4] := DataMain.PredOtpOsn.AsString;
+  TovTransNakl.NaklRekv[5] := DataMain.PredOtpNomer.AsString;
+  TovTransNakl.NaklRekv[6] := DatetoStr(DataMain.PredOtpOt.AsDateTime);
+  TovTransNakl.NaklRekv[7] := TextSum(Datamain.PredOtpSumma.AsFloat);
+  TovTransNakl.NaklRekv[8] := TextSum(Datamain.PredOtpSumma.AsFloat);
+
+  TovTransNakl.Table1.TableName := 'predtn.dbf';
+//  TovTransNakl.Table1.Filter := '[nomer]='+chr(39)+DataMain.PredOtpNomer.AsString+chr(39);
+//  TovTransNakl.Table1.Filtered := True;
+
+  TovTransNakl.Table1.IndexName := 'NOMER';
+  TovTransNakl.Table1.MasterFields := 'NOMER';
+  TovTransNakl.Table1.MasterSource := DataMain.PredotpDS;
+  TovTransNakl.Table1.Open;
+     if CHB.Checked then
+       TovTransNakl.QR1.Preview
+     else
+         begin
+         if Lo(GetVersion and $0000FFFF) < 5 then
+         begin
+                  TovTransNakl.Qr1.PrinterSetup;
+                  TovTransNakl.QR1.Printer.Orientation := poLandscape;
+                  TovTransNakl.QR1.Page.Orientation := poLandscape;
+         end;
+         Orient := Printer.Orientation;
+         Printer.Orientation := poLandscape;
+
+         TovTransNakl.QR1.Print;
+         Printer.Orientation := Orient;
+         end;
+finally
+  TovTransNakl.Release;
+  DataMain.Rekv.Close;
+  if Table1.Active then Table1.First;
+end;
+end;
+
+procedure TPrintPred.BitBtn6Click(Sender: TObject);
+begin
+  Application.CreateForm(TPrnRe_Pred, PrnRe_Pred);
+  PrnRe_Pred.Tag := 0;
+     if CHB.Checked then
+       PrnRe_Pred.Rep.Preview
+     else
+         begin
+         PrnRe_Pred.Rep.PrinterSetup;
+         PrnRe_Pred.Rep.Print;
+         end;
+  PrnRe_Pred.Release;
+
+end;
+
+end.

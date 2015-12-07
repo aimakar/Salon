@@ -1,0 +1,24 @@
+unit Rep3F;
+
+interface
+
+uses
+  Windows, Messages, SysUtils, Variants, Classes, Graphics, Controls, Forms,
+  Dialogs;
+
+type
+  TRep_3 = class(TForm)
+  private
+    { Private declarations }
+  public
+    { Public declarations }
+  end;
+
+var
+  Rep_3: TRep_3;
+
+implementation
+
+{$R *.dfm}
+
+end.

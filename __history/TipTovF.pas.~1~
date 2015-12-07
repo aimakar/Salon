@@ -1,0 +1,107 @@
+unit TipTovF;
+
+interface
+
+uses
+  Windows, Messages, SysUtils, Classes, Graphics, Controls, Forms, Dialogs,
+  StdCtrls, Buttons, Grids, DBGrids;
+
+type
+  TTipTov = class(TForm)
+    DBGrid1: TDBGrid;
+    procedure FormKeyDown(Sender: TObject; var Key: Word;
+      Shift: TShiftState);
+    procedure FormCreate(Sender: TObject);
+    procedure FormDestroy(Sender: TObject);
+    procedure FormClose(Sender: TObject; var Action: TCloseAction);
+    procedure DBGrid1KeyDown(Sender: TObject; var Key: Word;
+      Shift: TShiftState);
+  private
+    { Private declarations }
+  public
+    { Public declarations }
+  end;
+
+var
+  TipTov: TTipTov;
+
+implementation
+
+uses Data, Sklad;
+
+{$R *.DFM}
+
+procedure TTipTov.FormKeyDown(Sender: TObject; var Key: Word;
+  Shift: TShiftState);
+begin
+     if key = VK_ESCAPE then TipTov.Release;
+end;
+
+procedure TTipTov.FormCreate(Sender: TObject);
+begin
+     Datamain.TT.Open;
+end;
+
+procedure TTipTov.FormDestroy(Sender: TObject);
+begin
+     DataMain.TT.Close;
+     Main.N50.Enabled := True;
+end;
+
+procedure TTipTov.FormClose(Sender: TObject; var Action: TCloseAction);
+begin
+     Action := caFree;
+end;
+
+procedure TTipTov.DBGrid1KeyDown(Sender: TObject; var Key: Word;
+  Shift: TShiftState);
+var S : String;
+    I : Integer;
+begin
+     case Key of
+          VK_INSERT : begin
+                           if InputQuery('Тип товара','Введите новый тип',S) then
+                            begin
+                              Datamain.ConfigVit.Open;
+                              I := DataMain.ConfigVit.FieldByName('Nomer14').AsInteger + 1;
+                              DataMain.ConfigVit.Edit;
+                              DataMain.ConfigVit.FieldByName('Nomer14').AsInteger := I;
+                              DataMain.ConfigVit.Post;
+                              DataMain.ConfigVit.Close;
+                              DataMain.TT.Append;
+                              DataMain.TTTYPE_T.AsInteger := I;
+                              DataMain.TTNAIM.AsString := S;
+                              Datamain.TT.Post;
+                            end;
+                      end;
+          VK_DELETE : begin
+                        if MessageDlg('Удалить данный тип товара?',
+                           mtConfirmation, [mbYes, mbNo], 0) = mrYes then
+                           begin
+                                With DataMain do
+                                     begin
+                                          I := TTType_T.AsInteger;
+                                          Tovar.Open;
+                                          Tovar.First;
+                                          if Tovar.Locate('Type_T',I,[]) then
+                                             ShowMessage('Найдены позиции данного типа товара')
+                                          else
+                                              TT.Delete;
+                                          Tovar.Close;
+                                     end;
+                           end;
+                      end;
+          VK_RETURN : begin
+                           S := DataMain.TTNaim.AsString;
+                           if InputQuery('Тип товара','Введите новый тип',S) then
+                            begin
+                              DataMain.TT.Edit;
+                              DataMain.TTNAIM.AsString := S;
+                              Datamain.TT.Post;
+                            end;
+                      end;
+     end;
+
+end;
+
+end.

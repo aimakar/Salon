@@ -1,0 +1,368 @@
+unit IzlFormF;
+
+interface
+
+uses
+  Windows, Messages, SysUtils, Classes, Graphics, Controls, Forms, Dialogs,
+  Grids, DBGrids, DB, StdCtrls, Buttons, DBTables, ExtCtrls, RXClock, FileCtrl;
+    procedure Check;
+    procedure Prin;
+    
+type
+  TIzlForm = class(TForm)
+    DBGrid1: TDBGrid;
+    ToB: TBitBtn;
+    CB: TCheckBox;
+    RxClock1: TRxClock;
+    BitBtn1: TBitBtn;
+    Timer1: TTimer;
+    Bevel1: TBevel;
+    ExBtn: TBitBtn;
+    Q1: TQuery;
+    Q1Summa: TFloatField;
+    procedure DBGrid1KeyDown(Sender: TObject; var Key: Word;
+      Shift: TShiftState);
+    procedure FormKeyDown(Sender: TObject; var Key: Word;
+      Shift: TShiftState);
+    procedure FormActivate(Sender: TObject);
+    procedure FormDeactivate(Sender: TObject);
+    procedure ToBClick(Sender: TObject);
+    procedure DBGrid1DrawColumnCell(Sender: TObject; const Rect: TRect;
+      DataCol: Integer; Column: TColumn; State: TGridDrawState);
+
+    procedure CBKeyDown(Sender: TObject; var Key: Word;
+      Shift: TShiftState);
+    procedure CBClick(Sender: TObject);
+    procedure BitBtn1Click(Sender: TObject);
+    procedure Timer1Timer(Sender: TObject);
+    procedure FormDestroy(Sender: TObject);
+    procedure FormClose(Sender: TObject; var Action: TCloseAction);
+    procedure ExBtnClick(Sender: TObject);
+  private
+    { Private declarations }
+  public
+    { Public declarations }
+  end;
+
+var
+  IzlForm: TIzlForm;
+  Dost : String;
+
+implementation
+
+uses Data, Pro, IzlTF, Sklad, PrintIzlF;
+
+{$R *.DFM}
+
+procedure TIzlForm.DBGrid1KeyDown(Sender: TObject; var Key: Word;
+  Shift: TShiftState);
+var S,S1 : String;
+    I : Integer;
+    L : Boolean;
+begin
+     L := False;
+     case Key of
+     VK_Space: if NasDost(Dost[31]) then
+               if Datamain.IzlNakl.IsEmpty
+                      then
+                          ShowMessage('Че смотреть то будем, нет ничего еще!')
+                      else
+                          With DataMain do
+                              begin
+                                   if (IzlNaklPriz.AsBoolean) then IzlT.tag := 1 else IzlT.tag := 0;
+                                   IzlT.Label2.Caption := IzlNakl.FieldByName('Nomer').AsString;
+                                   IzlT.DE.Text := IzlNakl.FieldByName('Ot').AsString;
+                                   IzlT.ShowModal;
+                                   if IzlNakl.State = dsBrowse then IzlNakl.Edit;
+                                   IzlNakl.FieldByName('Ot').AsString := IzlT.DE.Text;
+                                   IzlNakl.FieldByName('Summa').AsFloat := StrToFloat(Trim(IzlT.Label11.Caption));
+                                   IzlNakl.Post;
+                              end;
+     VK_DELETE : if (NasDost(Dost[31]) and NasDost(Dost[32])) then
+                 if not(DataMain.IzlNakl.FieldByName('Priz').AsBoolean)  then
+                  if MessageDlg('Удалить накладную?',
+                     mtConfirmation, [mbNo, mbYes], 0) = mrYes then
+                        With DataMain do begin
+                           Valyta.Open;
+                           Tovar.Open;
+                           Ost.Open;
+                           IzlTN.Open;
+                           IzlTN.First;
+                           While not(DataMain.IzlTN.Eof) do
+                                IzlTN.Delete;
+                           IzlNakl.Delete;
+                           IzlTN.Close;
+                           Ost.Close;
+                           Tovar.Close;
+                           Valyta.Close;
+                        end;
+     VK_INSERT : begin
+                        Datamain.ConfigVit.open;
+                        I := Datamain.ConfigVitNomer18.AsInteger + 1;
+                        Datamain.ConfigVit.Edit;
+                        Datamain.ConfigVitNomer18.AsInteger := I;
+                        Datamain.ConfigVit.Post;
+                        Datamain.ConfigVit.Close;
+                        S1 := '-Изл';
+                        S := IntToStr(I) + S1;
+                        With DataMain.IzlNakl do
+                            begin
+                                 Append;
+                                 FieldByName('Nomer').AsString := S;
+                                 FieldByName('Ot').AsDateTime := Date();
+                                 FieldByName('Priz').AsBoolean := False;
+                                 Post;
+                                 IzlT.Label2.Caption := FieldByName('Nomer').AsString;
+                                 IzlT.DE.Text := FieldByName('Ot').AsString;
+                                 IzlT.ShowModal;
+                                 Edit;
+                                 FieldByName('Ot').AsString := IzlT.DE.Text;
+                                 FieldByName('Summa').AsFloat := StrToFloat(Trim(IzlT.Label11.Caption));
+                                 Post;
+                            end;
+                     end;
+     VK_F6 : if InputQuery('Поиск по номеру','Введите номер',S) then
+                  With Datamain.IzlNakl do
+                       begin
+                            DisableControls;
+                            Locate('Nomer',S,[loPartialKey]);
+                            enableControls;
+                       end;
+     VK_F5 : Prin;
+   end;
+
+end;
+
+procedure TIzlForm.FormKeyDown(Sender: TObject; var Key: Word;
+  Shift: TShiftState);
+begin
+     if Key = VK_ESCAPE then
+        begin
+             IzlForm.Release;
+        end;
+
+end;
+
+procedure TIzlForm.FormActivate(Sender: TObject);
+begin
+     With DataMain do
+          begin
+               IzlNakl.Open;
+               Dost := DostupDost1.AsString;
+          end;
+  Timer1.Enabled := True;
+  ExBtn.Visible := NasDost(Dost[8]);
+  Application.CreateForm(TIzlT, IzlT);
+
+end;
+
+procedure TIzlForm.FormDeactivate(Sender: TObject);
+begin
+Timer1.Enabled := False;
+  CloseData;
+  IzlT.Release;
+
+end;
+
+procedure TIzlForm.ToBClick(Sender: TObject);
+var S,S1: String;
+begin
+     with DataMain do begin
+     Valyta.Open;
+     Tovar.Open;
+     Ost.Open;
+     IzlTn.Open;
+     IzlTn.First;
+     while not(IzlTn.EOF) do
+          begin
+               Ost.FindKey([IzlTnCode.AsInteger]);
+               Ost.Edit;
+               OstKol2.AsInteger := OstKol2.AsInteger + IzlTnKol.AsInteger;
+               OstKol1.AsInteger := OstKol1.AsInteger + IzlTnKol.AsInteger;
+               Ost.post;
+               IzlTn.Next;
+          end;
+               IzlTn.Close;
+               Tovar.Close;
+               Valyta.Close;
+{Вставить обработку операциониста}
+
+             IzlNakl.Edit;
+             IzlNakl.FieldByName('Priz').AsBoolean := True;
+             IzlNakl.FieldByName('PrizDat').AsDateTime := date();
+             IzlNakl.Post;
+             IzlForm.ToB.Enabled := False;
+            end
+
+end;
+
+procedure TIzlForm.DBGrid1DrawColumnCell(Sender: TObject;
+  const Rect: TRect; DataCol: Integer; Column: TColumn;
+  State: TGridDrawState);
+var a, ex : Boolean;
+begin
+a := DataMain.IzlNaklPriz.AsBoolean;
+ex := DataMain.IzlNaklExp.AsBoolean;
+with DBGrid1.Canvas do begin
+     if a and (not (gdFocused in State)) then
+      begin
+       Font.Color := clGreen;
+       FillRect (Rect);
+       TextOut(Rect.Left,Rect.Top,Column.Field.Text);
+      end
+     else DBGrid1.DefaultDrawColumnCell(Rect,DataCol,Column,State);
+     if gdFocused in State then
+      begin
+       if Ex then
+          ExBtn.Font.Color := clRed
+       else
+           ExBtn.Font.Color := clBlack;
+       if a then
+          ToB.Enabled := False
+       else
+          ToB.Enabled := True;
+      end;
+end;
+
+end;
+
+procedure Check;
+begin
+     if IzlForm.CB.Checked then
+      begin
+       DataMain.IzlNakl.Filter := 'not([Priz])';
+       DataMain.IzlNakl.Filtered := True;
+      end
+     else
+      begin
+       DataMain.IzlNakl.Filtered := False;
+      end;
+end;
+
+
+procedure TIzlForm.CBKeyDown(Sender: TObject; var Key: Word;
+  Shift: TShiftState);
+begin
+  Check;
+end;
+
+procedure TIzlForm.CBClick(Sender: TObject);
+begin
+ Check;
+end;
+
+procedure Prin;
+var s,S1 : String;
+begin
+  with IzlForm do
+   begin
+    DataMain.IzlNakl.DisableControls;
+    Application.CreateForm(TPrintIzl, PrintIzl);
+    S := DataMain.IzlNaklNOMER.AsString;
+    S1 := S;
+    Delete(S,Pos('-',S),Length(S));
+    DataMain.IzlNakl.Tag := StrToInt(S);
+    DataMain.IzlNakl.Filtered := False;
+    DataMain.IzlNakl.Filter := '';
+    DataMain.IzlNakl.Filtered := True;
+    DataMain.IzlNakl.Refresh;
+    PrintIzl.SHowModal;
+    DataMain.IzlNakl.Filtered := False;
+    DataMain.IzlNakl.Tag := 0;
+    PrintIzl.Release;
+    DataMain.IzlNakl.Locate('Nomer',S1,[]);
+    DataMain.IzlNakl.EnableControls;
+   end;
+end;
+
+
+procedure TIzlForm.BitBtn1Click(Sender: TObject);
+begin
+     Prin;
+end;
+
+procedure TIzlForm.Timer1Timer(Sender: TObject);
+begin
+     DataMain.IzlNakl.Refresh;
+end;
+
+procedure TIzlForm.FormDestroy(Sender: TObject);
+begin
+     Main.N28.Enabled := True;
+end;
+
+procedure TIzlForm.FormClose(Sender: TObject; var Action: TCloseAction);
+begin
+Action := caFree;
+end;
+
+procedure TIzlForm.ExBtnClick(Sender: TObject);
+var F : TextFile;
+    S : String;
+begin
+     With DataMain do
+      begin
+        if not(IzlNaklOtk.AsBoolean) then
+         begin
+              IzlForm.Timer1.Enabled := False;
+              S := IzlNaklNOMER.AsString;
+              IzlForm.Q1.Close;
+              IzlForm.Q1.ParamByname('Nakl').AsString := S;
+              IzlForm.Q1.Open;
+              IzlForm.Q1.First;
+              IzlNakl.Edit;
+              IzlNaklOtk.ASBoolean := True;
+              if not(IzlForm.Q1.Eof) then
+                begin
+                 try
+                    IzlNaklSumma.AsFloat := IzlForm.Q1Summa.AsFloat;
+                 except
+                    IzlNaklSumma.AsFloat := 0;
+                 end;
+                end;
+              IzlNakl.Post;
+              IzlForm.Q1.Close;
+              if not(DirectoryExists('Q:\New\Export')) then ForceDirectories('Q:\New\Export');
+              AssignFile(F, 'Q:\New\Export\'+IzlNaklNomer.AsString+'.nkl');
+              Rewrite(F);
+              WriteLN(F,'Накладная;',
+                        IzlNaklNomer.AsString + ';',
+                        IzlNaklOt.AsString + ';',
+                        'ИЗЛИШКИ;',
+                        IzlNaklSumma.AsString + ';',
+                        ';');
+              IzlTn.Open;
+              IzlTn.First;
+              while not(IzlTn.Eof) do
+               begin
+                 WriteLN(F,'Товар;',
+                        IzlTnNomer.AsString + ';',
+                        IzlTnNaim.AsString + ';',
+                        IzlTnKol.AsString + ';',
+                        IzlTnPrice.AsString + ';',
+                        IzlTnMesto.asString + ';',
+                        IzlTnUp.AsString + ';',
+                        IzlTnV_UP.AsString+';'
+                        +';'
+                        +';'
+                        +';'
+                        +';'
+                        +';'
+                        + DataMain.get_sokr_post(IzlTNcode.asInteger) + '-' + IzlTnStella.AsString +  ';'
+                        );
+                 IzlTn.Next;
+               end;
+              IzlTn.Close;
+              CloseFile(F);
+              IzlNakl.Edit;
+              IzlNaklOtk.ASBoolean := False;
+              IzlNaklExp.AsBoolean := True;
+              IzlNakl.Post;
+              IzlForm.Timer1.Enabled := True;
+
+         end;
+      end;
+
+end;
+
+end.

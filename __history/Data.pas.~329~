@@ -1,0 +1,1068 @@
+unit Data;
+
+interface
+
+uses
+  Windows, Messages, SysUtils, Classes, Graphics, Controls, Forms, Dialogs,
+  Db, DBTables, ExtCtrls, ImgList, strutils, JvComponentBase, JvAppStorage,
+  JvAppIniStorage, JvTFManager, IBDatabase, IBCustomDataSet, IBTable,
+  JvDataSource, IBSQLMonitor, IBQuery;
+ const rozn_tov_filter = '[roznpriz] <> true';
+type
+  TDataMain = class(TDataModule)
+    ImageList1: TImageList;
+    ImageList2: TImageList;
+    IBDB: TIBDatabase;
+    IBT: TIBTransaction;
+    ConfigVit: TIBTable;
+    MasterDS: TJvDataSource;
+    ConfigVitDS: TJvDataSource;
+    ConfigVitNOMER1: TIBStringField;
+    ConfigVitNOMER2: TIBStringField;
+    ConfigVitNOMER3: TIBStringField;
+    ConfigVitNOMER4: TIBStringField;
+    ConfigVitNOMER5: TIBStringField;
+    ConfigVitNOMER7: TIBStringField;
+    ConfigVitNOMER8: TIBStringField;
+    ConfigVitNOMER9: TIBStringField;
+    ConfigVitNOMER10: TIBStringField;
+    ConfigVitNOMER11: TIBStringField;
+    ConfigVitNOMER12: TIBStringField;
+    ConfigVitNOMER13: TIBStringField;
+    ConfigVitPGR_ID: TIntegerField;
+    ConfigVitNOMER15: TIntegerField;
+    ConfigVitNOMER14: TIntegerField;
+    ConfigVitNOMER16: TIntegerField;
+    ConfigVitNOMER17: TIntegerField;
+    ConfigVitZPRED: TIntegerField;
+    ConfigVitCODE_SKL: TIntegerField;
+    ConfigVitNOMER18: TIntegerField;
+    ConfigVitNOMER19: TIntegerField;
+    ConfigVitTGR_ID: TIntegerField;
+    ConfigVitZROZN: TIntegerField;
+    ConfigVitZVAN: TIntegerField;
+    ConfigVitNOMER20: TIntegerField;
+    PredprDS: TJvDataSource;
+    Proiz: TIBTable;
+    Master: TIBTable;
+    Predpr: TIBTable;
+    MasterNAIM: TIBStringField;
+    MasterADDRESS: TIBStringField;
+    MasterGOROD: TIBStringField;
+    MasterCODE_MAST: TIntegerField;
+    MasterTEL: TIBStringField;
+    MasterBIRTH_DATE: TDateField;
+    PredprNAIM: TIBStringField;
+    PredprADDRESS: TIBStringField;
+    PredprCODE_PR: TIntegerField;
+    PredprGOROD: TIBStringField;
+    PredprRS: TIBStringField;
+    PredprPRIZ: TSmallintField;
+    PredprKS: TIBStringField;
+    PredprBANK: TIBStringField;
+    PredprBIK: TIntegerField;
+    PredprINN: TIBStringField;
+    PredprTEL: TIBStringField;
+    PredprSVID: TIBStringField;
+    PredprVYDAN: TIBStringField;
+    PredprPRIZ_SK: TIBStringField;
+    PredprBONUS: TIntegerField;
+    PredprDAY: TIBStringField;
+    PredprEXP_ROZN: TIBStringField;
+    PredprKPP: TIBStringField;
+    PredprTYPE_PRED: TIBStringField;
+    PredprTYPE_SK: TIBStringField;
+    PredprLIC: TIBStringField;
+    PredprPGR_ID: TIntegerField;
+    PredprBIRTH_DATE: TDateField;
+    PredprDOSTADD: TIBStringField;
+    PredprID_KART: TIntegerField;
+    PriozDS: TJvDataSource;
+    Post: TIBTable;
+    Tovar_: TIBTable;
+    Rekv: TIBTable;
+    PostDS: TJvDataSource;
+    TovarDS_: TJvDataSource;
+    RekvDS: TJvDataSource;
+    ProizNAIM: TIBStringField;
+    ProizPRIM: TIBStringField;
+    ProizCODE_PROIZ: TIntegerField;
+    PostNAIM: TIBStringField;
+    PostCONS: TSmallintField;
+    PostPRIM: TIBStringField;
+    PostSOKR: TIBStringField;
+    PostINN: TIBStringField;
+    PostCODE_POST: TIntegerField;
+    RekvNAIM: TIBStringField;
+    RekvADDRESS: TIBStringField;
+    RekvCODE: TSmallintField;
+    RekvRS: TIBStringField;
+    RekvKS: TIBStringField;
+    RekvBANK: TIBStringField;
+    RekvBIK: TIBStringField;
+    RekvOKONH: TIBStringField;
+    RekvINN: TIBStringField;
+    RekvOKPO: TIBStringField;
+    RekvPROGR: TIBStringField;
+    RekvTEL: TIBStringField;
+    RekvRUK: TIBStringField;
+    RekvNDS: TIBStringField;
+    RekvGLBUCH: TIBStringField;
+    RekvKPP: TIBStringField;
+    RekvLIC: TIBStringField;
+    GrTovar_: TIBTable;
+    GrTovarDS_: TJvDataSource;
+    Tovar_NAIM: TIBStringField;
+    Tovar_CODE: TIntegerField;
+    Tovar_KOL1: TIntegerField;
+    Tovar_CODE_PR: TIntegerField;
+    Tovar_KOL2: TIntegerField;
+    Tovar_UP: TSmallintField;
+    Tovar_CODE_VAL: TSmallintField;
+    Tovar_COMM1: TIBStringField;
+    Tovar_COMM2: TIBStringField;
+    Tovar_SERT: TWideMemoField;
+    Tovar_NDS: TSmallintField;
+    Tovar_BONUS: TIntegerField;
+    Tovar_CODEGR: TIntegerField;
+    Tovar_SPEC: TIBStringField;
+    Tovar_CODE_S: TIntegerField;
+    Tovar_TYPE_T: TIntegerField;
+    Tovar_DATASERT: TDateField;
+    Tovar_STRANA: TIBStringField;
+    Tovar_NTD: TIBStringField;
+    Tovar_VSKLAD: TIntegerField;
+    Tovar_MESTO: TIBStringField;
+    Tovar_RZT: TIntegerField;
+    Tovar_ARTIKUL: TIBStringField;
+    Tovar_STELLA: TIBStringField;
+    Tovar_NEW: TIBStringField;
+    Tovar_ROZNPRIZ: TIBStringField;
+    Tovar_ALKO_STR: TIBStringField;
+    Tovar_ALKO_DAL: TIntegerField;
+    Tovar_TGR_ID: TIntegerField;
+    Tovar_VID: TSmallintField;
+    Tovar_CODE_POST: TIntegerField;
+    Tovar_ALKO: TSmallintField;
+    GrTovar_NAIM: TIBStringField;
+    GrTovar_CODEGR: TIntegerField;
+    Ost: TIBTable;
+    Config: TIBTable;
+    TT: TIBTable;
+    TnVozv: TIBTable;
+    IzlNakl: TIBTable;
+    NaklVozv: TIBTable;
+    IzlTN: TIBTable;
+    BRTN: TIBTable;
+    BRNakl: TIBTable;
+    CashTN: TIBTable;
+    CashNakl: TIBTable;
+    TnVozvDS: TJvDataSource;
+    BRTNDS: TJvDataSource;
+    CashTNDS: TJvDataSource;
+    CashNaklDS: TJvDataSource;
+    BRNaklDS: TJvDataSource;
+    NaklPrihDS: TJvDataSource;
+    IzlNaklDS: TJvDataSource;
+    TNPrihDS: TJvDataSource;
+    NaklVozvDS: TJvDataSource;
+    ConfigDS: TJvDataSource;
+    TTDS: TJvDataSource;
+    IzlTNDS: TJvDataSource;
+    OstDS: TJvDataSource;
+    OstCODE: TIntegerField;
+    OstKOL1: TIntegerField;
+    OstKOL2: TIntegerField;
+    Tovar_Ost1: TIntegerField;
+    Tovar_Ost2: TIntegerField;
+    ConfigNALOG: TSmallintField;
+    ConfigNOMER1: TIBStringField;
+    ConfigNOMER2: TIBStringField;
+    ConfigNOMER3: TIBStringField;
+    ConfigNOMER4: TIBStringField;
+    ConfigNOMER5: TIBStringField;
+    ConfigNOMER6: TIBStringField;
+    ConfigNOMER7: TIBStringField;
+    ConfigNOMER8: TIBStringField;
+    ConfigNOMER9: TIntegerField;
+    ConfigSCH1: TIntegerField;
+    ConfigSCH2: TIntegerField;
+    ConfigSCH3: TIntegerField;
+    ConfigSCH4: TIntegerField;
+    ConfigSCH5: TIntegerField;
+    TTNAIM: TIBStringField;
+    TTTYPE_T: TIntegerField;
+    NaklVozvPREDPR: TIBStringField;
+    NaklVozvNOMER: TIBStringField;
+    NaklVozvCODE_PR: TIntegerField;
+    NaklVozvPRIM: TWideMemoField;
+    NaklVozvPRIZ: TIBStringField;
+    NaklVozvOT: TDateField;
+    NaklVozvOPERAC: TIBStringField;
+    NaklVozvPROV1: TIBStringField;
+    NaklVozvPROV2: TIBStringField;
+    NaklVozvPROV3: TIBStringField;
+    NaklVozvPROV1D: TDateField;
+    NaklVozvOPERACDAT: TDateField;
+    NaklVozvPROV2D: TDateField;
+    NaklVozvPROV3D: TDateField;
+    NaklVozvPRIZDAT: TDateField;
+    NaklVozvOTK: TIBStringField;
+    NaklVozvCODE_S: TSmallintField;
+    NaklVozvEXP: TIBStringField;
+    NaklVozvOSN: TIBStringField;
+    NaklVozvALKO: TIBStringField;
+    TnVozvCODE: TIntegerField;
+    TnVozvNOMER: TIBStringField;
+    TnVozvKOL: TIntegerField;
+    TnVozvUP: TSmallintField;
+    NaklVozvNAIM: TStringField;
+    TnVozvNaim: TStringField;
+    TnVozvV_UP: TIntegerField;
+    TnVozvSumma: TFloatField;
+    NaklPrih: TIBTable;
+    TnPrih: TIBTable;
+    NaklPrihNOMER: TIBStringField;
+    NaklPrihCODE_PR: TIntegerField;
+    NaklPrihCOD_VAL: TSmallintField;
+    NaklPrihPRIM: TWideMemoField;
+    NaklPrihPRIZ: TIBStringField;
+    NaklPrihOT: TDateField;
+    NaklPrihOPERAC: TIBStringField;
+    NaklPrihPROV1: TIBStringField;
+    NaklPrihCOMMENT: TIBStringField;
+    NaklPrihPROV2: TIBStringField;
+    NaklPrihPROV1D: TDateField;
+    NaklPrihOPERACDAT: TDateField;
+    NaklPrihBONUS: TIBStringField;
+    NaklPrihPROV2D: TDateField;
+    NaklPrihOTK: TIBStringField;
+    NaklPrihVITNOMER: TIBStringField;
+    NaklPrihCODE_S: TSmallintField;
+    NaklPrihEXP: TIBStringField;
+    TnPrihCODE: TIntegerField;
+    TnPrihNOMER: TIBStringField;
+    TnPrihKOL: TIntegerField;
+    TnPrihUP: TSmallintField;
+    TnPrihNaim: TStringField;
+    TnPrihSumma: TFloatField;
+    CashTNCODE: TIntegerField;
+    CashTNNOMER: TIBStringField;
+    CashTNKOL: TIntegerField;
+    CashTNUP: TIntegerField;
+    CashTNSK: TIntegerField;
+    CashTNBONUS: TIntegerField;
+    CashTNNaim: TStringField;
+    CashTNV_Up: TIntegerField;
+    CashTNOst: TIntegerField;
+    CashNaklNOMER: TIBStringField;
+    CashNaklCODE_PR: TIntegerField;
+    CashNaklPRIM: TWideMemoField;
+    CashNaklSKIDKA: TSmallintField;
+    CashNaklOPER: TSmallintField;
+    CashNaklOT: TDateField;
+    CashNaklOPERAC: TIBStringField;
+    CashNaklCODE_MAST: TIntegerField;
+    CashNaklDATA: TDateField;
+    CashNaklPROV1: TIBStringField;
+    CashNaklPROV2: TIBStringField;
+    CashNaklPROV3: TIBStringField;
+    CashNaklPROV1D: TIBStringField;
+    CashNaklPROV2D: TIBStringField;
+    CashNaklPROV3D: TIBStringField;
+    CashNaklBONUS: TIntegerField;
+    CashNaklOTK: TIBStringField;
+    CashNaklOPLATA: TIBStringField;
+    CashNaklDOST: TIBStringField;
+    CashNaklDOSTDAT: TDateField;
+    CashNaklCHERES: TIBStringField;
+    CashNaklEXP: TIBStringField;
+    CashNaklOSN: TIBStringField;
+    CashNaklDATAOPL: TDateField;
+    CashNaklOTP: TIBStringField;
+    CashNaklDOSTADD: TIBStringField;
+    CashNaklDATAOTP: TDateField;
+    CashNaklOPL: TIBStringField;
+    CashNaklID_KART: TIntegerField;
+    CashNaklOPLS: TIBStringField;
+    CashNaklOTPS: TIBStringField;
+    CashNaklPOSTUP: TIBStringField;
+    CashNaklPOSTUPL: TIBStringField;
+    CashNaklPOSTUPDAT: TDateField;
+    CashNaklPOLUCH: TIBStringField;
+    CashNaklPOLUCHL: TIBStringField;
+    CashNaklPOLUCHDAT: TDateField;
+    CashNaklRAZR: TIBStringField;
+    CashNaklCODE_POST: TIntegerField;
+    CashNaklRAZRL: TIBStringField;
+    CashNaklALKO: TIBStringField;
+    CashNaklRAZRDAT: TDateField;
+    CashNaklSCHNOM: TIntegerField;
+    CashNaklSCHR: TIBStringField;
+    CashNaklNAL: TIBStringField;
+    CashNaklFACT: TIBStringField;
+    CashNaklCODE_FIRM: TIntegerField;
+    CashNaklOSH: TIBStringField;
+    CashNaklGRUZ: TIBStringField;
+    CashNaklCODE_GRUZ: TIntegerField;
+    CashNaklEND_RAB: TIBStringField;
+    CashNaklEND_RABD: TIBStringField;
+    CashNaklBONUS_OPL: TIntegerField;
+    CashNaklPredpr: TStringField;
+    CashNaklSchet: TIntegerField;
+    CashNaklMaster: TStringField;
+    BRNaklNOMER: TIBStringField;
+    BRNaklPRIZDAT: TDateField;
+    BRNaklPRIM: TWideMemoField;
+    BRNaklPRIZ: TIBStringField;
+    BRNaklOT: TDateField;
+    BRNaklOPERAC: TIBStringField;
+    BRNaklOPERACDAT: TDateField;
+    BRNaklOTK: TIBStringField;
+    BRNaklEXP: TIBStringField;
+    BRTNCODE: TIntegerField;
+    BRTNNOMER: TIBStringField;
+    BRTNKOL: TIntegerField;
+    BRTNPRIM: TIBStringField;
+    BRTNUP: TIntegerField;
+    BRTNNaim: TStringField;
+    BRTNV_UP: TIntegerField;
+    IzlNaklNOMER: TIBStringField;
+    IzlNaklPRIZDAT: TDateField;
+    IzlNaklPRIM: TWideMemoField;
+    IzlNaklPRIZ: TIBStringField;
+    IzlNaklOT: TDateField;
+    IzlNaklOPERAC: TIBStringField;
+    IzlNaklOPERACDAT: TDateField;
+    IzlNaklOTK: TIBStringField;
+    IzlNaklEXP: TIBStringField;
+    IzlTNCODE: TIntegerField;
+    IzlTNNOMER: TIBStringField;
+    IzlTNKOL: TIntegerField;
+    IzlTNPRIM: TIBStringField;
+    IzlTNUP: TIntegerField;
+    IzlTNNaim: TStringField;
+    IzlTNV_UP: TIntegerField;
+    IzlTNSumma: TFloatField;
+    Otch_o: TIBQuery;
+    Otch_oNAIM: TIBStringField;
+    Otch_oKOL1: TIntegerField;
+    Otch_oKOL2: TIntegerField;
+    TovDS: TJvDataSource;
+    Find_Predpr: TIBTable;
+    Find_PredprNAIM: TIBStringField;
+    Find_PredprADDRESS: TIBStringField;
+    Find_PredprCODE_PR: TIntegerField;
+    Find_PredprGOROD: TIBStringField;
+    Find_PredprRS: TIBStringField;
+    Find_PredprPRIZ: TSmallintField;
+    Find_PredprKS: TIBStringField;
+    Find_PredprBANK: TIBStringField;
+    Find_PredprBIK: TIntegerField;
+    Find_PredprINN: TIBStringField;
+    Find_PredprTEL: TIBStringField;
+    Find_PredprSVID: TIBStringField;
+    Find_PredprVYDAN: TIBStringField;
+    Find_PredprPRIZ_SK: TIBStringField;
+    Find_PredprBONUS: TIntegerField;
+    Find_PredprDAY: TIBStringField;
+    Find_PredprEXP_ROZN: TIBStringField;
+    Find_PredprKPP: TIBStringField;
+    Find_PredprTYPE_PRED: TIBStringField;
+    Find_PredprTYPE_SK: TIBStringField;
+    Find_PredprLIC: TIBStringField;
+    Find_PredprPGR_ID: TIntegerField;
+    Find_PredprBIRTH_DATE: TDateField;
+    Find_PredprDOSTADD: TIBStringField;
+    Find_PredprID_KART: TIntegerField;
+    Q_Bonus: TIBQuery;
+    Q_BonusBONUS: TLargeintField;
+    Tov: TIBDataSet;
+    TovCODE: TIntegerField;
+    TovNAIM: TIBStringField;
+    TovKOL1: TIntegerField;
+    TovCODE_PR: TIntegerField;
+    TovKOL2: TIntegerField;
+    TovUP: TSmallintField;
+    TovCODE_VAL: TSmallintField;
+    TovCOMM1: TIBStringField;
+    TovCOMM2: TIBStringField;
+    TovSERT: TWideMemoField;
+    TovNDS: TSmallintField;
+    TovBONUS: TIntegerField;
+    TovCODEGR: TIntegerField;
+    TovSPEC: TIBStringField;
+    TovCODE_S: TIntegerField;
+    TovTYPE_T: TIntegerField;
+    TovDATASERT: TDateField;
+    TovSTRANA: TIBStringField;
+    TovNTD: TIBStringField;
+    TovVSKLAD: TIntegerField;
+    TovMESTO: TIBStringField;
+    TovRZT: TIntegerField;
+    TovARTIKUL: TIBStringField;
+    TovSTELLA: TIBStringField;
+    TovNEW: TIBStringField;
+    TovROZNPRIZ: TIBStringField;
+    TovALKO_STR: TIBStringField;
+    TovALKO_DAL: TIntegerField;
+    TovTGR_ID: TIntegerField;
+    TovVID: TSmallintField;
+    TovCODE_POST: TIntegerField;
+    TovALKO: TSmallintField;
+    IzlNaklSUMMA: TFloatField;
+    IzlTNPRICE: TFloatField;
+    NaklPrihSUMMA: TFloatField;
+    NaklPrihVALPRICE: TFloatField;
+    TnPrihPRICE: TFloatField;
+    Tovar_PRIHOD: TFloatField;
+    Tovar_NACEN: TFloatField;
+    Tovar_PRICE_B: TFloatField;
+    NaklVozvSUMMA: TFloatField;
+    TnVozvPRICE: TFloatField;
+    TnVozvPRICE_PRIH: TFloatField;
+    CashNaklSUMMA: TFloatField;
+    TovPRIHOD: TFloatField;
+    TovNACEN: TFloatField;
+    TovPRICE_B: TFloatField;
+    CashTNPRICE: TFloatField;
+    CashTNPRICEB: TFloatField;
+    CashTNPRICE_PRIH: TFloatField;
+    BRNaklSUMMA: TFloatField;
+    BRTNPRICE: TFloatField;
+    BRTNSumma: TFloatField;
+    CashTNSumma: TFloatField;
+    Q_BonusSUMMA: TFloatField;
+    IBTCash: TIBTransaction;
+    CashNakl_: TIBDataSet;
+    CashTN_: TIBDataSet;
+    CashNaklDS_: TJvDataSource;
+    CashTNDS_: TJvDataSource;
+    GrTovar: TIBDataSet;
+    TovarDS: TJvDataSource;
+    IBDataSet1: TIBDataSet;
+    IBDataSet2: TIBDataSet;
+    Tovar: TIBDataSet;
+    JvDataSource1: TJvDataSource;
+    JvDataSource2: TJvDataSource;
+    JvDataSource3: TJvDataSource;
+    JvDataSource4: TJvDataSource;
+    GrTovarDS: TJvDataSource;
+    GrTovarNAIM: TIBStringField;
+    GrTovarCODEGR: TIntegerField;
+    TovarCODE: TIntegerField;
+    TovarNAIM: TIBStringField;
+    TovarKOL1: TIntegerField;
+    TovarCODE_PR: TIntegerField;
+    TovarKOL2: TIntegerField;
+    TovarUP: TSmallintField;
+    TovarCODE_VAL: TSmallintField;
+    TovarCOMM1: TIBStringField;
+    TovarCOMM2: TIBStringField;
+    TovarSERT: TWideMemoField;
+    TovarNDS: TSmallintField;
+    TovarBONUS: TIntegerField;
+    TovarCODEGR: TIntegerField;
+    TovarSPEC: TIBStringField;
+    TovarCODE_S: TIntegerField;
+    TovarTYPE_T: TIntegerField;
+    TovarDATASERT: TDateField;
+    TovarSTRANA: TIBStringField;
+    TovarNTD: TIBStringField;
+    TovarVSKLAD: TIntegerField;
+    TovarMESTO: TIBStringField;
+    TovarRZT: TIntegerField;
+    TovarARTIKUL: TIBStringField;
+    TovarSTELLA: TIBStringField;
+    TovarNEW: TIBStringField;
+    TovarROZNPRIZ: TIBStringField;
+    TovarALKO_STR: TIBStringField;
+    TovarALKO_DAL: TIntegerField;
+    TovarTGR_ID: TIntegerField;
+    TovarVID: TSmallintField;
+    TovarCODE_POST: TIntegerField;
+    TovarALKO: TSmallintField;
+    TovarPRIHOD: TFloatField;
+    TovarNACEN: TFloatField;
+    TovarPRICE_B: TFloatField;
+    TovarOst1: TIntegerField;
+    TovarOst2: TIntegerField;
+    CashNakl_NOMER: TIBStringField;
+    CashNakl_CODE_PR: TIntegerField;
+    CashNakl_PRIM: TWideMemoField;
+    CashNakl_SKIDKA: TSmallintField;
+    CashNakl_OPER: TSmallintField;
+    CashNakl_SUMMA: TFloatField;
+    CashNakl_OT: TDateField;
+    CashNakl_OPERAC: TIBStringField;
+    CashNakl_CODE_MAST: TIntegerField;
+    CashNakl_DATA: TDateField;
+    CashNakl_PROV1: TIBStringField;
+    CashNakl_PROV2: TIBStringField;
+    CashNakl_PROV3: TIBStringField;
+    CashNakl_PROV1D: TIBStringField;
+    CashNakl_PROV2D: TIBStringField;
+    CashNakl_PROV3D: TIBStringField;
+    CashNakl_BONUS: TIntegerField;
+    CashNakl_OTK: TIBStringField;
+    CashNakl_OPLATA: TIBStringField;
+    CashNakl_DOST: TIBStringField;
+    CashNakl_DOSTDAT: TDateField;
+    CashNakl_CHERES: TIBStringField;
+    CashNakl_EXP: TIBStringField;
+    CashNakl_OSN: TIBStringField;
+    CashNakl_DATAOPL: TDateField;
+    CashNakl_OTP: TIBStringField;
+    CashNakl_DOSTADD: TIBStringField;
+    CashNakl_DATAOTP: TDateField;
+    CashNakl_OPL: TIBStringField;
+    CashNakl_ID_KART: TIntegerField;
+    CashNakl_OPLS: TIBStringField;
+    CashNakl_OTPS: TIBStringField;
+    CashNakl_POSTUP: TIBStringField;
+    CashNakl_POSTUPL: TIBStringField;
+    CashNakl_POSTUPDAT: TDateField;
+    CashNakl_POLUCH: TIBStringField;
+    CashNakl_POLUCHL: TIBStringField;
+    CashNakl_POLUCHDAT: TDateField;
+    CashNakl_RAZR: TIBStringField;
+    CashNakl_CODE_POST: TIntegerField;
+    CashNakl_RAZRL: TIBStringField;
+    CashNakl_ALKO: TIBStringField;
+    CashNakl_RAZRDAT: TDateField;
+    CashNakl_SCHNOM: TIntegerField;
+    CashNakl_SCHR: TIBStringField;
+    CashNakl_NAL: TIBStringField;
+    CashNakl_FACT: TIBStringField;
+    CashNakl_CODE_FIRM: TIntegerField;
+    CashNakl_OSH: TIBStringField;
+    CashNakl_GRUZ: TIBStringField;
+    CashNakl_CODE_GRUZ: TIntegerField;
+    CashNakl_END_RAB: TIBStringField;
+    CashNakl_END_RABD: TIBStringField;
+    CashNakl_BONUS_OPL: TIntegerField;
+    CashTN_CODE: TIntegerField;
+    CashTN_NOMER: TIBStringField;
+    CashTN_KOL: TIntegerField;
+    CashTN_UP: TIntegerField;
+    CashTN_SK: TIntegerField;
+    CashTN_BONUS: TIntegerField;
+    CashTN_PRICE: TFloatField;
+    CashTN_PRICEB: TFloatField;
+    CashTN_PRICE_PRIH: TFloatField;
+    CashTN_V_Up: TIntegerField;
+    CashTN_Naim: TStringField;
+    CashTN_Ost: TIntegerField;
+    CashTN_Summa: TFloatField;
+    CashNakl_Predpr: TStringField;
+    CashNakl_Master: TStringField;
+    CashNakl_Schet: TStringField;
+    IBTPrih: TIBTransaction;
+    IBTVozv: TIBTransaction;
+    IBTBR: TIBTransaction;
+    IBTIzl: TIBTransaction;
+    procedure CashTN_CalcFields(DataSet: TDataSet);
+    procedure IzlTN_CalcFields(DataSet: TDataSet);
+    procedure TnVozv_CalcFields(DataSet: TDataSet);
+    procedure BRTN_CalcFields(DataSet: TDataSet);
+    procedure CashNakl_CalcFields(DataSet: TDataSet);
+    procedure NaklPrih_FilterRecord(DataSet: TDataSet; var Accept: Boolean);
+    procedure Predpr_FilterRecord(DataSet: TDataSet; var Accept: Boolean);
+    procedure IzlNakl_FilterRecord(DataSet: TDataSet; var Accept: Boolean);
+    procedure BRNakl_FilterRecord(DataSet: TDataSet; var Accept: Boolean);
+    procedure CashNakl_FilterRecord(DataSet: TDataSet; var Accept: Boolean);
+    procedure Post_FilterRecord(DataSet: TDataSet; var Accept: Boolean);
+    procedure Predpr_NAIMSetText(Sender: TField; const Text: String);
+    procedure FindPredpr_(Code : Integer);
+    procedure NaklVozv_FilterRecord(DataSet: TDataSet; var Accept: Boolean);
+    procedure DataModuleCreate(Sender: TObject);
+    procedure MasterFilterRecord(DataSet: TDataSet; var Accept: Boolean);
+    procedure MonitorSQL(EventText: string; EventTime: TDateTime);
+    procedure PredprFilterRecord(DataSet: TDataSet; var Accept: Boolean);
+    procedure PostFilterRecord(DataSet: TDataSet; var Accept: Boolean);
+    procedure NaklPrihFilterRecord(DataSet: TDataSet; var Accept: Boolean);
+    procedure TnPrihCalcFields(DataSet: TDataSet);
+    procedure CashNakl__CalcFields(DataSet: TDataSet);
+    procedure CashNakl__FilterRecord(DataSet: TDataSet; var Accept: Boolean);
+    procedure CashTN__CalcFields(DataSet: TDataSet);
+    procedure BRNaklFilterRecord(DataSet: TDataSet; var Accept: Boolean);
+    procedure BRTNCalcFields(DataSet: TDataSet);
+    procedure IzlNaklFilterRecord(DataSet: TDataSet; var Accept: Boolean);
+    procedure IzlTNCalcFields(DataSet: TDataSet);
+    procedure NaklVozvFilterRecord(DataSet: TDataSet; var Accept: Boolean);
+    procedure CashTNCalcFields(DataSet: TDataSet);
+    procedure CashNaklCalcFields(DataSet: TDataSet);
+    procedure CashNaklFilterRecord(DataSet: TDataSet; var Accept: Boolean);
+  private
+    { Private declarations }
+  public
+        Find_Predpr_Array : array [1..6] of string;
+        dost : string;
+        base : string;
+        bpar : TStringList;
+        bs, bb : integer;
+
+        function get_sokr_post(code : integer):string;
+        function find_tovar_group(id : integer) : string;
+        function find_predpr_group(id : integer) : string;
+        procedure Export_(A : string; B, C : integer; DataS : TTable);
+        function Set_bonus(code_pr : integer):integer;
+    { Public declarations }
+  end;
+
+var
+  DataMain: TDataMain;
+
+implementation
+
+uses SpravPokup, Sklad, SprPostVybF, SpravMaster;
+
+
+{$R *.DFM}
+
+procedure TDataMain.Export_(A : string; B, C : integer; DataS : TTable);
+begin
+     // Экспорт накладных
+ { if not ExportBase.Active then ExportBase.Open;
+  ExportBase.Append;
+  ExportBase.FieldByName('nomer').AsString := A;
+  ExportBase.FieldByName('type').AsInteger := B;
+  ExportBase.FieldByName('work_').AsInteger := C;
+  ExportBase.FieldByName('ot').AsString := DateTimeToStr(Now);
+  ExportBase.Post;  }
+  if C = 1 then
+  try
+    DataS.Edit;
+    DataS.FieldByName('Exp').AsBoolean := True;
+    DataS.Post;
+  except
+  end;
+end;
+
+function TDataMain.get_sokr_post(code : integer):string;
+begin
+//
+  {Post_T.Open;
+  Tovar_T.Open;
+  if Tovar_T.Locate('code',code,[]) then result := AnsiUpperCase(Trim(Tovar_TPost_Sokr.AsString))
+  else
+      result := '';
+  Tovar_T.Close;
+  Post_T.Close;  }
+end;
+
+procedure TDataMain.TnPrihCalcFields(DataSet: TDataSet);
+begin
+    TnPrihSumma.AsFloat := TnPrihKol.AsFloat*TnPrihPrice.AsFloat;
+end;
+
+procedure TDataMain.CashTN__CalcFields(DataSet: TDataSet);
+begin
+With CashTN do
+     begin
+          FieldByName('Summa').AsFloat := FieldByName('Price').AsFloat*FieldByName('Kol').AsInteger;
+     end;
+end;
+
+procedure TDataMain.CashTNCalcFields(DataSet: TDataSet);
+begin
+With CashTN do
+     begin
+          FieldByName('Summa').AsFloat := FieldByName('Price').AsFloat*FieldByName('Kol').AsInteger;
+     end;
+end;
+
+procedure TDataMain.CashTN_CalcFields(DataSet: TDataSet);
+begin
+With CashTN do
+     begin
+          FieldByName('Summa').AsFloat := FieldByName('Price').AsFloat*FieldByName('Kol').AsInteger;
+     end;
+end;
+
+procedure TDataMain.DataModuleCreate(Sender: TObject);
+var f : textfile;  s:string;
+begin
+  dost := dupestring('1', 250);   // 250 едениц
+  bs := 250;
+  bb := 50;
+  base := 'C:\Program Files\Salon\BaseFB\BASE.FDB';
+  try
+    AssignFile(F, 'salon.ini');
+    Reset(F);
+    ReadLN(F, base);
+    ReadLN(F, s);
+    try
+      bs := strtoint(s);
+    except
+      bs := 250;
+    end;
+
+    ReadLN(F, s);
+    try
+      bs := strtoint(s);
+    except
+      bs := 250;
+    end;
+
+    CloseFile(F);
+  except
+    Rewrite(F);
+    WriteLN(F, base);
+    WriteLN(F, '250');
+    WriteLN(F, '50');
+    bs := 250;
+    bb := 50;
+    CloseFile(F);
+  end;
+
+
+  if base = '' then base := 'C:\Program Files\Salon\BaseFB\BASE.FDB';
+  IBDB.Close;
+  IBDB.DatabaseName := base;
+
+  bpar := TstringList.Create;
+  bpar.Append('user_name=sysdba');
+  bpar.append('password=');
+  bpar.append('lc_ctype=UTF8');
+  IBDB.Open;
+  IBT.StartTransaction;
+
+
+end;
+
+procedure TDataMain.IzlTNCalcFields(DataSet: TDataSet);
+begin
+    IzlTNSumma.AsFloat := IzlTNKol.AsInteger * IzlTNPrice.AsFloat;
+end;
+
+procedure TDataMain.IzlTN_CalcFields(DataSet: TDataSet);
+begin
+     IzlTNSumma.AsFloat := IzlTNKol.AsInteger * IzlTNPrice.AsFloat;
+end;
+
+procedure TDataMain.TnVozv_CalcFields(DataSet: TDataSet);
+begin
+     TNVozvSumma.AsFloat := TNVozvKol.AsInteger * TNVozvPrice.AsFloat;
+end;
+
+procedure TDataMain.BRTNCalcFields(DataSet: TDataSet);
+begin
+ // brtn.Open;
+ // brtn.Edit;
+  BRTNSumma.AsFloat := BRTNPrice.AsFloat*BRTNKol.AsInteger;
+end;
+
+procedure TDataMain.BRTN_CalcFields(DataSet: TDataSet);
+begin
+ // brtn.Open;
+ // brtn.Edit;
+  BRTNSumma.AsFloat := BRTNPrice.AsFloat*BRTNKol.AsInteger;
+end;
+
+procedure TDataMain.CashNaklCalcFields(DataSet: TDataSet);
+begin
+  if CashNaklSchNom.AsInteger <> 0 then
+     CashNaklSchet.AsString := CashNaklSchNom.AsString + CashNaklSchR.AsString
+     else CashnaklSchet.AsString := '';
+end;
+
+procedure TDataMain.CashNaklFilterRecord(DataSet: TDataSet;
+  var Accept: Boolean);
+var S : String;
+begin
+   if NaklPrih.Tag <> 0 then begin
+        S := NaklPrihNomer.AsString;
+        Delete(S,Pos('-',S),Length(S));
+        if (trim(S) <> '') and (StrToInt(S) = NaklPrih.Tag) then Accept := True else Accept := False;
+     end;
+end;
+
+procedure TDataMain.CashNakl_CalcFields(DataSet: TDataSet);
+begin
+     if CashNaklSchNom.AsInteger <> 0 then
+     CashNaklSchet.AsString := CashNaklSchNom.AsString + CashNaklSchR.AsString
+     else CashnaklSchet.AsString := '';
+
+end;
+
+procedure TDataMain.NaklPrihFilterRecord(DataSet: TDataSet;
+  var Accept: Boolean);
+var S : String;
+begin
+if NaklPrih.Tag <> 0 then begin
+        S := NaklPrihNomer.AsString;
+        Delete(S,Pos('-',S),Length(S));
+        if (trim(S) <> '') and (StrToInt(S) = NaklPrih.Tag) then Accept := True else Accept := False;
+     end;
+end;
+
+procedure TDataMain.NaklPrih_FilterRecord(DataSet: TDataSet;
+  var Accept: Boolean);
+var S : String;
+begin
+     if NaklPrih.Tag <> 0 then begin
+        S := NaklPrihNomer.AsString;
+        Delete(S,Pos('-',S),Length(S));
+        if (trim(S) <> '') and (StrToInt(S) = NaklPrih.Tag) then Accept := True else Accept := False;
+     end;
+end;
+
+procedure TDataMain.PredprFilterRecord(DataSet: TDataSet; var Accept: Boolean);
+var S : String;
+begin
+    if Predpr.Tag = 1 then
+        S := Trim(SprPokup.Edit1.Text)
+     else
+        S := '';
+     if S = '' then Accept := True else
+     Accept := Pos(AnsiUpperCase(S),AnsiUpperCase(PredprNaim.AsString))<>0;
+end;
+
+procedure TDataMain.Predpr_FilterRecord(DataSet: TDataSet; var Accept: Boolean);
+var S : String;
+begin
+     if Predpr.Tag = 1 then
+        S := Trim(SprPokup.Edit1.Text)
+     else
+        S := '';
+     if S = '' then Accept := True else
+     Accept := Pos(AnsiUpperCase(S),AnsiUpperCase(PredprNaim.AsString))<>0;
+end;
+
+procedure TDataMain.MasterFilterRecord(DataSet: TDataSet; var Accept: Boolean);
+var V: String;
+begin
+    if Master.Tag = 1 then
+      V := Trim(SprMaster.Edit1.Text)
+    else
+      V := '';
+
+    if V= '' then
+      Accept := True
+    else
+      Accept := Pos(AnsiUpperCase(V), AnsiUpperCase(MasterNaim.AsString))<>0;
+end;
+
+procedure TDataMain.MonitorSQL(EventText: string; EventTime: TDateTime);
+begin
+//SprMaster.Memo1.Lines.Add(EventText);
+ShowMessage(EventText);
+end;
+
+procedure TDataMain.IzlNaklFilterRecord(DataSet: TDataSet; var Accept: Boolean);
+var S : String;
+begin
+     if IzlNakl.Tag <> 0 then begin
+        S := IzlNaklNomer.AsString;
+        Delete(S,Pos('-',S),Length(S));
+        if StrToInt(S) = IzlNakl.Tag then Accept := True else Accept := False;
+     end;
+
+end;
+
+procedure TDataMain.IzlNakl_FilterRecord(DataSet: TDataSet;
+  var Accept: Boolean);
+var S : String;
+begin
+     if IzlNakl.Tag <> 0 then begin
+        S := IzlNaklNomer.AsString;
+        Delete(S,Pos('-',S),Length(S));
+        if StrToInt(S) = IzlNakl.Tag then Accept := True else Accept := False;
+     end;
+
+end;
+
+procedure TDataMain.BRNaklFilterRecord(DataSet: TDataSet; var Accept: Boolean);
+var S : String;
+begin
+     if BrNakl.Tag <> 0 then begin
+        S := BrNaklNomer.AsString;
+        Delete(S,Pos('-',S),Length(S));
+        if StrToInt(S) = BrNakl.Tag then Accept := True else Accept := False;
+     end;
+
+end;
+
+procedure TDataMain.BRNakl_FilterRecord(DataSet: TDataSet;
+  var Accept: Boolean);
+var S : String;
+begin
+     if BrNakl.Tag <> 0 then begin
+        S := BrNaklNomer.AsString;
+        Delete(S,Pos('-',S),Length(S));
+        if StrToInt(S) = BrNakl.Tag then Accept := True else Accept := False;
+     end;
+
+end;
+
+procedure TDataMain.CashNakl_FilterRecord(DataSet: TDataSet;
+  var Accept: Boolean);
+var S : String;
+begin
+     if CashNakl.Tag <> 0 then begin
+        S := CashNaklNomer.AsString;
+        Delete(S,Pos('-',S),Length(S));
+        if StrToInt(S) = cashnakl.Tag then Accept := True else Accept := False;
+     end;
+
+end;
+
+procedure TDataMain.CashNakl__CalcFields(DataSet: TDataSet);
+begin
+ if CashNaklSchNom.AsInteger <> 0 then
+     CashNaklSchet.AsString := CashNaklSchNom.AsString + CashNaklSchR.AsString
+     else CashnaklSchet.AsString := '';
+end;
+
+procedure TDataMain.CashNakl__FilterRecord(DataSet: TDataSet;
+  var Accept: Boolean);
+
+var S : String;
+begin
+     if CashNakl.Tag <> 0 then begin
+        S := CashNaklNomer.AsString;
+        Delete(S,Pos('-',S),Length(S));
+        if StrToInt(S) = cashnakl.Tag then Accept := True else Accept := False;
+     end;
+end;
+
+procedure TDataMain.PostFilterRecord(DataSet: TDataSet; var Accept: Boolean);
+var S : String;
+begin
+ try
+     S := Trim(SprPostVyb.Edit1.Text);
+     if S = '' then Accept := True else
+     Accept := Pos(AnsiUpperCase(S),AnsiUpperCase(PostNaim.AsString))<>0;
+  except
+     Accept := true;
+  end;
+end;
+
+procedure TDataMain.Post_FilterRecord(DataSet: TDataSet;
+  var Accept: Boolean);
+var S : String;
+begin
+  try
+     S := Trim(SprPostVyb.Edit1.Text);
+     if S = '' then Accept := True else
+     Accept := Pos(AnsiUpperCase(S),AnsiUpperCase(PostNaim.AsString))<>0;
+  except
+     Accept := true;
+  end;
+end;
+
+procedure TDataMain.Predpr_NAIMSetText(Sender: TField; const Text: String);
+begin
+     Datamain.PredprNaim.AsString := AnsiUpperCase(text);
+end;
+
+procedure TDataMain.FindPredpr_(code : Integer);
+begin
+  Find_Predpr_Array[1] := '';
+  Find_Predpr.Open;
+  if Find_Predpr.Locate('code_pr', code, []) then
+  begin
+       Find_Predpr_Array[3] := Find_PredprNaim.AsString;
+       Find_Predpr_Array[2] := Find_PredprINN.AsString + ' / ' + Find_PredprKPP.AsString;
+       Find_Predpr_Array[1] := IntToStr(Find_PredprCode_pr.Asinteger);
+       Find_Predpr_Array[4] := Find_PredprAddress.AsString;
+       Find_Predpr_Array[5] := Find_PredprLic.AsString;
+       Find_Predpr_Array[6] := 'р/с ' + Find_PredprRS.AsString + ' '+Find_PredprBANK.AsString + ', '
+                              + 'Бик ' +
+                              Find_PredprBIK.AsString + ', корр/сч ' +
+                              Find_PredprkS.AsString;
+
+  end;
+  Find_Predpr.Close;
+end;
+
+procedure TDataMain.NaklVozvFilterRecord(DataSet: TDataSet;
+  var Accept: Boolean);
+var S : String;
+begin
+     if NaklVozv.Tag <> 0 then begin
+        S := NaklVozvNomer.AsString;
+        Delete(S,Pos('-',S),Length(S));
+        if StrToInt(S) = NaklVozv.Tag then Accept := True else Accept := False;
+     end;
+
+end;
+
+procedure TDataMain.NaklVozv_FilterRecord(DataSet: TDataSet;
+  var Accept: Boolean);
+var S : String;
+begin
+     if NaklVozv.Tag <> 0 then begin
+        S := NaklVozvNomer.AsString;
+        Delete(S,Pos('-',S),Length(S));
+        if StrToInt(S) = NaklVozv.Tag then Accept := True else Accept := False;
+     end;
+end;
+
+function TDataMain.find_tovar_group(id : integer) : string;
+var L : Boolean;
+begin
+  L := false;
+  {if not(Tovar_GR.Active) then
+  begin
+    Tovar_GR.Active := True;
+    L := True;
+  end;
+  if Tovar_GR.Locate('id', id, []) then result := trim(Tovar_GRName.AsString) else result := '';
+  if L then Tovar_GR.Close;  }
+end;
+
+function TDataMain.find_predpr_group(id : integer) : string;
+var L : Boolean;
+begin
+  L := false;
+  {if not(Predpr_GR.Active) then
+  begin
+    Predpr_GR.Active := True;
+    L := True;
+  end;
+  if Predpr_GR.Locate('id', id, []) then result := trim(Predpr_GRName.AsString) else result := '';
+  if L then Predpr_GR.Close;   }
+end;
+
+function TDataMain.Set_bonus(code_pr : integer):integer;
+var sum : real;
+  bon : integer;
+begin
+  // Пересчет бонусов по клиенту
+  // Накладные с д/к дают плюс бонусам, а с оплатой по бонусам - минус
+  with Q_Bonus do
+  begin
+    Close;
+    ParamByName('code_pr').AsInteger := code_pr;
+    Open;
+    sum := trunc( FieldByName('summa').AsFloat/datamain.bs) * datamain.bb;
+    bon := FieldByName('bonus').AsInteger;
+    Close;
+    bon := round(sum-bon);
+  end;
+  with Find_Predpr do
+  begin
+    Close;
+    Find_Predpr.Filtered := false;
+    Open;
+    First;
+    Locate('code_pr', code_pr,[]);
+    try
+      Edit;
+      FieldByName('bonus').AsInteger := bon;
+      Post;
+    except
+      Predpr.FieldByName('bonus').AsInteger := bon;
+    end;
+    Close;
+  end;
+
+  result := bon;
+
+end;
+
+
+
+end.

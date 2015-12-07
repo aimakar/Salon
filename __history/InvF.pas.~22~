@@ -1,0 +1,168 @@
+unit InvF;
+
+interface
+
+uses
+  Windows, Messages, SysUtils, Classes, Graphics, Controls, Forms, Dialogs,
+  StdCtrls, Buttons, ComCtrls, DBTables, Db, IBQuery, IBCustomDataSet, IBTable;
+
+type
+  TInv = class(TForm)
+    Dat1: TDateTimePicker;
+    Dat2: TDateTimePicker;
+    PB: TProgressBar;
+    BitBtn1: TBitBtn;
+    BitBtn2: TBitBtn;
+    Label1: TLabel;
+    Label2: TLabel;
+    Table1: TIBTable;
+    Query1: TIBQuery;
+    Query2: TIBQuery;
+    Query3: TIBQuery;
+    Query4: TIBQuery;
+    Query13: TIBQuery;
+    Query16: TIBQuery;
+    Query17: TIBQuery;
+    Rev: TIBQuery;
+    VOst: TIBQuery;
+    Table1CODE: TIntegerField;
+    Table1KOL1: TIntegerField;
+    Table1KOL2: TIntegerField;
+    Query1CODE: TIntegerField;
+    Query1KOL: TLargeintField;
+    Query13CODE: TIntegerField;
+    Query13KOL2: TLargeintField;
+    Query16CODE: TIntegerField;
+    Query16KOL1: TLargeintField;
+    Query17CODE: TIntegerField;
+    Query17KOL2: TLargeintField;
+    Query2CODE: TIntegerField;
+    Query2KOL: TLargeintField;
+    Query3CODE: TIntegerField;
+    Query3KOL1: TLargeintField;
+    Query4CODE: TIntegerField;
+    Query4KOL2: TLargeintField;
+    RevCODE: TIntegerField;
+    RevKOL: TLargeintField;
+    VOstCODE: TIntegerField;
+    procedure BitBtn1Click(Sender: TObject);
+    procedure FormCreate(Sender: TObject);
+  private
+    { Private declarations }
+  public
+    { Public declarations }
+  end;
+
+var
+  Inv: TInv;
+
+implementation
+
+uses Sklad, Data;
+
+{$R *.DFM}
+
+procedure TInv.BitBtn1Click(Sender: TObject);
+var I, I1, I2, C : Integer;
+begin
+  try
+     Ost.Close;
+     Ost.Open;
+     PB.Position := 0;
+     VOst.Open;
+     PB.Max := VOst.RecordCount + 8;
+     Rev.Close;
+
+   //  Table1.Exclusive := True;
+     table1.Open;
+     Table1.EmptyTable;
+
+     Query1.Close;
+     Query2.Close;
+     Query3.Close;
+     Query4.Close;
+     Query13.Close;
+     Query16.Close;
+     Query17.Close;
+//     Rev.ParamByName('dat1').AsDate := dat1.date;
+     Rev.ParamByName('dat2').AsDate := dat2.date;
+     Rev.Open;
+     Query1.ParamByName('dat1').AsDate := dat1.date;
+     Query1.ParamByName('dat2').AsDate := dat2.date;
+     Query2.ParamByName('dat1').AsDate := dat1.date;
+     Query2.ParamByName('dat2').AsDate := dat2.date;
+     Query3.ParamByName('dat1').AsDate := dat1.date;
+     Query3.ParamByName('dat2').AsDate := dat2.date;
+     Query4.ParamByName('dat1').AsDate := dat1.date;
+     Query4.ParamByName('dat2').AsDate := dat2.date;
+     Query13.ParamByName('dat1').AsDate := dat1.date;
+     Query13.ParamByName('dat2').AsDate := dat2.date;
+     Query16.ParamByName('dat1').AsDate := dat1.date;
+     Query16.ParamByName('dat2').AsDate := dat2.date;
+     Query17.ParamByName('dat1').AsDate := dat1.date;
+     Query17.ParamByName('dat2').AsDate := dat2.date;
+     PB.Position := PB.Position + 1;
+     Query1.Open;
+     PB.Position := PB.Position + 1;
+     Query2.Open;
+     PB.Position := PB.Position + 1;   //3
+     Query3.Open;
+     PB.Position := PB.Position + 1;
+     Query4.Open;
+     PB.Position := PB.Position + 1;
+     Query13.Open;
+     PB.Position := PB.Position + 1;
+     Query16.Open;
+     PB.Position := PB.Position + 1;
+     Query17.Open;
+     PB.Position := PB.Position + 1; //18
+     VOst.First;
+     PB.Position := PB.Position + 1; //19
+     while not(VOst.Eof) do
+           begin
+                I := 0;
+                I1 := 0;
+                I2 := 0;
+                C := VOstCode.AsInteger;
+                if Rev.Locate('code',C,[]) then I := I + RevKol.AsInteger;
+                if Query1.Locate('code',C,[]) then I := I + Query1Kol.AsInteger;
+                if Query2.Locate('code',C,[]) then I := I + Query2Kol.AsInteger;
+                if Query3.Locate('code',C,[]) then I1 := I1 + Query3Kol1.AsInteger;
+                if Query4.Locate('code',C,[]) then I2 := I2 + Query4Kol2.AsInteger;
+                if Query13.Locate('code',C,[]) then I := I + Query13Kol2.AsInteger;
+                if Query16.Locate('code',C,[]) then I1 := I1 + Query16Kol1.AsInteger;
+                if Query17.Locate('code',C,[]) then I2 := I2 + Query17Kol2.AsInteger;
+
+                I1 := I - I1;
+                I2 := I - I2;
+                Table1.Append;
+                Table1Code.AsInteger := C;
+                Table1Kol1.AsInteger := I1;
+                Table1Kol2.AsInteger := I2;
+                Table1.Post;
+                VOst.next;
+                PB.Position := PB.Position + 1;
+           end;
+     Query1.Close;
+     Query2.Close;
+     Query3.Close;
+     Query4.Close;
+     Query13.Close;
+     Query16.Close;
+     Query17.Close;
+     VoSt.Close;
+     Table1.Close;
+     PB.Position := PB.Position + 1; //20
+     ModalResult := mrOk;
+  except
+     ShowMessage('Перезайдите в программу для произведения пересчета остатков');
+  end;
+end;
+
+procedure TInv.FormCreate(Sender: TObject);
+begin
+  dat2.date := now() + 1;
+
+end;
+
+end.

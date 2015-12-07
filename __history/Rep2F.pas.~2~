@@ -1,0 +1,24 @@
+unit Rep2F;
+
+interface
+
+uses
+  Windows, Messages, SysUtils, Variants, Classes, Graphics, Controls, Forms,
+  Dialogs;
+
+type
+  TRep_2 = class(TForm)
+  private
+    { Private declarations }
+  public
+    { Public declarations }
+  end;
+
+var
+  Rep_2: TRep_2;
+
+implementation
+
+{$R *.dfm}
+
+end.

@@ -1,0 +1,541 @@
+unit SpravTov;
+
+interface
+
+uses
+  Windows, Messages, SysUtils, Classes, Graphics, Controls, Forms, Dialogs,
+  Placemnt, ExtCtrls, StdCtrls, Buttons, Grids, DBGrids, RXClock, Db,
+  DBTables, ComCtrls, Menus;
+
+type
+  TSprTov = class(TForm)
+    DBGrid1: TDBGrid;
+    DBGrid2: TDBGrid;
+    Bevel2: TBevel;
+    NaimGR: TButton;
+    Table1: TTable;
+    BitBtn1: TBitBtn;
+    Query1: TQuery;
+    BitBtn2: TBitBtn;
+    Query2: TQuery;
+    PB1: TProgressBar;
+    PopupMenu1: TPopupMenu;
+    N1: TMenuItem;
+    BitBtn3: TBitBtn;
+    procedure FormActivate(Sender: TObject);
+    procedure FormDeactivate(Sender: TObject);
+    procedure DBGrid1KeyDown(Sender: TObject; var Key: Word;
+      Shift: TShiftState);
+    procedure DBGrid2KeyDown(Sender: TObject; var Key: Word;
+      Shift: TShiftState);
+    procedure NewGRClick(Sender: TObject);
+    procedure NaimGRClick(Sender: TObject);
+    procedure BitBtn1Click(Sender: TObject);
+    procedure FormDestroy(Sender: TObject);
+    procedure NaimGRKeyDown(Sender: TObject; var Key: Word;
+      Shift: TShiftState);
+    procedure PerKeyDown(Sender: TObject; var Key: Word;
+      Shift: TShiftState);
+    procedure NacGRKeyDown(Sender: TObject; var Key: Word;
+      Shift: TShiftState);
+    procedure BitBtn1KeyDown(Sender: TObject; var Key: Word;
+      Shift: TShiftState);
+    procedure BitBtn2KeyDown(Sender: TObject; var Key: Word;
+      Shift: TShiftState);
+    procedure FormClose(Sender: TObject; var Action: TCloseAction);
+    procedure BitBtn2Click(Sender: TObject);
+    procedure N1Click(Sender: TObject);
+    procedure BitBtn3Click(Sender: TObject);
+    procedure DBGrid2DrawColumnCell(Sender: TObject; const Rect: TRect;
+      DataCol: Integer; Column: TColumn; State: TGridDrawState);
+  private
+    { Private declarations }
+  public
+    { Public declarations }
+  end;
+
+var
+  SprTov: TSprTov;
+  d, d1, Mest : String;
+
+implementation
+
+uses Data, SprNovTov, SprNewGrTov, RedGrTov, Pro, Sklad, VSklF,
+  Kart_Tov_RoznF, SprPVF, TovMoveF;
+
+{$R *.DFM}
+
+procedure TSprTov.FormActivate(Sender: TObject);
+begin
+     With DataMain do
+          begin
+               Valyta.Active := True;
+               GrVal.Open;
+               tt.open;
+               Ost.Open;
+               OstVit.Open;
+               Sklad.Active := True;
+               Tovar.Active := True;
+               GRTovar.Active := True;
+               Config.Open;
+          end;
+
+  Application.CreateForm(TNewTov, NewTov);
+  Application.CreateForm(TNewGroup, NewGroup);
+  Application.CreateForm(TPereim, Pereim);
+  if DataMain.TovarTGR_ID.AsInteger > 0 then
+  begin
+       CE1.tag := DataMain.TovarTGR_ID.AsInteger;
+       CE1.Text := DataMain.find_tovar_group(CE1.tag);
+  end
+  else
+  begin
+      CE1.tag := 0;
+      CE1.text := '';
+  end;
+
+
+
+end;
+
+procedure TSprTov.FormDeactivate(Sender: TObject);
+begin
+     With DataMain do
+          begin
+               Tovar.Active := False;
+               GRTovar.Active := False;
+               Valyta.Active := False;
+               GrVal.Close;
+               Sklad.Active := False;
+               tt.close;
+               Config.Close;
+               OstVit.Close;
+               Ost.Close;
+          end;
+
+  NewTov.Release;
+  NewGroup.Release;
+  Pereim.Release;
+
+
+end;
+
+procedure TSprTov.DBGrid1KeyDown(Sender: TObject; var Key: Word;
+  Shift: TShiftState);
+var S : Boolean;
+begin
+     case Key of
+          VK_RETURN : SprTov.ActiveControl := DBGrid2;
+          VK_TAB    : SprTov.ActiveControl := DBGrid2;
+          VK_ESCAPE : SprTov.Release;
+          VK_INSERT : NewGroup.ShowModal;
+          VK_DELETE : Begin
+                    if MessageDlg('Удалить запись?',
+                        mtConfirmation, [mbYes, mbNo], 0) = mrYes then
+                        begin
+                             if not(DataMain.Tovar.FindKey([Datamain.GrTovarCodeGR.AsInteger])) then
+                                DataMain.GrTovar.Delete
+                             else
+                                 ShowMessage('В группе есть товар!');
+                        end;
+                      end;
+          VK_F6     : begin
+                         if InputQuery('Поиск по названию группы','Введите название группы',d1) then
+                            With DataMain.GrTovar do
+                                 begin
+                                  DisableControls;
+                                  S := True;
+                                  While (S and not(Eof)) do
+                                        if Pos(AnsiUpperCase(D1),AnsiUpperCase(FieldByName('Naim').AsString))=0 then
+                                           Next
+                                        else
+                                           S := False;
+                                  EnableControls;
+                                 end;
+                      end;
+
+     end;
+end;
+
+procedure TSprTov.DBGrid2KeyDown(Sender: TObject; var Key: Word;
+  Shift: TShiftState);
+Var I, I2, apr,ap,av,an,ac,au,acs,at : Integer;
+    NameI,bn,bc1,bc2,bs,bnt : String;
+    cp,cn,cpb,F : Real;
+    s, s1, s2 : Boolean;
+    TS : array [1..15] of String;
+
+begin
+     case Key of
+          VK_ESCAPE : SprTov.ActiveControl := DBGrid1;
+          VK_INSERT : Begin
+                    With DataMain do begin
+                         NameI := Tovar.IndexName;
+                         Tovar.DisableControls;
+                         Config.Refresh;
+                         I := ConfigNomer7.AsInteger;
+                         Config.Edit;
+                         ConfigNomer7.AsInteger := I+1;
+                         Config.Post                         ;
+                         Tovar.Append;
+                         TovarCodeGR.AsInteger := GRTovarCodeGr.AsInteger;
+                         TovarCode.AsInteger := I+1;
+                         TovarNDS.AsInteger := 20;
+                         TovarSpec.AsBoolean := True;
+                         Tovar.Post;
+{Вставить валюту по умолчанию}
+                         Post.Open;
+                         Proiz.Open;
+                         Tovar.EnableControls;
+                         Tovar.Edit;
+
+                    end;
+
+                    if NewTov.ShowModal = mrCancel then
+                       begin
+                            DataMain.Tovar.Cancel;
+                            DataMain.Tovar.Delete;
+                       end
+                    else
+                        DataMain.Tovar.Post;
+                    DataMain.Post.Close;
+                    DataMain.Proiz.Close;
+
+                    end;
+          VK_RETURN : Begin
+                    DataMain.Tovar.Edit;
+                    if NewTov.ShowModal = mrCancel then
+                            DataMain.Tovar.Cancel
+                    else
+                        DataMain.Tovar.Post;
+                      end;
+          VK_DELETE : Begin
+                    if MessageDlg('Удалить запись?',
+                        mtConfirmation, [mbYes, mbNo], 0) = mrYes then
+                        begin
+                             S := False;
+                             I2 := dataMain.TovarCODE.AsInteger;
+                             Ts[1] := 'TnPrih.dbf';
+                             Ts[2] := 'TnVozv.dbf';
+                             Ts[3] := 'CashTn.dbf';
+                             Ts[4] := 'PredTn.dbf';
+                             Ts[5] := 'VanOtpTn.dbf';
+                             Ts[6] := 'VTn.dbf';
+                             Ts[7] := 'RoznTN.dbf';
+                             Ts[8] := 'IzlTn.dbf';
+                             Ts[9] := 'BrTn.dbf';
+                             Ts[10] := 'NedTn.dbf';
+                             Ts[11] := 'AktTn.dbf';
+                             Ts[12] := 'VitTPrih.dbf';
+                             Ts[13] := 'VitTRash.dbf';
+                             Ts[14] := 'RevVitTn.dbf';
+                             Ts[15] := 'RevTn.dbf';
+                             for I := 1 to 15 do
+                                 begin
+                                      if not(S) then
+                                         begin
+                                              Table1.TableName := Ts[I];
+                                              Table1.IndexName := 'Code';
+                                              Table1.Open;
+                                              Table1.First;
+                                              S := Table1.FindKey([I2]);
+                                              Table1.Close;
+                                         end;
+                                 end;
+                             Table1.TableName := 'RevOst.dbf';
+                             Table1.IndexName := 'Code';
+                             Table1.Open;
+                             Table1.First;
+                             S1 := true;
+                             if  Table1.FindKey([I2]) then
+                                S1 := (Table1.FieldByName('nk').asinteger + Table1.FieldByName('rk').asinteger) > 0;
+                             Table1.Close;
+
+                             Table1.TableName := 'RevVitOst.dbf';
+                             Table1.IndexName := 'Code';
+                             Table1.Open;
+                             Table1.First;
+                             S2 := true;
+                             if  Table1.FindKey([I2]) then
+                                S2 := (Table1.FieldByName('nk').asinteger + Table1.FieldByName('rk').asinteger) > 0;
+                             Table1.Close;
+                             if not(S) or not(S1) or not (S2) then
+                                DataMain.Tovar.Delete
+                             else
+                                ShowMessage('По данному товару было движение, удаление невозможно!');
+                        end;
+
+                      end;
+          VK_F7     : Begin
+                    if MessageDlg('Копировать запись?',
+                        mtConfirmation, [mbYes, mbNo], 0) = mrYes then
+                        begin
+                          with DataMain do begin
+                           bn := tovarnaim.AsString;
+                           apr := tovarcode_pr.AsInteger;
+                           ap := tovarcode_post.AsInteger;
+                           av := tovarcode_Val.AsInteger;
+                           cp := tovarprihod.AsFloat;
+                           bc1 := tovarcomm1.AsString;
+                           bc2 := tovarComm2.AsString;
+                           cn := tovarNacen.AsFloat;
+                           cpb := tovarPrice_B.AsFloat;
+                           an := tovarNds.AsInteger;
+                           ac := tovarCodeGr.AsInteger;
+                           au := tovarUp.AsInteger;
+                           s := tovarSpec.AsBoolean;
+                           acs := tovarCode_S.AsInteger;
+                           at := tovarType_T.AsInteger;
+                           d := tovarDataSert.AsString;
+                           bs := tovarStrana.AsString;
+                           bnt := tovarNTD.AsString;
+                         NameI := Tovar.IndexName;
+                         Tovar.DisableControls;
+                         Config.Close;
+                         Config.Open;
+                         I := ConfigNomer7.AsInteger;
+                         Config.Edit;
+                         ConfigNomer7.AsInteger := I+1;
+                         Config.Post;
+                         Tovar.Append;
+                         TovarCode.AsInteger := I+1;
+                         TovarNDS.AsInteger := an;
+                         TovarSpec.AsBoolean := s;
+                         TovarNaim.AsString := bn;
+                         TovarCode_Pr.AsInteger := apr;
+                         TovarCode_Post.AsInteger := ap;
+                         TovarCode_Val.AsInteger := av;
+                         TovarPrihod.AsFloat := cp;
+                         TovarComm1.AsString := bc1;
+                         TovarComm2.AsString := bc2;
+                         TovarNacen.AsFloat := cn;
+                         TovarPrice_B.AsFloat := cpb;
+                         TovarCOdeGr.AsInteger := ac;
+                         TovarUp.AsInteger := au;
+                         TovarCode_S.AsInteger := acs;
+                         TovarType_T.AsInteger := at;
+                         TovarDataSert.AsString := d;
+                         TovarStrana.AsString := bs;
+                         TovarNTD.AsString := bnt;
+                         Tovar.Post;
+{Вставить валюту по умолчанию}
+                         Post.Open;
+                         Proiz.Open;
+                         Tovar.EnableControls;
+                        end;
+                      end;
+
+                      end; // F7
+          VK_F6     : begin
+                         if InputQuery('Поиск по названию','Введите название товара',d) then
+                            With DataMain.Tovar do
+                                 begin
+                                  DisableControls;
+                                  S := True;
+                                  While (S and not(Eof)) do
+                                        if Pos(AnsiUpperCase(D),AnsiUpperCase(FieldByName('Naim').AsString))=0 then
+                                           Next
+                                        else
+                                           S := False;
+                                  EnableControls;
+                                 end;
+                      end;
+     end;
+
+end;
+
+procedure TSprTov.NewGRClick(Sender: TObject);
+begin
+     NewGroup.ShowModal;
+end;
+
+procedure TSprTov.NaimGRClick(Sender: TObject);
+begin
+     Pereim.ShowModal;
+end;
+
+procedure TSprTov.BitBtn1Click(Sender: TObject);
+begin
+     if InputQuery('Ввод данных','Введите бокс для группы товара '+DataMain.GrTovarNaim.AsString,Mest) then
+     begin
+          if MessageDlg('Вы ввели '+Mest+' бокс'+#13+'Производить изменения?',
+          mtConfirmation, [mbYes, mbNo], 0) = mrYes then
+            begin
+                 Query1.Close;
+                 Query1.ParamByName('C').AsInteger := DataMain.GrTovarCodeGr.AsInteger;
+                 Query1.ParamByName('M').AsString := Mest;
+                 Try
+                 Query1.ExecSQL;
+                 except
+                 ShowMessage('Кто-то открыл карточку товара'+#13+'Попробуйте позже');
+                 end;
+                 Query1.Close;
+                 DataMain.Tovar.refresh;
+            end;
+     end;
+
+
+end;
+
+procedure TSprTov.FormDestroy(Sender: TObject);
+begin
+     Main.N13.Enabled := True;
+end;
+
+procedure TSprTov.NaimGRKeyDown(Sender: TObject; var Key: Word;
+  Shift: TShiftState);
+begin
+     If Key = VK_Escape then
+        SprTov.Release;
+end;
+
+procedure TSprTov.PerKeyDown(Sender: TObject; var Key: Word;
+  Shift: TShiftState);
+begin
+     If Key = VK_Escape then
+        SprTov.Release;
+
+end;
+
+procedure TSprTov.NacGRKeyDown(Sender: TObject; var Key: Word;
+  Shift: TShiftState);
+begin
+     If Key = VK_Escape then
+        SprTov.Release;
+
+end;
+
+procedure TSprTov.BitBtn1KeyDown(Sender: TObject; var Key: Word;
+  Shift: TShiftState);
+begin
+     If Key = VK_Escape then
+        SprTov.Release;
+
+end;
+
+procedure TSprTov.BitBtn2KeyDown(Sender: TObject; var Key: Word;
+  Shift: TShiftState);
+begin
+     If Key = VK_Escape then
+        SprTov.Release;
+
+end;
+
+procedure TSprTov.FormClose(Sender: TObject; var Action: TCloseAction);
+begin
+     Action := caFree;
+end;
+
+procedure TSprTov.BitBtn2Click(Sender: TObject);
+const
+     AErr = 'Карточка %s открыта другим пользователем'+#13+'После окончания обработки скорректируйте ее вручную!';
+var
+   SavePlace : TBookMark;
+begin
+  with DataMain do
+  begin
+       Application.CreateForm(TVSKL,VSkl);
+     if VSkl.ShowModal = mrOk then
+     begin
+          if MessageDlg('Производить изменения?',
+          mtConfirmation, [mbYes, mbNo], 0) = mrYes then
+            begin
+                 PB1.Enabled := True;
+                 PB1.Max := Tovar.RecordCount;
+                 PB1.Position := 0;
+                 PB1.Visible := True;
+                 SavePlace := Tovar.GetBookMark;
+                 Tovar.DisableControls;
+                 Tovar.First;
+                 while not Tovar.Eof do
+                  begin
+                   Try
+                    Tovar.Edit;
+                    TovarCode_S.AsInteger := VSkl.Tag;
+                    Tovar.Post;
+                   except
+                    ShowMessage(Format(AErr,[TovarNaim.AsString]));
+                   end;
+                    PB1.Position := PB1.Position + 1;
+                    Tovar.Next;
+                  end;
+                  Tovar.GotoBookmark(SavePlace);
+                  Tovar.FreeBookMark(SavePlace);
+                  Tovar.EnableControls;
+                  PB1.Visible := False;
+                  PB1.Position := 0;
+                  PB1.Enabled := False;
+            end;
+     end;
+     VSkl.Release;
+  end;
+
+end;
+
+procedure TSprTov.N1Click(Sender: TObject);
+begin
+  try
+    Application.CreateForm(TSprPV, SprPV);
+    if SprPV.ShowMOdal = mrOk then
+    begin
+      try
+        Application.CreateForm(TKart_Tov_Rozn, Kart_Tov_Rozn);
+        with Kart_Tov_Rozn do
+        begin
+          Kart_Rozn.ParamByName('c').AsInteger := DataMain.TovarCODE.AsInteger;
+          Kart_Rozn.ParamByName('cp').AsInteger := SprPV.Tag;
+          Kart_Rozn.Open;
+          Kart_Tov_Rozn.ShowModal;
+          Kart_Rozn.Close;
+        end;
+      finally
+        Kart_Tov_Rozn.Release;
+      end;
+    end;
+  finally
+    SprPV.Release;
+  end;
+end;
+
+procedure TSprTov.BitBtn3Click(Sender: TObject);
+begin
+  If DataMain.Tovar.IsEmpty then exit;
+  try
+    Application.createForm(TTovMove, TovMove);
+    TovMove.Query1.Open;
+    if TovMove.ShowModal = mrOk then
+    begin
+      DataMain.Tovar.Edit;
+      DataMain.Tovarcodegr.AsInteger := TovMove.Query1CodeGr.AsInteger;
+      DataMain.Tovar.Post;
+    end;
+  finally
+    TovMove.Query1.CLose;
+    TovMove.Release;
+  end;
+
+end;
+
+procedure TSprTov.DBGrid2DrawColumnCell(Sender: TObject; const Rect: TRect;
+  DataCol: Integer; Column: TColumn; State: TGridDrawState);
+var g, f : boolean;
+begin
+  g := true;
+  f := DataMain.TovarNew.AsBoolean;
+  with DBGrid2.Canvas do begin
+     if F and (not (gdFocused in State)) then
+      begin
+       Font.Color := clRed;
+
+       Font.Style := [fsBold];
+       FillRect (Rect);
+       TextOut(Rect.Left,Rect.Top,Column.Field.Text);
+       g := false;
+      end;
+
+     if g then DBGrid2.DefaultDrawColumnCell(Rect,DataCol,Column,State);
+  end;
+
+end;
+
+end.

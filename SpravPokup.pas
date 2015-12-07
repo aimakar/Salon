@@ -1,0 +1,271 @@
+unit SpravPokup;
+
+interface
+
+uses
+  Windows, Messages, SysUtils, Classes, Graphics, Controls, Forms, Dialogs,
+  Grids, DBGrids, StdCtrls, Db, DBTables, Menus, ExtCtrls, JvExDBGrids, JvDBGrid,
+  ToolWin, ActnMan, ActnCtrls, ActnList, XPStyleActnCtrls, IBCustomDataSet,
+  IBTable, IBQuery;
+
+type
+  TSprPokup = class(TForm)
+    PM1: TPopupMenu;
+    N1: TMenuItem;
+    N2: TMenuItem;
+    Panel1: TPanel;
+    CB: TCheckBox;
+    Edit1: TEdit;
+    JvDBGrid2: TJvDBGrid;
+    ActionManager1: TActionManager;
+    A_Ins: TAction;
+    ActionToolBar1: TActionToolBar;
+    A_Edit: TAction;
+    A_Del: TAction;
+    A_Find: TAction;
+    A_Exit: TAction;
+    A_WinCr: TAction;
+    A_Vybor: TAction;
+    Query1: TIBQuery;
+    Query1CODE_PR: TIntegerField;
+    Query2: TIBQuery;
+    procedure FormActivate(Sender: TObject);
+    procedure FormDeactivate(Sender: TObject);
+    procedure CBClick(Sender: TObject);
+    procedure CBKeyDown(Sender: TObject; var Key: Word;
+      Shift: TShiftState);
+    procedure FormClose(Sender: TObject; var Action: TCloseAction);
+    procedure Edit1KeyDown(Sender: TObject; var Key: Word;
+      Shift: TShiftState);
+    procedure A_EditExecute(Sender: TObject);
+    procedure A_ExitExecute(Sender: TObject);
+    procedure A_DelExecute(Sender: TObject);
+    procedure A_InsExecute(Sender: TObject);
+    procedure CreateWindowHandle(const Params: TCreateParams);override;
+    procedure A_FindExecute(Sender: TObject);
+    procedure A_VyborExecute(Sender: TObject);
+    procedure A_WinCrExecute(Sender: TObject);
+    procedure FormCreate(Sender: TObject);
+    procedure JvDBGrid2MouseUp(Sender: TObject; Button: TMouseButton;
+      Shift: TShiftState; X, Y: Integer);
+  private
+    { Private declarations }
+      fs : string;
+  public
+    { Public declarations }
+    id_ : integer;
+    n_ : string;
+    close_t, vybor : boolean;
+
+  end;
+
+var
+  SprPokup: TSprPokup;
+  Dost : String;
+implementation
+
+uses Data, SprNewPredpr, Sklad, Pro,  Find_StrF;
+
+{$R *.DFM}
+
+procedure TSprPokup.CreateWindowHandle(const Params: TCreateParams);
+var Comp:TSprPokup;
+begin
+  inherited;
+  Comp:=TSprPokup(Application.Components[Application.ComponentCount-1]);
+  Comp.Visible:=false;
+end;
+
+procedure TSprPokup.FormActivate(Sender: TObject);
+begin
+if not DataMain.IBT.InTransaction then  DataMain.IBT.StartTransaction;
+     Dost := DataMain.Dost;
+     DataMain.Predpr.Tag := 1;
+     DataMain.Predpr.Open;
+end;
+
+procedure TSprPokup.FormDeactivate(Sender: TObject);
+begin
+     Datamain.Predpr.Filtered := False;
+     DataMain.Predpr.Refresh;
+     CB.Checked := False;
+//     DataMain.Predpr.Close;
+end;
+
+procedure TSprPokup.JvDBGrid2MouseUp(Sender: TObject; Button: TMouseButton;
+  Shift: TShiftState; X, Y: Integer);
+begin
+    if Button = mbRight then PM1.Popup(0, 0);
+end;
+
+procedure TSprPokup.A_DelExecute(Sender: TObject);
+var S : Boolean;
+begin
+  if MessageDlg('Удалить запись?', mtConfirmation, [mbYes, mbNo],0) = mrYes then
+  begin
+    S := False;
+    if not(S) then
+      begin
+          Query1.Close;
+          Query1.ParamByName('code_pr').AsInteger:= DataMain.PredprCODE_PR.AsInteger;
+          Query1.Open;
+          S:= Query1.RecordCount>0;
+          Query2.Close;
+          Query2.ParamByName('code_pr').AsInteger:= DataMain.PredprCODE_PR.AsInteger;
+          Query2.Open;
+          S:= Query2.RecordCount>0;
+      end;
+    if not(S) then
+      DataMain.Predpr.Delete
+    else
+      ShowMessage('По данному клиенту было движение, удаление невозможно!');
+    end;
+      DataMain.Predpr.ApplyUpdates;
+      DataMain.IBT.CommitRetaining;
+      DataMain.Predpr.Refresh;
+end;
+
+procedure TSprPokup.A_EditExecute(Sender: TObject);
+begin
+  try
+    Application.CreateForm(TNewPredpr, NewPredpr);
+    NewPredpr.Caption := 'Просмотр данных о клиенте';
+    NewPredpr.code := DataMain.Predprcode_pr.AsInteger;
+    DataMain.Predpr.Edit;
+    if NewPredpr.ShowModal = mrCancel then
+      DataMain.Predpr.Cancel
+    else
+      DataMain.Predpr.Post;
+  finally
+    NewPredpr.Release;
+  end;
+    DataMain.Predpr.ApplyUpdates;
+    DataMain.IBT.CommitRetaining;
+    DataMain.Predpr.Refresh;
+end;
+
+procedure TSprPokup.A_ExitExecute(Sender: TObject);
+begin
+  SprPokup.Release;
+end;
+
+procedure TSprPokup.A_FindExecute(Sender: TObject);
+var l : boolean;
+  tt : tibtable;
+begin
+// Поиск в зависимости от выделенного столбца
+  try
+    tt := DataMain.Predpr;
+    Application.CreateForm(TFind_Str, Find_Str);
+    Find_Str.Edit1.Text := fs;
+    if Find_Str.ShowModal = mrOk then
+    begin
+      tt.DisableControls;
+      L := true;
+      while L and not(tt.Eof) do
+      begin
+        if Pos(AnsiUpperCase(Find_Str.Edit1.Text), AnsiUpperCase(JvDBGrid2.SelectedField.AsString)) > 0 then
+          L := false
+        else
+          tt.Next;
+      end;
+      fs := Find_Str.Edit1.Text;
+      tt.EnableControls;
+    end;
+  finally
+    Find_Str.Release;
+  end;
+end;
+
+procedure TSprPokup.A_InsExecute(Sender: TObject);
+var I : integer;
+begin
+  try
+    Application.CreateForm(TNewPredpr, NewPredpr);
+    if not(DataMain.Predpr.Filtered) then
+    begin
+      With DataMain do
+      begin
+        Predpr.Refresh;
+        NewPredpr.Caption := 'Добавление клиента';
+        ConfigVit.Open;
+        I:=ConfigVit.fieldByName('Nomer15').AsInteger + 1;
+        ConfigVit.Edit;
+        ConfigVit.fieldByName('Nomer15').AsInteger := I;
+        ConfigVit.post;
+        ConFigVit.Close;
+        Predpr.Append;
+        PredprCode_pr.AsInteger := I;
+        Predpr.Post;
+        Predpr.Edit;
+        if NewPredpr.ShowModal = mrCancel then
+        begin
+          Predpr.Cancel;
+          Predpr.Delete;
+        end
+        else
+          Predpr.Post;
+      end;
+    end;
+   finally
+    NewPredpr.Release;
+  end;
+  DataMain.Predpr.ApplyUpdates;
+  DataMain.IBT.CommitRetaining;
+  DataMain.Predpr.Refresh;
+end;
+
+procedure TSprPokup.A_VyborExecute(Sender: TObject);
+begin
+  if not DataMain.Predpr.IsEmpty then
+  begin
+    id_ := DataMain.Predprcode_pr.AsInteger;
+    n_ := DataMain.Predprnaim.AsString;
+  end
+  else
+  begin
+    id_ := 0;
+    n_ := '';
+  end;
+  ModalResult := mrok;
+end;
+
+procedure TSprPokup.A_WinCrExecute(Sender: TObject);
+begin
+  A_Vybor.Enabled := vybor;
+end;
+
+procedure TSprPokup.CBClick(Sender: TObject);
+begin
+     Edit1.Enabled := CB.Checked;
+     DataMain.Predpr.Filtered := CB.Checked;
+     if CB.Checked then SprPokup.ActiveControl := Edit1;
+end;
+
+procedure TSprPokup.CBKeyDown(Sender: TObject; var Key: Word;
+  Shift: TShiftState);
+begin
+     Edit1.Enabled := CB.Checked;
+     DataMain.Predpr.Filtered := CB.Checked;
+     if CB.Checked then SprPokup.ActiveControl := Edit1;
+end;
+
+procedure TSprPokup.FormClose(Sender: TObject; var Action: TCloseAction);
+begin
+if  (DataMain.IBT.InTransaction) and (close_t) then DataMain.IBT.Commit;
+     Action := caFree;
+end;
+
+procedure TSprPokup.FormCreate(Sender: TObject);
+begin
+  vybor := false;
+end;
+
+procedure TSprPokup.Edit1KeyDown(Sender: TObject; var Key: Word;
+  Shift: TShiftState);
+begin
+     if Key = VK_RETURN then
+        Datamain.Predpr.Refresh;
+end;
+
+end.

@@ -1,0 +1,308 @@
+unit InvF;
+
+interface
+
+uses
+  Windows, Messages, SysUtils, Classes, Graphics, Controls, Forms, Dialogs,
+  StdCtrls, Buttons, ComCtrls, DBTables, Db, Placemnt;
+
+type
+  TInv = class(TForm)
+    Dat1: TDateTimePicker;
+    Dat2: TDateTimePicker;
+    PB: TProgressBar;
+    BitBtn1: TBitBtn;
+    BitBtn2: TBitBtn;
+    Label1: TLabel;
+    Label2: TLabel;
+    Query1: TQuery;
+    Query2: TQuery;
+    Query3: TQuery;
+    Table1: TTable;
+    VOst: TQuery;
+    Query1Code: TFloatField;
+    Query1Kol: TFloatField;
+    Query2Code: TFloatField;
+    Query2Kol: TFloatField;
+    Query3Code: TFloatField;
+    Query3Kol1: TFloatField;
+    Query5: TQuery;
+    Query5Code: TFloatField;
+    Query5Kol1: TFloatField;
+    Query7: TQuery;
+    Query7Code: TFloatField;
+    Query7Kol1: TFloatField;
+    Query9: TQuery;
+    Query9Code: TFloatField;
+    Query9Kol1: TFloatField;
+    Query11: TQuery;
+    Query11Code: TFloatField;
+    Query11Kol1: TFloatField;
+    Query4: TQuery;
+    Query4Code: TFloatField;
+    Query4Kol2: TFloatField;
+    Query6: TQuery;
+    Query6Code: TFloatField;
+    Query6Kol2: TFloatField;
+    Query8: TQuery;
+    Query8Code: TFloatField;
+    Query8Kol2: TFloatField;
+    Query10: TQuery;
+    Query10Code: TFloatField;
+    Query10Kol2: TFloatField;
+    Query12: TQuery;
+    Query12Code: TFloatField;
+    Query12Kol2: TFloatField;
+    Query14: TQuery;
+    Query14Code: TFloatField;
+    Query14Kol1: TFloatField;
+    Query16: TQuery;
+    Query16CODE: TFloatField;
+    Query16KOL1: TFloatField;
+    Query13: TQuery;
+    Query13CODE: TFloatField;
+    Query13KOL2: TFloatField;
+    Query15: TQuery;
+    Query15Code: TFloatField;
+    Query15Kol2: TFloatField;
+    Query17: TQuery;
+    Query17CODE: TFloatField;
+    Query17KOL2: TFloatField;
+    VOstCode: TFloatField;
+    Table1CODE: TFloatField;
+    Table1KOL1: TFloatField;
+    Table1KOL2: TFloatField;
+    Rev: TQuery;
+    RevCode: TFloatField;
+    RevKol: TFloatField;
+    Query18: TQuery;
+    Query18CODE: TFloatField;
+    Query18KOL2: TFloatField;
+    Query19: TQuery;
+    Query19CODE: TFloatField;
+    Query19KOL1: TFloatField;
+    Query20: TQuery;
+    Query20CODE: TFloatField;
+    Query20KOL1: TFloatField;
+    FormStorage1: TFormStorage;
+    Query21: TQuery;
+    Query21Code: TFloatField;
+    Query21Kol1: TFloatField;
+    procedure BitBtn1Click(Sender: TObject);
+    procedure BitBtn2Click(Sender: TObject);
+    procedure FormDestroy(Sender: TObject);
+  private
+    { Private declarations }
+  public
+    { Public declarations }
+  end;
+
+var
+  Inv: TInv;
+
+implementation
+
+uses Sklad;
+
+{$R *.DFM}
+
+procedure TInv.BitBtn1Click(Sender: TObject);
+var I, I1, I2, C : Integer;
+begin
+     PB.Position := 0;
+     VOst.Open;
+     PB.Max := VOst.RecordCount + 24;
+     Rev.Close;
+
+     Table1.Exclusive := True;
+     table1.Open;
+     Table1.EmptyTable;
+
+     Query1.Close;
+     Query2.Close;
+     Query3.Close;
+     Query4.Close;
+     Query5.Close;
+     Query6.Close;
+     Query7.Close;
+     Query8.Close;
+     Query9.Close;
+     Query10.Close;
+     Query11.Close;
+     Query12.Close;
+     Query13.Close;
+     Query14.Close;
+     Query15.Close;
+     Query16.Close;
+     Query17.Close;
+     Query18.Close;
+     Query19.Close;
+     Query20.Close;
+     Query21.Close;
+//     Rev.ParamByName('dat1').AsDate := dat1.date;
+     Rev.ParamByName('dat2').AsDate := dat2.date;
+     Rev.Open;
+     Query1.ParamByName('dat1').AsDate := dat1.date;
+     Query1.ParamByName('dat2').AsDate := dat2.date;
+     Query2.ParamByName('dat1').AsDate := dat1.date;
+     Query2.ParamByName('dat2').AsDate := dat2.date;
+     Query3.ParamByName('dat1').AsDate := dat1.date;
+     Query3.ParamByName('dat2').AsDate := dat2.date;
+     Query4.ParamByName('dat1').AsDate := dat1.date;
+     Query4.ParamByName('dat2').AsDate := dat2.date;
+     Query5.ParamByName('dat1').AsDate := dat1.date;
+     Query5.ParamByName('dat2').AsDate := dat2.date;
+     Query6.ParamByName('dat1').AsDate := dat1.date;
+     Query6.ParamByName('dat2').AsDate := dat2.date;
+     Query7.ParamByName('dat1').AsDate := dat1.date;
+     Query7.ParamByName('dat2').AsDate := dat2.date;
+     Query8.ParamByName('dat1').AsDate := dat1.date;
+     Query8.ParamByName('dat2').AsDate := dat2.date;
+     Query9.ParamByName('dat1').AsDate := dat1.date;
+     Query9.ParamByName('dat2').AsDate := dat2.date;
+     Query10.ParamByName('dat1').AsDate := dat1.date;
+     Query10.ParamByName('dat2').AsDate := dat2.date;
+     Query11.ParamByName('dat1').AsDate := dat1.date;
+     Query11.ParamByName('dat2').AsDate := dat2.date;
+     Query12.ParamByName('dat1').AsDate := dat1.date;
+     Query12.ParamByName('dat2').AsDate := dat2.date;
+     Query13.ParamByName('dat1').AsDate := dat1.date;
+     Query13.ParamByName('dat2').AsDate := dat2.date;
+     Query14.ParamByName('dat1').AsDate := dat1.date;
+     Query14.ParamByName('dat2').AsDate := dat2.date;
+     Query15.ParamByName('dat1').AsDate := dat1.date;
+     Query15.ParamByName('dat2').AsDate := dat2.date;
+     Query16.ParamByName('dat1').AsDate := dat1.date;
+     Query16.ParamByName('dat2').AsDate := dat2.date;
+     Query17.ParamByName('dat1').AsDate := dat1.date;
+     Query17.ParamByName('dat2').AsDate := dat2.date;
+     Query18.ParamByName('dat1').AsDate := dat1.date;
+     Query18.ParamByName('dat2').AsDate := dat2.date;
+     Query19.ParamByName('dat1').AsDate := dat1.date;
+     Query19.ParamByName('dat2').AsDate := dat2.date;
+     Query20.ParamByName('dat1').AsDate := dat1.date;
+     Query20.ParamByName('dat2').AsDate := dat2.date;
+     Query21.ParamByName('dat1').AsDate := dat1.date;
+     Query21.ParamByName('dat2').AsDate := dat2.date;
+     PB.Position := PB.Position + 1;
+     Query1.Open;
+     PB.Position := PB.Position + 1;
+     Query2.Open;
+     PB.Position := PB.Position + 1;   //3
+     Query3.Open;
+     PB.Position := PB.Position + 1;
+     Query4.Open;
+     PB.Position := PB.Position + 1;
+     Query5.Open;
+     PB.Position := PB.Position + 1;
+     Query6.Open;
+     PB.Position := PB.Position + 1;
+     Query7.Open;
+     PB.Position := PB.Position + 1;
+     Query8.Open;
+     PB.Position := PB.Position + 1;
+     Query9.Open;
+     PB.Position := PB.Position + 1;
+     Query10.Open;
+     PB.Position := PB.Position + 1;  //11
+     Query11.Open;
+     PB.Position := PB.Position + 1;
+     Query12.Open;
+     PB.Position := PB.Position + 1;
+     Query13.Open;
+     PB.Position := PB.Position + 1;
+     Query14.Open;
+     PB.Position := PB.Position + 1;
+     Query15.Open;
+     PB.Position := PB.Position + 1;
+     Query16.Open;
+     PB.Position := PB.Position + 1;
+     Query17.Open;
+     PB.Position := PB.Position + 1; //18
+     Query18.Open;
+     PB.Position := PB.Position + 1; //18
+     Query19.Open;
+     PB.Position := PB.Position + 1; //18
+     Query20.Open;
+     PB.Position := PB.Position + 1; //18
+     Query21.Open;
+     PB.Position := PB.Position + 1; //18
+     VOst.First;
+     PB.Position := PB.Position + 1; //19
+     while not(VOst.Eof) do
+           begin
+                I := 0;
+                I1 := 0;
+                I2 := 0;
+                C := VOstCode.AsInteger;
+                if Rev.Locate('code',C,[]) then I := I + RevKol.AsInteger;
+                if Query1.Locate('code',C,[]) then I := I + Query1Kol.AsInteger;
+                if Query2.Locate('code',C,[]) then I := I + Query2Kol.AsInteger;
+                if Query3.Locate('code',C,[]) then I1 := I1 + Query3Kol1.AsInteger;
+                if Query4.Locate('code',C,[]) then I2 := I2 + Query4Kol2.AsInteger;
+                if Query5.Locate('code',C,[]) then I1 := I1 + Query5Kol1.AsInteger;
+                if Query6.Locate('code',C,[]) then I2 := I2 + Query6Kol2.AsInteger;
+                if Query7.Locate('code',C,[]) then I1 := I1 + Query7Kol1.AsInteger;
+                if Query8.Locate('code',C,[]) then I2 := I2 + Query8Kol2.AsInteger;
+                if Query9.Locate('code',C,[]) then I1 := I1 + Query9Kol1.AsInteger;
+                if Query10.Locate('code',C,[]) then I2 := I2 + Query10Kol2.AsInteger;
+                if Query11.Locate('code',C,[]) then I1 := I1 + Query11Kol1.AsInteger;
+                if Query12.Locate('code',C,[]) then I2 := I2 + Query12Kol2.AsInteger;
+                if Query13.Locate('code',C,[]) then I := I + Query13Kol2.AsInteger;
+                if Query14.Locate('code',C,[]) then I1 := I1 + Query14Kol1.AsInteger;
+                if Query15.Locate('code',C,[]) then I2 := I2 + Query15Kol2.AsInteger;
+                if Query16.Locate('code',C,[]) then I1 := I1 + Query16Kol1.AsInteger;
+                if Query17.Locate('code',C,[]) then I2 := I2 + Query17Kol2.AsInteger;
+                if Query19.Locate('code',C,[]) then I1 := I1 + Query19Kol1.AsInteger;
+                if Query18.Locate('code',C,[]) then I2 := I2 + Query18Kol2.AsInteger;
+                if Query20.Locate('code',C,[]) then I1 := I1 + Query20Kol1.AsInteger;
+                if Query21.Locate('code',C,[]) then I1 := I1 + Query21Kol1.AsInteger;
+
+                I1 := I - I1;
+                I2 := I - I2;
+                Table1.Append;
+                Table1Code.AsInteger := C;
+                Table1Kol1.AsInteger := I1;
+                Table1Kol2.AsInteger := I2;
+                Table1.Post;
+                VOst.next;
+                PB.Position := PB.Position + 1;
+           end;
+     Query1.Close;
+     Query2.Close;
+     Query3.Close;
+     Query4.Close;
+     Query5.Close;
+     Query6.Close;
+     Query7.Close;
+     Query8.Close;
+     Query9.Close;
+     Query10.Close;
+     Query11.Close;
+     Query12.Close;
+     Query13.Close;
+     Query14.Close;
+     Query15.Close;
+     Query16.Close;
+     Query17.Close;
+     Query18.Close;
+     Query19.Close;
+     Query20.Close;
+     Query21.Close;
+     VoSt.Close;
+     Table1.Close;
+     PB.Position := PB.Position + 1; //20
+     Inv.Release;
+end;
+
+procedure TInv.BitBtn2Click(Sender: TObject);
+begin
+     Inv.release;
+end;
+
+procedure TInv.FormDestroy(Sender: TObject);
+begin
+     Main.N63.Enabled := True;
+end;
+
+end.

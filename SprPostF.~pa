@@ -1,0 +1,245 @@
+unit SprPostF;
+
+interface
+
+uses
+  Windows, Messages, SysUtils, Classes, Graphics, Controls, Forms, Dialogs,
+  StdCtrls, Grids, DBGrids, RxLogin, DBSecur, Db, DBTables, Menus;
+
+type
+  TSprPost = class(TForm)
+    DBGrid1: TDBGrid;
+    Table1: TTable;
+    PM1: TPopupMenu;
+    N1: TMenuItem;
+    Query1: TQuery;
+    Query2: TQuery;
+    N2: TMenuItem;
+    procedure DBGrid1KeyDown(Sender: TObject; var Key: Word;
+      Shift: TShiftState);
+    procedure FormActivate(Sender: TObject);
+    procedure FormDeactivate(Sender: TObject);
+    procedure FormDestroy(Sender: TObject);
+    procedure FormClose(Sender: TObject; var Action: TCloseAction);
+    procedure N1Click(Sender: TObject);
+    procedure PostNac;
+    procedure N2Click(Sender: TObject);
+  private
+    { Private declarations }
+  public
+    { Public declarations }
+  end;
+
+var
+  SprPost: TSprPost;
+
+implementation
+
+uses Data, NewPostF, SprNewPredpr, Sklad, NacMsgDlgF, Pro;
+
+{$R *.DFM}
+
+procedure TSprPost.DBGrid1KeyDown(Sender: TObject; var Key: Word;
+  Shift: TShiftState);
+var I, I2 : Integer;
+    NameI : String;
+    S : Boolean;
+    Ts : Array [1..2] of String;
+begin
+     Case Key of
+          VK_RETURN :begin
+                    NewPost.CheckBox1.Enabled := False;
+                    NewPost.CheckBox2.Enabled := False;
+                    NewPost.Caption := 'Просмотр и редактирование сведений о поставщике';
+                    DataMain.Post.Edit;
+                    if NewPost.ShowModal = mrCancel then
+                       DataMain.Post.Cancel
+                    else
+                        DataMain.Post.Post;
+                    end;
+
+          VK_INSERT : Begin
+                    NewPost.Caption := 'Добаление нового поставщика';
+                    NewPost.CheckBox1.Enabled := True;
+                    NewPost.CheckBox2.Enabled := True;
+                    With DataMain do
+                         begin
+                              Post.Refresh;
+                              ConfigVit.Open;
+                              I := ConfigVitNomer16.AsInteger + 1;
+                              ConfigVit.Edit;
+                              ConfigVitNomer16.AsInteger := I;
+                              ConfigVit.post;
+                              ConFigVit.Close;
+                              Post.Append;
+                              PostCode_Post.AsInteger := I;
+                              PostCons.AsInteger :=0;
+                              Post.Post;
+                              Post.Edit;
+                              if NewPost.ShowModal = mrCancel then
+                                 begin
+                                      Post.Cancel;
+                                      Post.Delete;
+                                 end
+                              else
+                                  Post.post;
+                              If NewPost.CheckBox1.Checked then begin
+                                 Predpr.Open;
+                                 ConfigVit.Open;
+                                 I := ConfigVitNomer15.AsInteger + 1;
+                                 ConfigVit.Edit;
+                                 ConfigVitNomer15.AsInteger := I;
+                                 ConfigVit.post;
+                                 ConFigVit.Close;
+                                 Predpr.Append;
+                                 PredprCode_Pr.AsInteger := I;
+                                 PredprNaim.AsString := PostNaim.AsString;
+                                 Predpr.Post;
+                                 if MessageDlg('Желаете отредактировать данные клиента?',
+                                 mtConfirmation, [mbYes, mbNo], 0) = mrYes then begin
+                                      NewPredpr.CheckBox1.Enabled := False;
+                                      NewPredpr.CheckBox2.Enabled := False;
+                                      Predpr.Edit;
+                                      NewPredpr.ShowModal;
+                                      Predpr.Post;
+                                 end;
+                                 Predpr.Close;
+                              end;
+                              If NewPost.CheckBox2.Checked then begin
+                                 Proiz.Open;
+                                 ConfigVit.Open;
+                                 I := ConfigVitNomer17.AsInteger + 1;
+                                 ConfigVit.Edit;
+                                 ConfigVitNomer17.AsInteger := I;
+                                 ConfigVit.post;
+                                 ConFigVit.Close;
+                                 Proiz.Append;
+                                 ProizCode_Proiz.AsInteger := I;
+                                 ProizNaim.AsString := PostNaim.AsString;
+                                 ProizPrim.AsString := PostPrim.AsString;
+                                 Proiz.Post;
+                                 Proiz.Close;
+                              end;
+                         end;
+                      end;
+
+          VK_DELETE : begin
+                    if MessageDlg('Удалить запись?',
+                        mtConfirmation, [mbYes, mbNo], 0) = mrYes then
+                        begin
+                             S := False;
+                             I2 := dataMain.PostCODE_Post.AsInteger;
+                             Ts[1] := 'Tovar.dbf';
+                             Ts[2] := 'NaklPrih.dbf';
+                             for I := 1 to 2 do
+                                 begin
+                                      if not(S) then
+                                         begin
+                                              Table1.TableName := Ts[I];
+                                              case I of
+                                                   1 : Table1.IndexName := 'Code_Post';
+                                                   2 : Table1.IndexName := 'Code_Pr';
+                                              end;
+                                              Table1.Open;
+                                              Table1.First;
+                                              S := Table1.FindKey([I2]);
+                                              Table1.Close;
+                                         end;
+                                 end;
+                             if not(S) then
+                                DataMain.Post.Delete
+                             else
+                                ShowMessage('По данному поставщику было движение, удаление невозможно!');
+                        end;
+                    end;
+          VK_ESCAPE : SprPost.Release;
+     end;
+end;
+
+procedure TSprPost.FormActivate(Sender: TObject);
+begin
+     DataMain.Post.Active := True;
+     Application.CreateForm(TNewPost, NewPost);
+     Application.CreateForm(TNewPredpr, NewPredpr);
+end;
+
+procedure TSprPost.FormDeactivate(Sender: TObject);
+begin
+     DataMain.Post.Close;
+     NewPost.Release;
+     NewPredpr.Release;
+
+end;
+
+procedure TSprPost.FormDestroy(Sender: TObject);
+begin
+     Main.N24.Enabled := True;
+end;
+
+procedure TSprPost.FormClose(Sender: TObject; var Action: TCloseAction);
+begin
+     Action := caFree;
+end;
+
+procedure TSprPost.N1Click(Sender: TObject);
+begin
+  PostNac;
+end;
+
+procedure TSprPost.PostNac;
+var Dost :String;
+begin
+// Установка наценки для поставщика.
+Dost := Datamain.DostupDost1.AsString;
+if NasDost(Dost[170]) then
+try
+  Application.CreateForm(TNacMsgDlg, NacMsgDlg);
+  if NacMsgDlg.ShowModal = mrOk then
+  begin
+    if NacMsgDlg.SpirtCB.Checked then
+    begin
+        Query2.ParamByName('nacen').Value := NacMsgDlg.NacEdit1.Value;
+        Query2.ParamByName('code_post').Value := DataMain.PostCode_post.Value;
+        Query2.ExecSql;
+    end
+    else
+    begin
+        Query1.ParamByName('nacen').Value := NacMsgDlg.NacEdit1.Value;
+        Query1.ParamByName('code_post').Value := DataMain.PostCode_post.Value;
+        Query1.ExecSql;
+    end;
+    ShowMessage('Цены установлены');
+  end;
+finally
+  NacMsgDlg.Release;
+end
+
+end;
+
+
+
+procedure TSprPost.N2Click(Sender: TObject);
+var S : string;
+    SavePlace: TBookmark;
+    L : Boolean;
+
+begin
+     if InputQuery('Поиск по подстроке', 'Введите название поставщика', S) then
+     begin
+       SavePlace := DataMain.Post.GetBookmark;
+       DataMain.Post.DisableControls;
+       DataMain.Post.First;
+       L := True;
+       while (not DataMain.Post.EOF) and L do
+       begin
+         L := not(Pos(AnsiUpperCase(S), AnsiUpperCase(DataMain.PostNaim.AsString)) > 0);
+         if L then
+         DataMain.Post.Next;
+       end;
+       if L then DataMain.Post.GotoBookmark(SavePlace);
+       DataMain.Post.FreeBookmark(SavePlace);
+       DataMain.Post.EnableControls;
+     end;
+end;
+
+end.

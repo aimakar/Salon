@@ -1,0 +1,85 @@
+unit PrnPrihF;
+
+interface
+
+uses
+  Windows, Messages, SysUtils, Classes, Graphics, Controls, Forms, Dialogs,
+  ExtCtrls, quickrpt, Qrctrls;
+
+type
+  TPrnPrih = class(TForm)
+    PrnPrihod: TQuickRep;
+    PageHeaderBand1: TQRBand;
+    SummaryBand1: TQRBand;
+    TitleBand1: TQRBand;
+    QRSysData1: TQRSysData;
+    QRSysData2: TQRSysData;
+    QRLabel1: TQRLabel;
+    QRLabel2: TQRLabel;
+    QRLabel3: TQRLabel;
+    QRLabel4: TQRLabel;
+    QRLabel5: TQRLabel;
+    QRDBText1: TQRDBText;
+    QRDBText2: TQRDBText;
+    QRDBText3: TQRDBText;
+    QRLabel8: TQRLabel;
+    QRDBRichText1: TQRDBRichText;
+    QRSubDetail1: TQRSubDetail;
+    QRShape7: TQRShape;
+    QRShape8: TQRShape;
+    QRShape9: TQRShape;
+    QRShape10: TQRShape;
+    QRShape11: TQRShape;
+    QRDBText6: TQRDBText;
+    QRDBText7: TQRDBText;
+    QRDBText8: TQRDBText;
+    QRDBText9: TQRDBText;
+    QRDBText10: TQRDBText;
+    QRExpr1: TQRExpr;
+    QRExpr2: TQRExpr;
+    QRExpr3: TQRExpr;
+    QRLabel20: TQRLabel;
+    QRBand1: TQRBand;
+    QRLabel16: TQRLabel;
+    QRShape1: TQRShape;
+    QRLabel15: TQRLabel;
+    QRShape3: TQRShape;
+    QRLabel14: TQRLabel;
+    QRLabel13: TQRLabel;
+    QRShape4: TQRShape;
+    QRLabel12: TQRLabel;
+    QRLabel11: TQRLabel;
+    QRShape5: TQRShape;
+    QRLabel19: TQRLabel;
+    QRLabel10: TQRLabel;
+    QRShape2: TQRShape;
+    QRLabel9: TQRLabel;
+    QRLabel21: TQRLabel;
+    QRExpr5: TQRExpr;
+    QRLabel17: TQRLabel;
+    QRDBText12: TQRDBText;
+    QRExpr4: TQRExpr;
+    procedure QRExpr5Print(sender: TObject; var Value: String);
+  private
+    { Private declarations }
+  public
+    { Public declarations }
+  end;
+
+var
+  PrnPrih: TPrnPrih;
+  I : Integer;
+
+implementation
+
+uses PrintPrihRep, Data;
+
+{$R *.DFM}
+
+procedure TPrnPrih.QRExpr5Print(sender: TObject; var Value: String);
+begin
+     PrnPrih.Tag := PrnPrih.Tag + 1;
+     Value := IntToStr(PrnPrih.Tag);
+end;
+
+end.

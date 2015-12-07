@@ -1,0 +1,326 @@
+unit PrintCashF;
+
+interface
+
+uses
+  Windows, Messages, SysUtils, Classes, Graphics, Controls, Forms, Dialogs,
+  StdCtrls, Buttons, Db, DBTables, Grids, DBGrids, Mask, PRINTERS;
+
+type
+  TPrintCash = class(TForm)
+    GroupBox2: TGroupBox;
+    BitBtn3: TBitBtn;
+    BitBtn4: TBitBtn;
+    ChB: TCheckBox;
+    Table1: TTable;
+    Table1Naim: TStringField;
+    Table1UP: TFloatField;
+    Table1KOL: TFloatField;
+    Table1PRICE: TFloatField;
+    Table1Summa: TFloatField;
+    Table1NOMER: TStringField;
+    Table1CODE: TFloatField;
+    Table1NDS: TIntegerField;
+    Table1SPC: TBooleanField;
+    Table1Comm1: TStringField;
+    Table1Comm2: TStringField;
+    Table1ntd: TStringField;
+    Table1Strana: TStringField;
+    Table1PRICEB: TFloatField;
+    Table1SK: TFloatField;
+    BitBtn2: TBitBtn;
+    procedure FormKeyDown(Sender: TObject; var Key: Word;
+      Shift: TShiftState);
+    procedure BitBtn8Click(Sender: TObject);
+    procedure FormCreate(Sender: TObject);
+    procedure FormDestroy(Sender: TObject);
+    procedure BitBtn2Click(Sender: TObject);
+    procedure BitBtn7Click(Sender: TObject);
+    procedure BitBtn3Click(Sender: TObject);
+    procedure BitBtn4Click(Sender: TObject);
+    procedure Table1CalcFields(DataSet: TDataSet);
+    procedure BitBtn5Click(Sender: TObject);
+  private
+    { Private declarations }
+  public
+        A : String;
+    { Public declarations }
+  end;
+
+var
+  PrintCash: TPrintCash;
+
+implementation
+
+uses Data, Pro, PrnCashChKasF, PrnCashCHKF, PrnCashSCHF,
+  PrnCashRBF, PrnCashRBBF, PrnCashSclF, PrnNTDF,
+  TovTransNaklF, PrnSCHet1F;
+
+{$R *.DFM}
+
+procedure TPrintCash.FormKeyDown(Sender: TObject; var Key: Word;
+  Shift: TShiftState);
+begin
+     if Key=VK_ESCAPE then PrintCash.ModalResult := mrOk;
+end;
+
+procedure TPrintCash.BitBtn8Click(Sender: TObject);
+begin
+  Application.CreateForm(TPrnNTD, PrnNTD);
+  PrnNTD.Tag := 0;
+     if CHB.Checked then
+       PrnNTD.Report.Preview
+     else
+         begin
+         PrnNTD.Report.PrinterSetup;
+         PrnNTD.Report.Print;
+         end;
+  PrnNTD.Release;
+end;
+
+procedure TPrintCash.FormCreate(Sender: TObject);
+begin
+     With DataMain do
+          begin
+               CashTN.Open;
+               Oper.Filtered :=False;
+               Oper.Filter := '[CodeOper] = 2';
+               Oper.Filtered := True;
+               Oper.Open;
+               Oper.Locate('Oper',DataMain.CashNaklOper.AsInteger,[]);
+               Config.Open;
+               Predpr.Locate('code_pr', DataMain.CashNaklCode_pr.AsInteger,[]);
+
+          end;
+end;
+
+procedure TPrintCash.FormDestroy(Sender: TObject);
+begin
+     With DataMain do
+          begin
+            CashTN.Close;
+            Oper.Close;
+            Oper.Filtered :=False;
+            Oper.Filter := '';
+            Config.Close;
+          end;
+
+end;
+
+procedure TPrintCash.BitBtn2Click(Sender: TObject);
+begin
+  Application.CreateForm(TPrnSCHet1, PrnSCHet1);
+  PrnSCHet1.Tag := 0;
+  DataMain.Rekv.Open;
+  if not DataMain.Rekv.FindKey([DataMain.CashNaklCode_Firm.AsInteger]) then
+      DataMain.Rekv.FindKey([1]);
+  PrnSCHet1.NDS := DataMain.RekvNDS.AsBoolean;
+  if CHB.Checked then
+     PrnSCHet1.CashTovC.Preview
+  else
+  begin
+    PrnSCHet1.CashTovC.PrinterSetup;
+    PrnSCHet1.CashTovC.Print;
+  end;
+  PrnSCHet1.Release;
+  DataMain.Rekv.Close;
+
+end;
+
+procedure TPrintCash.BitBtn7Click(Sender: TObject);
+begin
+  Application.CreateForm(TPrnCashRB, PrnCashRB);
+  PrnCashRB.Tag := 0;
+  DataMain.Rekv.Open;
+    if not DataMain.Rekv.FindKey([DataMain.CashNaklCode_Firm.AsInteger]) then
+      DataMain.Rekv.FindKey([1]);
+  PrnCashRB.NDS := DataMain.RekvNDS.AsBoolean;
+     if CHB.Checked then
+       PrnCashRB.PrnChKasC.Preview
+     else
+         begin
+         PrnCashRB.PrnChKasC.PrinterSetup;
+         PrnCashRB.PrnChKasC.Print;
+         end;
+  PrnCashRB.Release;
+  dataMain.Rekv.Close;
+
+end;
+
+procedure TPrintCash.BitBtn3Click(Sender: TObject);
+{begin
+ Application.CreateForm(TPrnCashRS, PrnCashRS);
+  PrnCashRS.Tag := 0;
+  DataMain.Rekv.Open;
+    if not DataMain.Rekv.FindKey([DataMain.CashNaklCode_Firm.AsInteger]) then
+      DataMain.Rekv.FindKey([1]);
+  PrnCashRS.NDS := DataMain.RekvNDS.AsBoolean;
+     if CHB.Checked then
+       PrnCashRS.CashTovC.Preview
+     else
+         begin
+         PrnCashRS.CashTovC.PrinterSetup;
+         PrnCashRS.CashTovC.Print;
+         end;
+  PrnCashRS.Release;
+  DataMain.Rekv.Close;}
+var Orient : TPrinterOrientation;
+    A : Integer;
+    Sum_1, Sum_2 : real;
+begin
+try
+  Application.CreateForm(TTovTransNakl, TovTransNakl);
+  TovTransNakl.Tag := 0;
+  DataMain.Rekv.Open;
+  TovTransNakl.Table1.Close;
+
+
+  if (DataMain.PredOtpDost.AsBoolean) then
+    TovTransNakl.DeliveryDate := DataMain.CashNaklDostDat.AsString
+  else
+    TovTransNakl.DeliveryDate := '';
+
+
+  TovTransNakl.TotalPosition := 0;
+  TovTransNakl.TotalCount := 0;
+  Sum_1 := 0;
+  Sum_2 := 0;
+  Table1.Open;
+  Table1.First;
+  while (not Table1.Eof) do
+  begin
+    Sum_1 := Sum_1+((Table1Price.AsFloat*100/(100+Table1NDS.AsInteger))*Table1Kol.AsInteger);
+    Sum_2 := Sum_2+((Table1Price.AsFloat*Table1NDS.AsInteger/(100+Table1NDS.AsInteger))*Table1Kol.AsInteger);
+    TovTransNakl.TotalPosition := TovTransNakl.TotalPosition + 1;
+    TovTransNakl.TotalCount := TovTransNakl.TotalCount + Table1Kol.AsInteger;
+    Table1.Next;
+  end;
+  TovTransNakl.TotalSum := Sum_1+Sum_2;
+
+    if not DataMain.Rekv.FindKey([DataMain.CashNaklCode_Firm.AsInteger]) then
+      DataMain.Rekv.FindKey([1]);
+  TovTransNakl.NDS := DataMain.RekvNDS.AsBoolean;
+  TovTransNakl.NaklRekv[1] := '»ÕÕ ' +DataMain.RekvINN.AsString + ', '
+                              +  DataMain.RekvNAIM.AsString + ', '+
+                              DataMain.RekvADDRESS.AsString + ', '+
+                              DataMain.RekvTEL.AsString + ', '+
+                              '/Ò ' + DataMain.RekvRS.AsString +' '+ DataMain.RekvBANK.AsString + ', '
+                              + '¡ËÍ ' +
+                              DataMain.RekvBIK.AsString + ', ÍÓ/Ò˜ ' +
+                              DataMain.RekvkS.AsString;
+  if DataMain.CashNaklCode_Gruz.AsInteger > 0 then
+    DataMain.FindPredpr_(DataMain.CashNaklCode_Gruz.AsInteger)
+  else
+    DataMain.FindPredpr_(DataMain.CashNaklCode_Pr.AsInteger);
+  TovTransNakl.NaklRekv[2] := '»ÕÕ ' + DataMain.Find_Predpr_Array[2] + ', ' + DataMain.Find_Predpr_Array[3] +
+                              ', '+  DataMain.Find_Predpr_Array[4] + '( '+ DataMain.CashNaklDostAdd.AsString + ')';
+{  TovTransNakl.NaklRekv[2] := '»ÕÕ ' + DataMain.Find_Predpr_Array[2] + ', ' + DataMain.Find_Predpr_Array[3] +
+                              ', ' + DataMain.CashNaklDostAdd.AsString;
+}  DataMain.FindPredpr_(DataMain.CashNaklCode_Pr.AsInteger);
+  TovTransNakl.NaklRekv[3] := '»ÕÕ ' + DataMain.Find_Predpr_Array[2] + ', ' + DataMain.Find_Predpr_Array[3] +
+                              ', ' + DataMain.Find_Predpr_Array[4];
+  TovTransNakl.NaklRekv[4] := DataMain.CashNaklOsn.AsString;
+  TovTransNakl.NaklRekv[5] := DataMain.CashNaklNomer.AsString;
+  TovTransNakl.NaklRekv[6] := DatetoStr(DataMain.CashNaklOt.AsDateTime);
+  TovTransNakl.NaklRekv[7] := TextSum(Datamain.CashNaklSumma.AsFloat);
+  TovTransNakl.NaklRekv[8] := TextSum(Datamain.CashNaklSumma.AsFloat);
+
+
+  TovTransNakl.Table1.TableName := 'cashtn.dbf';
+//  TovTransNakl.Table1.Filter := '[nomer]='+chr(39)+DataMain.PredOtpNomer.AsString+chr(39);
+//  TovTransNakl.Table1.Filtered := True;
+
+  TovTransNakl.Table1.IndexName := 'NOMER';
+  TovTransNakl.Table1.MasterFields := 'NOMER';
+  TovTransNakl.Table1.MasterSource := DataMain.CashNaklDS;
+  TovTransNakl.Table1.FieldDefs.Update;
+  TovTransNakl.Table1Nomer.Size := 16;
+  TovTransNakl.Table1.Open;
+
+
+     if CHB.Checked then
+       TovTransNakl.QR1.Preview
+     else
+         begin
+         if Lo(GetVersion and $0000FFFF) < 5 then
+         begin
+                  TovTransNakl.Qr1.PrinterSetup;
+                  TovTransNakl.QR1.Printer.Orientation := poLandscape;
+                  TovTransNakl.QR1.Page.Orientation := poLandscape;
+         end;
+         Orient := Printer.Orientation;
+         Printer.Orientation := poLandscape;
+         TovTransNakl.QR1.Print;
+         Printer.Orientation := Orient;
+         end;
+finally;
+  TovTransNakl.Release;
+  DataMain.Rekv.Close;
+  if Table1.Active then Table1.First;
+end;
+end;
+
+procedure TPrintCash.BitBtn4Click(Sender: TObject);
+begin
+  Application.CreateForm(TPrnCashSCH, PrnCaSHSCH);
+  PrncASHSCH.Tag := 0;
+  DataMain.Rekv.Open;
+    if not DataMain.Rekv.FindKey([DataMain.CashNaklCode_Firm.AsInteger]) then
+      DataMain.Rekv.FindKey([1]);
+  PrnCashSCH.NDS := DataMain.RekvNDS.AsBoolean;
+  if DataMain.CashNaklGruz.AsBoolean then
+  begin
+    PrnCashSCH.Gruz_Name := DataMain.CashNaklPredpr.AsString;
+    PrnCashSCH.Gruz_Address := DataMain.PredprAddress.AsString;
+  end
+  else
+  begin
+    DataMain.Predpr_T.Open;
+    if DataMain.Predpr_T.FindKey([DataMain.CashNaklCode_Gruz.AsInteger]) then
+    begin
+        PrnCashSCH.Gruz_Name := DataMain.Predpr_TNaim.AsString;
+        PrnCashSCH.Gruz_Address := DataMain.Predpr_TAddress.AsString;
+    end
+    else
+    begin
+        PrnCashSCH.Gruz_Name := DataMain.CashNaklPredpr.AsString;
+        PrnCashSCH.Gruz_Address := DataMain.PredprAddress.AsString;
+    end;
+    DataMain.Predpr_T.Close;
+  end;
+  if CHB.Checked then
+    PrnCashSCH.CashTovC.Preview
+  else
+  begin
+    PrnCashSCH.CashTovC.PrinterSetup;
+    PrnCashSCH.CashTovC.Print;
+  end;
+  PrnCashSCH.Release;
+  dataMain.Rekv.Close;
+end;
+
+procedure TPrintCash.Table1CalcFields(DataSet: TDataSet);
+begin
+With Table1 do
+     begin
+          FieldByName('Summa').AsFloat := FieldByName('Price').AsFloat*FieldByName('Kol').AsInteger;
+     end;
+
+end;
+
+procedure TPrintCash.BitBtn5Click(Sender: TObject);
+begin
+  Application.CreateForm(TPrnCashScl, PrnCaSHScl);
+  PrncASHSCl.Tag := 0;
+     if CHB.Checked then
+       PrnCashScl.Report.Preview
+     else
+         begin
+         PrnCashSCl.Report.PrinterSetup;
+         PrnCashSCl.Report.Print;
+         end;
+  PrnCashSCl.Release;
+
+end;
+
+end.

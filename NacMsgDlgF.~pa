@@ -1,0 +1,28 @@
+unit NacMsgDlgF;
+
+interface
+
+uses
+  Windows, Messages, SysUtils, Classes, Graphics, Controls, Forms, Dialogs,
+  StdCtrls, Buttons, Mask, ToolEdit, CurrEdit;
+
+type
+  TNacMsgDlg = class(TForm)
+    Label1: TLabel;
+    NacEdit1: TRxCalcEdit;
+    BitBtn1: TBitBtn;
+    BitBtn2: TBitBtn;
+  private
+    { Private declarations }
+  public
+    { Public declarations }
+  end;
+
+var
+  NacMsgDlg: TNacMsgDlg;
+
+implementation
+
+{$R *.DFM}
+
+end.

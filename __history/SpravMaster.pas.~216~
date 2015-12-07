@@ -1,0 +1,255 @@
+unit SpravMaster;
+
+interface
+
+uses
+  Windows, Messages, SysUtils, Variants, Classes, Graphics, Controls, Forms,
+  Dialogs, Grids, DBGrids, PlatformDefaultStyleActnCtrls, ActnList, ActnMan,
+  ToolWin, ActnCtrls, JvActionsEngine, JvVersionControlActions, DB, DBTables,
+  XPStyleActnCtrls, JvExDBGrids, JvDBGrid, StdCtrls, ExtCtrls, IBCustomDataSet,
+  IBTable, IBSQLMonitor, IBQuery, Mask, DBCtrls;
+
+type
+  TSprMaster = class(TForm)
+    ActionManager1: TActionManager;
+    A_Ins: TAction;
+    ActionToolBar1: TActionToolBar;
+    A_Del: TAction;
+    JclVersionCtrlAddCommand: TJvVersionControlAddAction;
+    A_Edit: TAction;
+    A_WinCr: TAction;
+    A_Exit: TAction;
+    JvDBGrid1: TJvDBGrid;
+    A_Find: TAction;
+    CB: TCheckBox;
+    Edit1: TEdit;
+    Panel1: TPanel;
+    A_Vybor: TAction;
+    Query1: TIBQuery;
+    Query1CODE_MAST: TIntegerField;
+    procedure A_InsExecute(Sender: TObject);
+    procedure FormActivate(Sender: TObject);
+    procedure FormDeactivate(Sender: TObject);
+    procedure FormClose(Sender: TObject; var Action: TCloseAction);
+    procedure A_EditExecute(Sender: TObject);
+    procedure A_DelExecute(Sender: TObject);
+    procedure A_FindExecute(Sender: TObject);
+    procedure CBClick(Sender: TObject);
+    procedure CBKeyDown(Sender: TObject; var Key: Word; Shift: TShiftState);
+    procedure Edit1KeyDown(Sender: TObject; var Key: Word; Shift: TShiftState);
+    procedure CreateWindowHandle(const Params: TCreateParams); override;
+    procedure A_VyborExecute(Sender: TObject);
+    procedure FormCreate(Sender: TObject);
+    procedure A_WinCrExecute(Sender: TObject);
+    procedure A_ExitExecute(Sender: TObject);
+
+  private
+    { Private declarations }
+    fs : string;
+  public
+    { Public declarations }
+    idM_ : integer;
+    nM_ : string;
+    vyborM : boolean;
+  end;
+
+var
+  SprMaster: TSprMaster;
+
+implementation
+
+uses Data, SprNewMaster, Sklad, Pro, Find_StrF;
+
+{$R *.dfm}
+
+procedure TSprMaster.CreateWindowHandle(const Params: TCreateParams);
+var Comp:TSprMaster;
+begin
+  inherited;
+  Comp:=TSprMaster(Application.Components[Application.ComponentCount-1]);
+  Comp.Visible:=false;
+end;
+
+procedure TSprMaster.FormActivate(Sender: TObject);
+begin
+if not DataMain.IBT.InTransaction then  DataMain.IBT.StartTransaction;
+  DataMain.Master.Tag:=1;
+  DataMain.Master.Open;
+end;
+
+procedure TSprMaster.FormDeactivate(Sender: TObject);
+begin
+  Datamain.Master.Filtered := False;
+  DataMain.Master.Refresh;
+  CB.Checked := False;
+  //DataMain.Master.Close;
+
+end;
+
+procedure TSprMaster.A_DelExecute(Sender: TObject);
+var
+  S: boolean;
+begin
+  if MessageDlg('Удалить запись?', mtConfirmation, [mbYes, mbNo],0) = mrYes then
+  begin
+    S:= False;
+          Query1.Close;
+          Query1.ParamByName('code_mast').AsInteger:= DataMain.MasterCODE_MAST.AsInteger;
+          Query1.Open;
+          S:= Query1.RecordCount>0;
+  if not (S) then
+  begin
+   DataMain.Master.Delete;
+  end
+  else
+    ShowMessage('По данному мастеру было движение, удаление невозможно!');
+  end;
+    DataMain.Master.ApplyUpdates;
+end;
+
+
+
+procedure TSprMaster.A_ExitExecute(Sender: TObject);
+begin
+  SprMaster.Release;
+end;
+
+procedure TSprMaster.A_FindExecute(Sender: TObject);
+var l : boolean;
+  tt : tibtable;
+begin
+  try
+    tt:=DataMain.Master;
+    //tt.First;
+    Application.CreateForm(TFind_Str, Find_Str);
+    Find_Str.Edit1.Text := fs;
+    if Find_Str.ShowModal = mrOk then
+    begin
+      tt.DisableControls;
+      L := true;
+      while L and not(tt.Eof) do
+      begin
+        if Pos(AnsiUpperCase(Find_Str.Edit1.Text), AnsiUpperCase(JvDBGrid1.SelectedField.AsString)) > 0 then
+          L := false
+        else
+          tt.Next;
+      end;
+      fs := Find_Str.Edit1.Text;
+      tt.EnableControls;
+    end;
+
+  finally
+     Find_Str.Release;
+  end;
+
+end;
+
+procedure TSprMaster.A_EditExecute(Sender: TObject);
+begin
+  try
+    Application.CreateForm(TNewMaster, NewMaster);
+    NewMaster.Caption := 'Просмотр данных о мастере';
+    //NewMaster.code := DataMain.Mastercode_mast.AsInteger;
+    DataMain.Master.Edit;
+    if NewMaster.ShowModal = mrCancel then
+      DataMain.Master.Cancel
+    else
+      DataMain.Master.Post;
+  finally
+    NewMaster.Release;
+  end;
+  DataMain.Master.ApplyUpdates;
+end;
+
+
+procedure TSprMaster.A_InsExecute(Sender: TObject);
+var I : integer;
+begin
+   try
+      Application.CreateForm(TNewMaster, NewMaster);
+      if not(DataMain.Master.Filtered) then
+      begin
+        With DataMain do
+        begin
+          Master.Refresh;
+          NewMaster.Caption:= 'Добавление мастера';
+          ConfigVit.Open;
+          I:=ConfigVit.FieldByName('Nomer20').AsInteger + 1;
+          ConfigVit.Edit;
+          ConfigVit.FieldByName('Nomer20').AsInteger := I;
+          ConfigVit.Post;
+          ConfigVit.Close;
+          Master.Append;
+          MasterCode_mast.AsInteger := I;
+          Master.Post;
+          Master.Edit;
+            if NewMaster.ShowModal = mrCancel then
+              begin
+                Master.Cancel;
+                Master.Delete;
+              end
+            else
+              Master.Post;
+        end;
+      end;
+   finally
+       NewMaster.Release;
+   end;
+     DataMain.Master.ApplyUpdates;
+     DataMain.Master.Refresh;
+end;
+
+procedure TSprMaster.A_VyborExecute(Sender: TObject);
+begin
+  if not DataMain.Master.IsEmpty then
+  begin
+     idM_ := DataMain.Mastercode_mast.AsInteger;
+     nM_ := DataMain.Masternaim.AsString;
+  end
+  else
+  begin
+     idM_ := 0;
+     nM_ := '';
+  end;
+  ModalResult := mrOk;
+end;
+
+procedure TSprMaster.A_WinCrExecute(Sender: TObject);
+begin
+  A_Vybor.Enabled := vyborM;
+end;
+
+procedure TSprMaster.CBClick(Sender: TObject);
+begin
+  Edit1.Enabled := CB.Checked;
+  DataMain.Master.Filtered := Cb.Checked;
+  if CB.Checked then SprMaster.ActiveControl:=Edit1;
+end;
+
+procedure TSprMaster.CBKeyDown(Sender: TObject; var Key: Word;
+  Shift: TShiftState);
+begin
+  Edit1.Enabled := CB.Checked;
+  DataMain.Master.Filtered := Cb.Checked;
+  if CB.Checked then SprMaster.ActiveControl:=Edit1;
+end;
+
+procedure TSprMaster.FormClose(Sender: TObject; var Action: TCloseAction);
+begin
+if  DataMain.IBT.InTransaction then DataMain.IBT.Commit;
+  Action:=caFree;
+end;
+
+procedure TSprMaster.FormCreate(Sender: TObject);
+begin
+  vyborM := false;
+end;
+
+procedure TSprMaster.Edit1KeyDown(Sender: TObject; var Key: Word;
+  Shift: TShiftState);
+begin
+  if Key = VK_RETURN then
+     DataMain.Master.Refresh;
+end;
+
+end.

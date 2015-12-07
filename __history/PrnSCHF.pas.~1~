@@ -1,0 +1,305 @@
+unit PrnSchF;
+
+interface
+
+uses
+  Windows, Messages, SysUtils, Classes, Graphics, Controls, Forms, Dialogs,
+  ExtCtrls, quickrpt, Qrctrls;
+
+type
+  TPrnSCH = class(TForm)
+    CashTovC: TQuickRep;
+    SummaryBand1: TQRBand;
+    TitleBand1: TQRBand;
+    QRLabel3: TQRLabel;
+    QRLabel5: TQRLabel;
+    QRLabel7: TQRLabel;
+    QRDBText1: TQRDBText;
+    QRGroup1: TQRGroup;
+    QRSubDetail1: TQRSubDetail;
+    QRShape1: TQRShape;
+    QRShape2: TQRShape;
+    QRShape3: TQRShape;
+    QRShape4: TQRShape;
+    QRLabel9: TQRLabel;
+    QRShape5: TQRShape;
+    QRLabel10: TQRLabel;
+    QRLabel17: TQRLabel;
+    QRLabel18: TQRLabel;
+    QRLabel20: TQRLabel;
+    QRLabel22: TQRLabel;
+    QRLabel11: TQRLabel;
+    QRShape7: TQRShape;
+    QRShape8: TQRShape;
+    QRShape9: TQRShape;
+    QRShape10: TQRShape;
+    QRShape11: TQRShape;
+    QRShape12: TQRShape;
+    QRExpr1: TQRExpr;
+    QRDBText4: TQRDBText;
+    QRDBText7: TQRDBText;
+    QRExpr2: TQRExpr;
+    QRExpr3: TQRExpr;
+    QRExpr4: TQRExpr;
+    QRExpr8: TQRExpr;
+    QRDBText3: TQRDBText;
+    QRLabel28: TQRLabel;
+    QRDBText13: TQRDBText;
+    QRLabel31: TQRLabel;
+    QRLabel33: TQRLabel;
+    QRLabel34: TQRLabel;
+    QRExpr7: TQRExpr;
+    QRExpr11: TQRExpr;
+    QRDBText5: TQRDBText;
+    QRLabel24: TQRLabel;
+    QRDBText10: TQRDBText;
+    QRLabel57: TQRLabel;
+    QRLabel6: TQRLabel;
+    QRLabel13: TQRLabel;
+    QRLabel32: TQRLabel;
+    QRLabel55: TQRLabel;
+    QRShape13: TQRShape;
+    QRShape15: TQRShape;
+    QRShape17: TQRShape;
+    QRShape18: TQRShape;
+    QRDBText11: TQRDBText;
+    QRDBText15: TQRDBText;
+    QRLabel12: TQRLabel;
+    QRShape6: TQRShape;
+    QRDBText6: TQRDBText;
+    QRDBText16: TQRDBText;
+    QRDBText18: TQRDBText;
+    QRLabel4: TQRLabel;
+    QRExpr5: TQRExpr;
+    QRDBText27: TQRDBText;
+    QRDBText28: TQRDBText;
+    QRDBText14: TQRDBText;
+    QRLabel23: TQRLabel;
+    QRLabel25: TQRLabel;
+    QRMemo1: TQRMemo;
+    QRLabel8: TQRLabel;
+    QRLabel59: TQRLabel;
+    QRLabel16: TQRLabel;
+    QRLabel26: TQRLabel;
+    QRLabel14: TQRLabel;
+    QRLabel15: TQRLabel;
+    QRLabel27: TQRLabel;
+    QRLabel21: TQRLabel;
+    QRDBText17: TQRDBText;
+    QRDBText19: TQRDBText;
+    QRDBText20: TQRDBText;
+    QRLabel19: TQRLabel;
+    GruzName: TQRExpr;
+    GruzAddress: TQRExpr;
+    QRDBText2: TQRDBText;
+    QRDBText8: TQRDBText;
+    QRMemo2: TQRMemo;
+    procedure QRExpr1Print(sender: TObject; var Value: String);
+    procedure QRExpr2Print(sender: TObject; var Value: String);
+    procedure QRExpr3Print(sender: TObject; var Value: String);
+    procedure QRExpr4Print(sender: TObject; var Value: String);
+    procedure QRExpr8Print(sender: TObject; var Value: String);
+    procedure NDS_Nalog(sender: TObject; var Value: String);
+    procedure QRExpr10Print(sender: TObject; var Value: String);
+    procedure QRExpr12Print(sender: TObject; var Value: String);
+    procedure QRExpr11Print(sender: TObject; var Value: String);
+    procedure QRExpr9Print(sender: TObject; var Value: String);
+    procedure QRExpr13Print(sender: TObject; var Value: String);
+    procedure FormDestroy(Sender: TObject);
+    procedure QRExpr7Print(sender: TObject; var Value: String);
+    procedure QRLabel4Print(sender: TObject; var Value: String);
+    procedure QRExpr5Print(sender: TObject; var Value: String);
+    procedure CashTovCBeforePrint(Sender: TQuickRep;
+      var PrintReport: Boolean);
+    procedure GruzNamePrint(sender: TObject; var Value: String);
+    procedure GruzAddressPrint(sender: TObject; var Value: String);
+    procedure SummaryBand1BeforePrint(Sender: TQRCustomBand;
+      var PrintBand: Boolean);
+  private
+    { Private declarations }
+  public
+    NDS : Boolean;
+    Gruz_Address, Gruz_Name : String;
+    { Public declarations }
+  end;
+
+var
+  PrnSCH: TPrnSCH;
+  I1, D, NDS_Val : Real;
+implementation
+
+uses Pro, Data, PrintRezPred;
+
+{$R *.DFM}
+
+procedure TPrnSCH.QRExpr1Print(sender: TObject; var Value: String);
+begin
+     PrnSCH.Tag := PrnSCH.Tag + 1;
+     Value := IntToStr(PrnSCH.Tag);
+end;
+
+procedure TPrnSCH.QRExpr2Print(sender: TObject; var Value: String);
+var I : Real;
+begin
+{     With DataMain do
+     begin
+       If NDS then
+         NDS_Val := PrintPred.table1NDS.AsInteger
+       else
+         NDS_Val := 0;
+       if (PrintPred.table1SPC.AsBoolean and PredOtpNal.AsBoolean) then
+          I := (PrintPred.table1Price.AsFloat*100/(100+ConfigNalog.AsInteger))*100/(100+NDS_Val)
+       else
+          I := PrintPred.table1Price.AsFloat*100/(NDS_Val+100);
+     end;
+     Value := FloatToStrF(I,ffFixed,12,2);
+}
+end;
+
+procedure TPrnSCH.QRExpr3Print(sender: TObject; var Value: String);
+var I : Real;
+begin
+{     With DataMain do
+     begin
+       If NDS then
+         NDS_Val := PrintPred.table1NDS.AsInteger
+       else
+         NDS_Val := 0;
+       if (PrintPred.table1SPC.AsBoolean and PredOtpNal.AsBoolean) then begin
+          I := (PrintPred.table1Price.AsFloat*100/(100+ConfigNalog.AsInteger))*100/(100+NDS_Val);
+       end
+       else
+          I := PrintPred.table1Price.AsFloat*100/(NDS_VAL+100);
+     end;
+     I1 := I1 + I*PrintPred.table1Kol.AsInteger;
+     Value := FloatToStrF(I*PrintPred.table1Kol.AsInteger,ffFixed,12,2);
+  }
+end;
+
+procedure TPrnSCH.QRExpr4Print(sender: TObject; var Value: String);
+var I : Real;
+begin
+  If NDS then
+     NDS_Val := PrintPred.table1NDS.AsInteger
+  else
+     NDS_Val := 0;
+  I := PrintPred.table1Price.AsFloat*NDS_Val/(NDS_Val+100);
+  D := D + I*PrintPred.table1Kol.AsInteger;
+  Value := FloatToStrF(I * PrintPred.table1Kol.AsInteger,ffFixed,12,2);
+end;
+
+procedure TPrnSCH.QRExpr8Print(sender: TObject; var Value: String);
+var S,S1 : String;
+begin
+//         S := Trim(TextSum(Datamain.PredOtpSumma.AsFloat));
+         S1 := AnsiUpperCase(S[1]);
+         S[1] := S1[1];
+         Value := S;
+end;
+
+procedure TPrnSCH.NDS_Nalog(sender: TObject; var Value: String);
+var I : Real;
+begin
+{     With DataMain do
+       if (PrintPred.table1SPC.AsBoolean and PredOtpNal.AsBoolean) then begin
+
+          I := (PrintPred.table1Price.AsFloat*ConfigNalog.AsInteger/(100+ConfigNalog.AsInteger))*PrintPred.table1Kol.AsInteger;
+          Value := FloatToStrF(I,ffFixed,12,2);
+
+       end
+       else
+          Value := '---';
+ }
+end;
+
+
+procedure TPrnSCH.QRExpr10Print(sender: TObject; var Value: String);
+begin
+{     if DataMain.PredOtpNal.AsBoolean then
+        Value :='Сумма налога с продаж     '+ FloatToStrF(DataMain.PredOtpSUMMA.AsFloat-I1-D,ffFixed,12,2)
+     else
+         Value := '';
+     }
+end;
+
+procedure TPrnSCH.QRExpr12Print(sender: TObject; var Value: String);
+begin
+{     if DataMain.PredOtpNal.AsBoolean then
+        Value :='Сумма без налога с продаж     '+ FloatToStrF(I1+D,ffFixed,12,2)
+     else
+         Value := '';
+}
+end;
+
+procedure TPrnSCH.QRExpr11Print(sender: TObject; var Value: String);
+begin
+     Value := FloatToStrF(D,ffFixed,12,2);
+end;
+
+procedure TPrnSCH.QRExpr9Print(sender: TObject; var Value: String);
+begin
+     Value := 'Сумма без налога     '+FloatToStrF(I1,ffFixed,12,2);
+end;
+
+procedure TPrnSCH.QRExpr13Print(sender: TObject; var Value: String);
+begin
+     Value := Trim(PrintPred.table1Comm1.AsString)+' '+Trim(PrintPred.table1COMM2.AsString);
+end;
+
+procedure TPrnSCH.FormDestroy(Sender: TObject);
+begin
+     I1 := 0;
+     D := 0;
+
+end;
+
+procedure TPrnSCH.QRExpr7Print(sender: TObject; var Value: String);
+var I : Real;
+begin
+     I := PrintPred.table1Price.AsFloat;
+     Value := FloatToStrF(I*PrintPred.table1Kol.AsInteger,ffFixed,12,2);
+
+end;
+
+procedure TPrnSCH.QRLabel4Print(sender: TObject; var Value: String);
+begin
+{  if DataMain.PredprDay.AsBoolean then
+    Value := DecDatePer(DataMain.PredOtpOt.AsDateTime)
+  else
+    Value := DateToStr(DataMain.PredOtpOt.AsDateTime);
+}
+end;
+
+procedure TPrnSCH.QRExpr5Print(sender: TObject; var Value: String);
+begin
+  If NDS then
+     NDS_Val := PrintPred.table1NDS.AsInteger
+  else
+     NDS_Val := 0;
+   Value := FloatToStrF(NDS_Val,fffixed,12,0);
+end;
+
+procedure TPrnSCH.CashTovCBeforePrint(Sender: TQuickRep;
+  var PrintReport: Boolean);
+begin
+     I1 := 0;
+     D := 0;
+end;
+
+procedure TPrnSCH.GruzNamePrint(sender: TObject; var Value: String);
+begin
+     Value := Gruz_Name;
+end;
+
+procedure TPrnSCH.GruzAddressPrint(sender: TObject; var Value: String);
+begin
+     Value := Gruz_Address;
+end;
+
+procedure TPrnSCH.SummaryBand1BeforePrint(Sender: TQRCustomBand;
+  var PrintBand: Boolean);
+begin
+     QRMemo2.Enabled := DataMain.PredOtpCode_Firm.AsInteger = 6;
+end;
+
+end.

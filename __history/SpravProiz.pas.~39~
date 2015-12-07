@@ -1,0 +1,216 @@
+unit SpravProiz;
+
+interface
+
+uses
+  Windows, Messages, SysUtils, Classes, Graphics, Controls, Forms, Dialogs,
+  StdCtrls, Grids, DBGrids, Db, DBTables, ActnList, XPStyleActnCtrls, ActnMan,
+  ToolWin, ActnCtrls, IBCustomDataSet, IBQuery, JvExDBGrids, JvDBGrid;
+
+type
+  TSprProiz = class(TForm)
+    ActionManager1: TActionManager;
+    A_WinCr: TAction;
+    A_Ins: TAction;
+    ActionToolBar1: TActionToolBar;
+    Action1: TAction;
+    A_Del: TAction;
+    A_Exit: TAction;
+    Query1: TIBQuery;
+    JvDBGrid1: TJvDBGrid;
+    procedure DBGrid1KeyDown(Sender: TObject; var Key: Word;
+      Shift: TShiftState);
+    procedure FormActivate(Sender: TObject);
+    procedure FormDeactivate(Sender: TObject);
+    procedure FormClose(Sender: TObject; var Action: TCloseAction);
+    procedure A_InsExecute(Sender: TObject);
+    procedure Action1Execute(Sender: TObject);
+    procedure A_ExitExecute(Sender: TObject);
+    procedure A_DelExecute(Sender: TObject);
+  private
+    { Private declarations }
+  public
+    { Public declarations }
+  end;
+
+var
+  SprProiz: TSprProiz;
+
+implementation
+
+uses Data, NewPostF, SprNewPredpr, NewProizF, Sklad;
+
+{$R *.DFM}
+
+procedure TSprProiz.Action1Execute(Sender: TObject);
+begin
+  try
+    Application.CreateForm(TNewProiz, NewProiz);
+    NewProiz.CheckBox1.Enabled := False;
+    NewProiz.CheckBox2.Enabled := False;
+    NewProiz.Caption := 'ѕросмотр и редактирование сведений о производителе';
+    DataMain.Proiz.Edit;
+    if NewProiz.ShowModal = mrCancel then
+      DataMain.Proiz.Cancel
+    else
+      DataMain.Proiz.Post;
+  finally
+    NewProiz.Release;
+  end;
+  DataMain.Proiz.ApplyUpdates;
+end;
+
+procedure TSprProiz.A_DelExecute(Sender: TObject);
+var I, I2 : Integer;
+    NameI : String;
+    S : Boolean;
+    Ts : Array [1..2] of String;
+begin
+  if MessageDlg('”далить запись?', mtConfirmation, [mbYes, mbNo], 0) = mrYes then
+  begin
+    S := False;
+    Query1.Close;
+          Query1.ParamByName('code_pr').AsInteger:= DataMain.ProizCODE_Proiz.AsInteger;
+          Query1.Open;
+          S:= Query1.RecordCount>0;
+   { I2 := dataMain.ProizCODE_Proiz.AsInteger;
+    Ts[1] := 'Tovar.dbf';
+    Table1.TableName := Ts[1];
+    Table1.IndexName := 'Code_Pr';
+    Table1.Open;
+    Table1.First;
+    S := Table1.FindKey([I2]);
+    Table1.Close;}
+    if not(S) then
+    begin
+      DataMain.Proiz.Delete;
+      DataMain.Proiz.ApplyUpdates;
+      DataMain.Proiz.Refresh;
+    end
+    else
+      ShowMessage('ѕо данному производителю было движение, удаление невозможно!');
+  end;
+
+end;
+
+procedure TSprProiz.A_ExitExecute(Sender: TObject);
+begin
+  SprProiz.Release;
+end;
+
+procedure TSprProiz.A_InsExecute(Sender: TObject);
+var i : integer;
+begin
+  try
+    Application.CreateForm(TNewProiz, NewProiz);
+    NewProiz.Caption := 'ƒобавление нового производител€';
+    NewProiz.CheckBox1.Enabled := True;
+    NewProiz.CheckBox2.Enabled := True;
+    With DataMain do
+    begin
+      Proiz.Refresh;
+      ConfigVit.Open;
+      I := ConfigVit.FieldByName('Nomer17').AsInteger + 1;
+      ConfigVit.Edit;
+      ConfigVit.FieldByName('Nomer17').AsInteger := I;
+      ConfigVit.post;
+      ConFigVit.Close;
+      Proiz.Append;
+      ProizCode_Proiz.AsInteger := I;
+      Proiz.Post;
+    //  Proiz.ApplyUpdates;
+      Proiz.Edit;
+      if NewProiz.ShowModal = mrCancel then
+      begin
+        Proiz.Delete;
+        Proiz.ApplyUpdates;
+        Proiz.Refresh;
+      end
+      else
+      begin
+        Proiz.post;
+        Proiz.ApplyUpdates;
+        Proiz.Refresh;
+      end;
+      If NewProiz.CheckBox1.Checked then
+      begin
+        Predpr.Open;
+        ConfigVit.Open;
+        I := ConfigVit.FieldByName('Nomer15').AsInteger + 1;
+        ConfigVit.Edit;
+        ConfigVit.FieldByName('Nomer15').AsInteger := I;
+        ConfigVit.post;
+        ConFigVit.Close;
+        Predpr.Append;
+        PredprCode_Pr.AsInteger := I;
+        PredprNaim.AsString := ProizNaim.AsString;
+        Predpr.Post;
+        Predpr.ApplyUpdates;
+        if MessageDlg('∆елаете отредактировать данные клиента?', mtConfirmation, [mbYes, mbNo], 0) = mrYes then
+        begin
+          try
+            Application.CreateForm(TNewPredpr, NewPredpr);
+            Predpr.Edit;
+            NewPredpr.ShowModal;
+            Predpr.Post;
+          finally
+            NewPredpr.Release;
+          end;
+        end;
+        DataMain.Predpr.ApplyUpdates;
+      end;
+      If NewProiz.CheckBox2.Checked then
+      begin
+        Post.Open;
+        ConfigVit.Open;
+        I := ConfigVit.FieldByName('Nomer16').AsInteger + 1;
+        ConfigVit.Edit;
+        ConfigVit.FieldByName('Nomer16').AsInteger := I;
+        ConfigVit.post;
+        ConFigVit.Close;
+        Post.Append;
+        PostCode_Post.AsInteger := I;
+        PostNaim.AsString := ProizNaim.AsString;
+        PostPrim.AsString := ProizPrim.AsString;
+        Post.Post;
+        Post.ApplyUpdates;
+      end;
+    end;
+  finally
+    NewProiz.Release;
+  end;
+
+end;
+
+procedure TSprProiz.DBGrid1KeyDown(Sender: TObject; var Key: Word;
+  Shift: TShiftState);
+
+begin
+     Case Key of
+
+
+          VK_DELETE : begin
+                        
+                      end;
+
+     end;
+
+end;
+
+procedure TSprProiz.FormActivate(Sender: TObject);
+begin
+     DataMain.Proiz.Open;
+end;
+
+procedure TSprProiz.FormDeactivate(Sender: TObject);
+begin
+     DataMain.Proiz.Close;
+
+end;
+
+procedure TSprProiz.FormClose(Sender: TObject; var Action: TCloseAction);
+begin
+     Action := caFree;
+end;
+
+end.

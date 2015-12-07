@@ -1,0 +1,449 @@
+unit Plan1F;
+
+interface
+
+uses
+  Windows, Messages, SysUtils, Variants, Classes, Graphics, Controls, Forms,
+  Dialogs, JvTFDays, JvExControls, JvTFManager, JvTFGlance, JvTFWeeks, ToolWin,
+  ActnMan, ActnCtrls, ActnList, XPStyleActnCtrls, DateUtils, DB, DBTables,
+  Menus, ActnPopup, PlatformDefaultStyleActnCtrls, StdCtrls, DBCtrls,
+  IBCustomDataSet, IBQuery;
+
+type
+  TPlan1 = class(TForm)
+    ActionManager1: TActionManager;
+    A_WinCR: TAction;
+    A_W_F: TAction;
+    A_W_B: TAction;
+    A_Ins: TAction;
+    A_Del: TAction;
+    A_Edit: TAction;
+    ActionToolBar1: TActionToolBar;
+    TFD: TJvTFDays;
+    A_Clear: TAction;
+    Q_Browse_: TQuery;
+    A_Add: TAction;
+    Q_Del_: TQuery;
+    PopupActionBar1: TPopupActionBar;
+    N1: TMenuItem;
+    N2: TMenuItem;
+    N3: TMenuItem;
+    Q_Dr_: TQuery;
+    TFS: TJvTFScheduleManager;
+    ComboBox1: TComboBox;
+    Q_Mast_: TQuery;
+    Q_BrowseP_: TQuery;
+    Q_Dr: TIBQuery;
+    Q_Browse: TIBQuery;
+    Q_Del: TIBQuery;
+    Q_Mast: TIBQuery;
+    Q_BrowseP: TIBQuery;
+    Q_BrowseNAIM: TIBStringField;
+    Q_BrowseTEL: TIBStringField;
+    Q_BrowseNAIMM: TIBStringField;
+    Q_BrowseTM_S: TIBStringField;
+    Q_BrowseTM_E: TIBStringField;
+    Q_BrowseCODE_PR: TIntegerField;
+    Q_BrowseTYPE_: TSmallintField;
+    Q_BrowsePRIZ: TSmallintField;
+    Q_BrowseID_NAKL: TIntegerField;
+    Q_BrowseOT: TDateField;
+    Q_BrowseID: TIntegerField;
+    Q_BrowseCODE_MAST: TIntegerField;
+    Q_BrowseCOMMENT: TIBStringField;
+    Q_BrowsePNAIM: TIBStringField;
+    Q_BrowsePTEL: TIBStringField;
+    Q_BrowsePNAIMM: TIBStringField;
+    Q_BrowsePTM_S: TIBStringField;
+    Q_BrowsePTM_E: TIBStringField;
+    Q_BrowsePCODE_PR: TIntegerField;
+    Q_BrowsePTYPE_: TSmallintField;
+    Q_BrowsePPRIZ: TSmallintField;
+    Q_BrowsePID_NAKL: TIntegerField;
+    Q_BrowsePOT: TDateField;
+    Q_BrowsePID: TIntegerField;
+    Q_BrowsePCODE_MAST: TIntegerField;
+    Q_BrowsePCOMMENT: TIBStringField;
+    Q_DrCODE_PR: TIntegerField;
+    Q_DrNAIM: TIBStringField;
+    Q_DrTEL: TIBStringField;
+    Q_DrBIRTH_DATE: TDateField;
+    Q_MastNAIM: TIBStringField;
+    procedure A_WinCRExecute(Sender: TObject);
+    procedure A_W_FExecute(Sender: TObject);
+    procedure A_W_BExecute(Sender: TObject);
+    procedure TFDDblClick(Sender: TObject);
+    procedure A_InsExecute(Sender: TObject);
+    procedure FormCreate(Sender: TObject);
+    procedure A_ClearExecute(Sender: TObject);
+    procedure A_AddExecute(Sender: TObject);
+    procedure A_EditExecute(Sender: TObject);
+    procedure A_DelExecute(Sender: TObject);
+    procedure CreateWindowHandle(const Params: TCreateParams); override;
+    procedure FormClose(Sender: TObject; var Action: TCloseAction);
+    procedure ComboBox1DropDown(Sender: TObject);
+    procedure ComboBox1Change(Sender: TObject);
+  private
+    { Private declarations }
+    tf_t : TJvTFScheduleManager;
+    procedure EditPlan(ApptStartDate, ApptEndDate: TDate;ApptStartTime, ApptEndTime: TTime; Cap : string;Type_, code_pr : integer);
+  public
+    { Public declarations }
+    days : array[0..6] of string;
+    dat : tdate;
+    t_ : integer;
+    naim_p : string;
+  end;
+
+var
+  Plan1: TPlan1;
+
+implementation
+
+uses Data, Plan_AddF;
+
+{$R *.dfm}
+
+procedure TPlan1.ComboBox1Change(Sender: TObject);
+begin
+  naim_p:=Combobox1.Text;
+  A_WinCr.Execute;
+end;
+
+procedure TPlan1.ComboBox1DropDown(Sender: TObject);
+begin
+  Combobox1.Items.Clear;
+  Combobox1.Items.Add('Все мастера');
+  Q_Mast.Close;
+  Q_Mast.Open;
+      while not Q_Mast.Eof do
+      begin
+        Combobox1.Items.Add(Q_Mast.FieldByName('NAIM' ).AsString);
+        Q_Mast.Next;
+      end;
+      Q_Mast.Close;
+end;
+
+procedure TPlan1.CreateWindowHandle(const Params: TCreateParams);
+  var Comp:TPlan1;
+begin
+  inherited;
+  Comp:=TPlan1(Application.Components[Application.ComponentCount-1]);
+  Comp.Visible:=false;
+end;
+
+
+procedure TPlan1.EditPlan(ApptStartDate, ApptEndDate:
+TDate;ApptStartTime, ApptEndTime: TTime; Cap : String;
+Type_, code_pr : integer);
+var
+  I, d1, d2: Integer;
+  Appt: TJvTFAppt;
+
+  function FindCol(d : tdate) : integer;
+  var z, z1 : integer;
+
+  begin
+    z := -1;
+    for z := 0 to 6 do
+    begin
+      if TFD.Cols[z].SchedDate = d then z1 := z;
+    end;
+    result := z1;
+
+  end;
+
+begin
+    Appt := TFD.ScheduleManager.dbNewAppt('');
+    d1 := FindCol(ApptStartDate);
+    ApptEndDate :=  ApptStartDate;
+
+    if (d1 >= 0) or (d2 >= 0) then
+
+
+    With Appt do
+    Begin
+      Appt.BeginUpdate;
+      Try
+        SetStartEnd(ApptStartDate, ApptStartTime, ApptEndDate, ApptEndTime);
+
+        cap := inttostr(code_pr)+ ' || '+cap;
+        Description := Cap;
+        if type_ > -1 then
+        begin
+          case type_ of
+            0 : Appt.Color := clSkyBlue;
+            1 : Appt.Color := clYellow;
+            3 : Appt.Color := clLime;
+          end;
+        end;
+        Appt.AddSchedule(TFD.Cols[d1].SchedName);
+
+
+      Finally
+        Appt.EndUpdate;
+      End;
+    End
+end;
+
+procedure TPlan1.FormClose(Sender: TObject; var Action: TCloseAction);
+begin
+  Action := caFree;
+end;
+
+procedure TPlan1.FormCreate(Sender: TObject);
+begin
+  dat := now - dayoftheweek(now)+1;
+
+  days[0] := 'Понедельник';
+  days[1] := 'Вторник';
+  days[2] := 'Среда';
+  days[3] := 'Четверг';
+  days[4] := 'Пятница';
+  days[5] := 'Суббота';
+  days[6] := 'Воскресенье';
+  t_ := 0;
+end;
+
+procedure TPlan1.A_InsExecute(Sender: TObject);
+begin
+  try
+    Application.CreateForm(TPlan_Add, Plan_Add);
+    Plan_Add.A_WinCr.Execute;
+    if Plan_Add.ShowModal = mrOk then
+    begin
+      A_Clear.Execute;
+      A_Add.Execute;
+    end;
+
+  finally
+    Plan_Add.Release;
+  end;
+
+end;
+
+procedure TPlan1.A_EditExecute(Sender: TObject);
+var cap1 : string;
+
+begin
+  try
+    Application.CreateForm(TPlan_Add, Plan_Add);
+    if (TFD.SelAppt = nil) then
+    begin
+      if TFD.SelStart.X >= 0 then
+      begin
+        Plan_Add.dat1 := TFD.Cols[TFD.SelStart.X].SchedDate;
+        Plan_Add.tm1 := TFD.RowToTime(TFD.SelStart.Y);
+        Plan_Add.tm2 := Plan_Add.tm1 + strtotime('00:30');
+        Plan_Add.vid := 2;
+      end
+    end
+    else
+    begin
+        Plan_Add.dat1 := TFD.SelAppt.StartDate;
+        Plan_Add.tm1 := TFD.SelAppt.StartTime;
+        Plan_Add.tm2 := TFD.SelAppt.EndTime;
+        cap1 := TFD.SelAppt.Description;
+
+
+        if TFD.SelAppt.Color = clSkyBlue then Plan_Add.Type_ := 0
+        else Plan_Add.Type_ := 1;
+        Plan_Add.id := strtoint(trim(copy(Cap1,0,pos('||',Cap1)-1)));
+        Plan_Add.vid := 1;
+       if TFD.SelAppt.Color = clLime then Plan_Add.vid := 3;
+
+    end;
+
+
+    Plan_Add.A_WinCr.Execute;
+    if Plan_Add.ShowModal = mrOk then
+    begin
+      A_Clear.Execute;
+      A_Add.Execute;
+    end;
+
+  finally
+
+  end;
+
+end;
+
+procedure TPlan1.A_DelExecute(Sender: TObject);
+var id : integer;
+  Cap1 : string;
+begin
+  if not (TFD.SelAppt = nil) then
+  begin
+    if MessageDlg('Удалить выделенную запись?', mtConfirmation, [mbYes, mbNo],0, mbNo) = mrYes then
+    begin
+      Cap1 := TFD.SelAppt.Description;
+      id := strtoint(trim(copy(Cap1,0,pos('||',Cap1)-1)));
+      Q_Del.Close;
+      Q_Del.ParamByName('id').AsInteger := id;
+      Q_Del.ExecSQL;
+      TFD.SelAppt.Delete;
+    end;
+
+  end;
+
+
+end;
+
+procedure TPlan1.A_AddExecute(Sender: TObject);
+var cap2 : string;
+i : integer;
+dat_t, dat_c : tdatetime;
+begin
+  if ComboBox1.Text='Все мастера' then
+  Begin
+    try
+      Q_Browse.Close;
+      Q_Browse.ParamByName('dat1').AsDate := dat;
+      Q_Browse.ParamByName('dat2').AsDate := dat + 8;
+      Q_Browse.ParamByName('type_').AsInteger := t_;
+      Q_Browse.Open;
+      while not Q_Browse.Eof do
+      with Q_Browse do
+      begin
+        try
+        cap2 := FieldByName('naim').ASString + '  тел: ' + FieldByName('tel').ASString
+        + '  ком: ' +FieldByName('comment').ASString +' маст: ' +FieldByName('naimm').AsString;
+        EditPlan(FieldByName('ot').ASDatetime, FieldByName('ot').ASDatetime
+        , strtotime(FieldByName('tm_s').ASString), strtotime(FieldByName('tm_e').ASString)
+        , cap2, FieldByName('type_').ASInteger, FieldByName('id').ASInteger);
+        except
+
+        end;
+        Q_Browse.Next;
+      end;
+      Q_Browse.Close;
+    except on E: Exception do
+      begin
+        ShowMessage('Обнаружена ошибка: ' + #13 + E.Message);
+      end;
+    end;
+  End
+  else
+  begin
+    try
+      Q_BrowseP.Close;
+      Q_BrowseP.ParamByName('dat1').AsDate := dat;
+      Q_BrowseP.ParamByName('dat2').AsDate := dat + 8;
+      Q_BrowseP.ParamByName('type_').AsInteger := t_;
+      Q_BrowseP.ParamByName('naim_mp').AsString := ComboBox1.Text;
+      Q_BrowseP.Open;
+      while not Q_BrowseP.Eof do
+      with Q_BrowseP do
+      begin
+        try
+        cap2 := FieldByName('naim').ASString + '  тел: ' + FieldByName('tel').ASString
+        + '  ком: ' +FieldByName('comment').ASString+' маст: ' +FieldByName('naimm').AsString;
+        EditPlan(FieldByName('ot').ASDatetime, FieldByName('ot').ASDatetime
+        , strtotime(FieldByName('tm_s').ASString), strtotime(FieldByName('tm_e').ASString)
+        , cap2, FieldByName('type_').ASInteger, FieldByName('id').ASInteger);
+        except
+
+        end;
+        Q_BrowseP.Next;
+      end;
+      Q_BrowseP.Close;
+    except on E: Exception do
+      begin
+        ShowMessage('Обнаружена ошибка: ' + #13 + E.Message);
+      end;
+    end;
+
+
+
+  end;
+
+
+
+
+
+  if t_ = 1 then
+  begin
+    dat_t := dat;
+    for i := 0 to 8 do
+    try
+      dat_t := dat + i;
+      Q_Dr.Close;
+      Q_Dr.ParamByName('m').AsInteger := monthof(dat_t);
+      Q_Dr.ParamByName('d1').AsInteger := dayof(dat_t);
+      Q_Dr.Open;
+      while not Q_Dr.Eof do
+      with Q_Dr do
+      begin
+        try
+          cap2 := FieldByName('naim').ASString + '  тел: ' + FieldByName('tel').ASString
+          + '  ком: День Рожденья' ;
+          dat_c := strtodate(inttostr(dayof(dat_t))+'.'+ inttostr(monthof(dat_t))+'.'+ inttostr(yearof(now)));
+          EditPlan(dat_c, dat_c
+          , strtotime('10:00'), strtotime('10:30')
+          , cap2, 3, FieldByName('code_pr').ASInteger);
+        except
+
+        end;
+        Next;
+      end;
+    Q_Dr.Close;
+    except on E: Exception do
+      begin
+        ShowMessage('Обнаружена ошибка: ' + #13 + E.Message);
+      end;
+    end;
+
+  end;
+end;
+
+procedure TPlan1.A_ClearExecute(Sender: TObject);
+var i, k : integer;
+begin
+  with TFS do
+  begin
+  for i := 0 to ScheduleCount -1 do
+   for k := 0  to Schedules[i].ApptCount - 1 do
+      Schedules[i].Appts[0].Delete;
+  end;
+end;
+
+procedure TPlan1.A_WinCRExecute(Sender: TObject);
+var i, k : integer;
+begin
+
+//  tfd.ScheduleManager := datamain.TFS;
+
+  TFD.Cols.Clear;
+
+  dat := strtodate(datetostr(dat));
+
+
+  for I := 0 to 6 do
+  begin
+    TFD.Cols.Add.SchedDate := strtodate(datetostr(dat + i));
+    TFD.Cols[i].SchedName := days[i];
+  end;
+  A_Clear.Execute;
+  naim_p:='Все мастера';
+  A_Add.Execute;
+end;
+
+procedure TPlan1.A_W_BExecute(Sender: TObject);
+begin
+  dat := dat -7;
+  A_WinCr.Execute;
+end;
+
+procedure TPlan1.A_W_FExecute(Sender: TObject);
+begin
+  dat := dat + 7;
+  A_WinCr.Execute;
+end;
+
+procedure TPlan1.TFDDblClick(Sender: TObject);
+begin
+  A_Edit.Execute;
+end;
+
+
+end.
