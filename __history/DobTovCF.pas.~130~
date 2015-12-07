@@ -4,13 +4,14 @@ interface
 
 uses
   Windows, Messages, SysUtils, Classes, Graphics, Controls, Forms, Dialogs,
-  Grids, DBGrids, ExtCtrls, DBCtrls, StdCtrls, Variants, DB;
+  Grids, DBGrids, ExtCtrls, DBCtrls, StdCtrls, Variants, DB, JvExDBGrids,
+  JvDBGrid;
 
 type
   TDobTovC = class(TForm)
-    DBGrid1: TDBGrid;
     DBGrid2: TDBGrid;
     DBGrid3: TDBGrid;
+    DBGrid1: TDBGrid;
     procedure DBGrid1KeyDown(Sender: TObject; var Key: Word;
       Shift: TShiftState);
     procedure DBGrid2KeyDown(Sender: TObject; var Key: Word;
@@ -82,10 +83,9 @@ Var I,acs,at,I1, Vup : Integer;
     cp,cn,cpb,F : Real;
     L,s : Boolean;
 begin
-  Application.CreateForm(TAddKol, AddKol);
-     case Key of
-          VK_RETURN : begin
-
+Application.CreateForm(TAddKol, AddKol);
+case Key of
+  VK_RETURN : begin
   I := DataMain.TovarCode.AsInteger;
   T := DataMain.TovarPrihod.AsFloat;
   TB:= DataMain.TovarPrice_B.AsFloat;
@@ -99,7 +99,7 @@ begin
     AddKol.Up.Text := '0';
     AddKol.Kol.Text := '0';
    end
-  else
+  else        // товар еcть в накладной
    begin
     AddKol.Up.Text := Datamain.CashTnUP.AsString;
     AddKol.Kol.Text := Datamain.CashTnKol.AsString;
@@ -120,7 +120,7 @@ begin
   AddKol.Label2.Caption := 'Остаток '+ Trim(DataMain.TovarOst1.AsString)+
   ' (в упаковке по '+Trim(DataMain.TovarUp.AsString)+' штук.)';
 
-
+///////////////////////////////////////////////////////////////////////////
   if (AddKol.ShowModal = mrOk) then
        if not(L) then   // товара нет в накладной
          begin
@@ -139,7 +139,6 @@ begin
                  if (trim(DataMain.Tovar.FieldByName('Vid').AsString)='0') then  //если это товар
                  FieldByName('Kol1').AsInteger := FieldByName('Kol1').AsInteger - StrToInt(Trim(AddKol.Kol.Text));
                  Post;
-              //   ApplyUpdates;
                  Datamain.CashTn.Append;
                  DataMAin.CashTNCode.AsInteger :=I;
                  Datamain.CashTnPrice.AsFloat := DataMain.TovarPrice_B.AsFloat;
@@ -152,9 +151,6 @@ begin
                  Datamain.CashTn.ApplyUpdates;
                  DataMain.IBT.CommitRetaining;
                  DataMain.IBTCash.CommitRetaining;
-                 //ss:= inttostr(DataMain.TovarUP.AsInteger);
-                 //if DataMain.IBTCash.InTransaction then ss:=ss+' - '+' true';
-                 //Showmessage(ss);
                 end;
              end;
          end
@@ -304,6 +300,7 @@ begin
         end;
              CashTN.Delete;
              CashTN.ApplyUpdates;
+             DataMain.IBT.CommitRetaining;
              DataMain.IBTCash.CommitRetaining;
              CashTn.Refresh;
         end;
