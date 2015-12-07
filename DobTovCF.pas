@@ -154,7 +154,7 @@ case Key of
                 end;
              end;
          end
-       else // L    товар есть в накладной
+       else // L товар есть в накладной
        begin
          With DataMain.Ost do
          begin
@@ -247,8 +247,6 @@ case Key of
                                   EnableControls;
                                  end;
                       end;
-
-
           VK_TAB : DobTovC.ActiveControl := DBGrid1;
           VK_F3 : Begin
                     DataMain.Tovar.Edit;
@@ -318,8 +316,6 @@ begin
   DBGrid2.DataSource := nil;
   DobTovC.Update;
   DBGRid2.Update;
-
-
 end;
 
 procedure TDobTovC.FormDeactivate(Sender: TObject);
