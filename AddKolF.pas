@@ -108,8 +108,6 @@ case Key of
                    AddKol.Up.Text := '0';
                    AddKol.ActiveControl := Kol;
               end;
-              //for commit
-
 end;
 
 end;
