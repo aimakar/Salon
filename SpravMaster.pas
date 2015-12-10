@@ -160,7 +160,6 @@ begin
   DataMain.IBT.CommitRetaining;
 end;
 
-
 procedure TSprMaster.A_InsExecute(Sender: TObject);
 var I : integer;
 begin
